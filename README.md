@@ -18,8 +18,11 @@ The project begins with an initial team meeting to introduce members and align e
 ---
 
 ## 2. Initial Role Assignment
-Temporary roles will be assigned during the early project phase to provide structure and accountability.
-Lara Alzannan
+
+| Role                      | Assigned To   | Responsibilities                                                                                                                      |
+| ------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Temporary Project Manager | Lara Alzannan | Coordinate the initial project phase, organize team activities, facilitate communication, and support task planning and distribution. |
+
 
 
 ## 3. Communication and Collaboration Guidelines
