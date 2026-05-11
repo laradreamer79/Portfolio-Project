@@ -125,7 +125,7 @@ Additionally, the main constraint for all ideas was the limited development dura
 
 ---
 
-# ✅ Task 3: Decision and Refinement
+# Task 3: Decision and Refinement
 
 ## 1. Select the Final MVP Idea
 
