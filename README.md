@@ -125,3 +125,60 @@ Additionally, the main constraint for all ideas was the limited development dura
 
 ---
 
+# ✅ Task 3: Decision and Refinement
+
+## 1. Select the Final MVP Idea
+
+### Final MVP Idea
+**Oyster** – a digital platform that aggregates diving centers, instructors, and trips in Saudi Arabia in one place, allowing users to explore dive sites, book trips and courses, and communicate with instructors easily.
+
+### Reason for Selection
+- **Feasibility:** Can be built as a web/mobile app using standard technologies such as React/Node.js or Flutter with a simple database.
+- **Market Need:** Growing interest in marine tourism in Saudi Arabia (Red Sea, NEOM) with no existing unified platform.
+- **Team Alignment:** The team has skills in web development, UX design, and business analysis.
+- **Scalability:** Future enhancements such as payments, maps, and instant booking can be added easily.
+
+---
+
+
+## 2. Refine the Selected Concept
+
+### a. The Problem It Solves
+
+Diving enthusiasts in Saudi Arabia, including hobbyists, beginners, and tourists, struggle to find reliable diving centers, compare trips and courses, and book services due to the absence of a unified digital platform.
+
+This leads to wasted time, reduced trust, and missed tourism and economic opportunities.
+
+---
+
+### b. Target Audience or Users
+
+| User Type | Description |
+|---|---|
+| Hobbyists & Beginners | People aged 20–45 looking for first dive experiences or certified courses and seeking safe organized trips. |
+| Local & International Tourists | Visitors to coastal cities such as Jeddah, Yanbu, Dammam, NEOM, and Al Wajh interested in marine activities. |
+| Professional Divers | Experienced divers searching for advanced diving trips and new dive sites. |
+| Diving Centers & Instructors | Service providers who need a marketing channel and an additional booking system. |
+
+---
+
+### c. Key Features (MVP Only)
+
+| # | Feature | Description |
+|---|---|---|
+| 1 | Browse Diving Centers by City | Display a list of diving centers including name, address, license number, approximate price, and short description. |
+| 2 | View Trips and Courses | Each center page displays available trips, duration, diving level, prices, and offered courses. |
+| 3 | Simple Booking Request | Users can send booking requests through a form. Centers respond via email or WhatsApp. |
+| 4 | User Ratings & Reviews | Users can rate centers and trips using a 5-star system and leave written reviews. |
+
+---
+
+### d. Expected Outcomes
+
+| Outcome | Metric |
+|---|---|
+| Reduce search time for diving centers and trips | From several hours to less than 10 minutes |
+| Increase bookings for participating centers | At least 30% within 3 months of launch |
+| Number of registered diving centers | 50+ licensed Saudi diving centers |
+| Monthly active users during MVP phase | 500 users |
+| User satisfaction regarding booking experience | Average rating of 4.2/5 from surveys |
