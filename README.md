@@ -31,7 +31,6 @@ The project begins with an initial team meeting to introduce members and align e
 The team will use agreed-upon communication tools such as:
 - Discord
 - Whats App
-- WhatsApp (if preferred for quick communication)
 
 ### Team Communication Rules
 - Respond to messages within a reasonable timeframe 2 hours
