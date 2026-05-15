@@ -19,9 +19,12 @@ The project begins with an initial team meeting to introduce members and align e
 
 ## 2. Initial Role Assignment
 
-| Role                      | Assigned To   | Responsibilities                                                                                                                      |
-| ------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| Temporary Project Manager | Lara Alzannan | Coordinate the initial project phase, organize team activities, facilitate communication, and support task planning and distribution. |
+| Role                      | Assigned To       | Responsibilities                                                                                                                      |
+| ------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Temporary Project Manager | Lara Alzannan     | Coordinate the initial project phase, organize team activities, facilitate communication, and support task planning and distribution. |
+| Full Stack Developer       | Maryam Alessa     | Backend and frontend development, database design, and API integration.                                                              |
+| UI/UX Designer            | Solaf Alessa      | Interface design, wireframing, prototyping using Figma, and ensuring a consistent user experience.                                   |
+| Full Stack Developer / Research Lead | Ebtihal Alomari | Idea generation, technical research, frontend and backend development, and documentation.                                  |
 
 
 
