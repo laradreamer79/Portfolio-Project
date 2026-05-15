@@ -1,186 +1,270 @@
-# Team Formation and Project Initiation
+# Stage 1 Report – Team Formation and Idea Development
 
-## Overview
-This document outlines the initial steps for establishing the project team, defining roles, and setting collaboration practices to ensure an organized and effective project start.
+**Project:** Oyster – Diving Platform for Saudi Arabia
+**Team:** Lara Mubarak Alzannan, Maryam Alessa, Solaf Alessa, Ebtihal Alomari
+**Stage:** 1 – Team Formation and Idea Development
 
 ---
 
-## 1. Kickoff Meeting
-The project begins with an initial team meeting to introduce members and align expectations.
+## 1. Team Formation Overview
 
-### Objectives
-- Introduce all team members
-- Share each member’s background, strengths, and interests
+### 1.1 Kickoff Meeting
+
+The project began with an initial team meeting to introduce members and align expectations.
+
+**Objectives:**
+- Introduce all team members and share each member's background, strengths, and interests
 - Discuss individual learning goals and expected contributions
 - Present the project idea, vision, and objectives
 - Ensure everyone understands the project scope
 
 ---
 
-## 2. Initial Role Assignment
+### 1.2 Team Members and Roles
 
-| Role                      | Assigned To   | Responsibilities                                                                                                                      |
-| ------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Role | Assigned To | Responsibilities |
+|------|-------------|-----------------|
 | Temporary Project Manager | Lara Alzannan | Coordinate the initial project phase, organize team activities, facilitate communication, and support task planning and distribution. |
-
-
-
-## 3. Communication and Collaboration Guidelines
-
-### Communication Platform
-The team will use agreed-upon communication tools such as:
-- Discord
-- Whats App
-
-### Team Communication Rules
-- Respond to messages within a reasonable timeframe 2 hours
-- Attend scheduled meetings whenever possible
-- Inform the team early about blockers or delays
-- Maintain respectful and professional communication
-
-### Decision-Making Process
-Decisions will be made using one of the following approaches:
-- Team consensus
-- Majority voting
-- Project manager decision after discussion
+| Full Stack Developer | Maryam Alessa | Backend and frontend development, database design, and API integration. |
+| UI/UX Designer | Solaf Alessa | Interface design, wireframing, prototyping using Figma, and ensuring a consistent user experience. |
+| Full Stack Developer / Research Lead | Ebtihal Alomari | Idea generation, technical research, frontend and backend development, and documentation. |
 
 ---
 
-## 4. Collaboration Tools
+### 1.3 Collaboration Strategies
 
-The following tools will support project management and teamwork:
+**Communication Platforms:**
+- **Discord** – Primary channel for team discussions, daily updates, and quick decisions.
+- **WhatsApp** – For urgent and informal communication.
+
+**Team Communication Rules:**
+- Respond to messages within **2 hours** during working hours.
+- Attend all scheduled meetings; inform the team at least 1 hour in advance of any absence.
+- Raise blockers or delays immediately to avoid bottlenecks.
+- Maintain respectful and professional communication at all times.
+
+**Decision-Making Process:**
+Decisions are made through team consensus first. If consensus is not reached, the team proceeds with majority voting. In time-sensitive situations, the Project Manager makes the final call after team discussion.
+
+**Collaboration Tools:**
 
 | Tool | Purpose |
 |------|---------|
-| Notion | Project planning, documentation, task organization |
+| Notion | Project planning, documentation, and task organization |
 | GitHub Projects | Task tracking and issue management |
 | Figma | UI/UX design collaboration |
-| Discord | Team communication |
-| Canva | Design |
-| whatsApp | communication | 
+| Discord | Team communication and meetings |
+| Canva | Visual design assets |
+| WhatsApp | Quick and informal communication |
+
+**Development Workflow Rules:**
+- Use feature branches for all development work.
+- No direct pushes to the `main` branch.
+- All changes go through Pull Requests and require at least one review.
+- Write clear and descriptive commit messages.
+- Keep documentation updated alongside code changes.
 
 ---
 
-## 5. Development Workflow Rules
-To maintain code quality and team coordination:
+## 2. Ideas Explored
 
-- Use feature branches for development
-- Avoid direct pushes to the `main` branch
-- Submit Pull Requests for code review
-- Write clear commit messages
-- Keep documentation updated
+### 2.1 Brainstorming Process
 
----
+The team applied structured brainstorming frameworks to generate and refine ideas:
 
-# Research and Brain Storming
-
-To apply the brainstorming and research process, our team generated multiple project ideas based on real-world problems, user needs, and market opportunities. We used creative thinking techniques to explore different solution areas, evaluate feasibility, and compare concepts before shortlisting the strongest ideas for further consideration.
-
-## 1. Proposed Project Ideas
-We applied brainstorming frameworks to refine and evaluate our project ideas. Using Mind Mapping, we explored related features, target users, and problem connections for each concept. Through the SCAMPER framework, we improved existing ideas by combining features, adapting successful concepts from other industries, and modifying solutions to better fit user needs. Using “How Might We” questions, we reframed problems into open-ended opportunities, helping us generate innovative and user-centered project ideas.
-
-
-| Project Name | Overview | Problem Addressed | Target Audience | Key Features | Idea Owner |
-|--------------|----------|-------------------|----------------|--------------|------------|
-| Murshid | Smart airport navigation platform that guides travelers from airport entry to their boarding gate in real time. | Large airports can be confusing and stressful, especially without accurate indoor navigation and real-time service information. | Frequent travelers, first-time international travelers, elderly passengers, families. | Real-time indoor navigation, shop directory, product search, airport service information. | Ebtihal Alomari |
-| Baseer | AI-powered accessibility assistant for visually impaired users using computer vision and smart guidance. | Visually impaired individuals face challenges identifying surroundings and navigating unfamiliar environments independently. | Blind or partially visually impaired individuals, educational institutions. | Object recognition, voice guidance, haptic feedback navigation, obstacle detection. | Ebtihal Alomari |
-| Mihan | Digital marketplace connecting service providers and skilled workers with customers. | Service providers struggle to reach customers, while users struggle to find trusted providers. | Skilled workers, freelancers, small business owners, customers. | Service listings, smart search, ratings, profile pages. | Maryam Alessa |
-| Qareeb | Community-based platform connecting nearby users to complete small daily tasks quickly. | People need quick assistance with errands or tasks but lack organized local support. | Neighborhood residents, users seeking help, gig workers. | Task posting, nearby offers, status tracking, location matching. | Maryam Alessa |
-| Oyster | Diving platform connecting users with diving centers, instructors, courses, and experiences across Saudi Arabia. | Divers struggle to find trusted diving services in one unified platform. | Divers, tourists, beginners, professionals, diving centers. | Listings, booking, reviews, interactive dive map, courses. | Lara Alzannan |
+- **Mind Mapping:** Explored related features, target users, and problem connections for each concept.
+- **SCAMPER Framework:** Improved ideas by combining features, adapting successful concepts from other industries, and modifying solutions to fit user needs.
+- **"How Might We" Questions:** Reframed problems into open-ended opportunities to generate innovative, user-centered project ideas.
 
 ---
 
-## 2. Idea Evaluation
+### 2.2 Ideas Generated and Evaluated
 
-To evaluate and prioritize the proposed ideas, the team established a set of evaluation criteria based on the project requirements and the limited development timeline of three months. The selected criteria included feasibility, potential impact, technical alignment, and scalability.
+#### Idea 1: Murshid – Smart Airport Navigation Platform
+**Idea Owner:** Ebtihal Alomari
 
-### Evaluation Criteria
+**Overview:** A smart airport navigation platform that guides travelers from airport entry to their boarding gate in real time.
 
-- **Feasibility:** Measures how realistic and achievable the idea is within the available time and resources.
-- **Potential Impact:** Evaluates the value and benefits the idea can provide to users and the market.
-- **Technical Alignment:** Assesses how well the idea matches the team’s technical skills and available technologies.
-- **Scalability:** Determines the possibility of expanding and improving the system in the future.
+**Problem Addressed:** Large airports are often confusing and stressful, especially without accurate indoor navigation and real-time service information.
 
-### Evaluation Rubric
+**Target Audience:** Frequent travelers, first-time international travelers, elderly passengers, and families.
+
+**Key Features:** Real-time indoor navigation, shop directory, product search, and airport service information.
+
+| Strengths | Weaknesses |
+|-----------|------------|
+| Addresses a real and common pain point for millions of travelers worldwide. | Requires accurate indoor mapping systems, significantly increasing development complexity. |
+| High potential for adoption in large international airports. | Dependent on partnerships with airport authorities for data access. |
+| Scalable to multiple airports and cities. | Hardware integration (beacons/sensors) may be needed for accurate indoor navigation. |
+
+**Reason for Rejection:** The technical requirements for indoor navigation exceeded the team's capacity within the three-month timeline. **Score: 16/20**
+
+---
+
+#### Idea 2: Baseer – AI Accessibility Assistant for Visually Impaired Users
+**Idea Owner:** Ebtihal Alomari
+
+**Overview:** An AI-powered accessibility assistant for visually impaired users using computer vision and smart guidance.
+
+**Problem Addressed:** Visually impaired individuals face significant challenges identifying their surroundings and navigating unfamiliar environments independently.
+
+**Target Audience:** Blind or partially visually impaired individuals and educational institutions.
+
+**Key Features:** Object recognition, voice guidance, haptic feedback navigation, and obstacle detection.
+
+| Strengths | Weaknesses |
+|-----------|------------|
+| Very high social impact and humanitarian value. | Heavily reliant on advanced AI and computer vision technologies. |
+| Scalable into multiple assistive use cases. | Requires extensive testing and ethical considerations. |
+| Strong differentiation from existing products. | Low feasibility within the three-month MVP window given the team's current expertise. |
+
+**Reason for Rejection:** The AI and computer vision requirements were beyond the team's available expertise and timeline. **Score: 14/20**
+
+---
+
+#### Idea 3: Mihan – Digital Service Marketplace
+**Idea Owner:** Maryam Alessa
+
+**Overview:** A digital marketplace connecting service providers and skilled workers with customers.
+
+**Problem Addressed:** Service providers struggle to reach customers, while users struggle to find trusted providers.
+
+**Target Audience:** Skilled workers, freelancers, small business owners, and customers.
+
+**Key Features:** Service listings, smart search, ratings, and provider profile pages.
+
+| Strengths | Weaknesses |
+|-----------|------------|
+| Technically feasible and well-aligned with the team's skills. | Faces strong competition from well-established platforms (e.g., Mrsool, Freelancer). |
+| Clear market need and high potential demand. | Differentiation would be difficult to achieve at the MVP stage. |
+| Standard web technologies make development straightforward. | User trust-building with new providers takes significant time and effort. |
+
+**Reason for Rejection:** The highly competitive market landscape reduced the project's potential for unique impact. **Score: 18/20**
+
+---
+
+#### Idea 4: Qareeb – Community Task Assistance Platform
+**Idea Owner:** Maryam Alessa
+
+**Overview:** A community-based platform connecting nearby users to complete small daily tasks quickly.
+
+**Problem Addressed:** People need quick assistance with errands or tasks but lack an organized local support network.
+
+**Target Audience:** Neighborhood residents, users seeking help, and gig workers.
+
+**Key Features:** Task posting, nearby offers, status tracking, and location matching.
+
+| Strengths | Weaknesses |
+|-----------|------------|
+| High technical feasibility and good team alignment. | Similar solutions already exist (e.g., TaskRabbit, local delivery apps). |
+| Practical and relatable use case with broad appeal. | Limited uniqueness reduces competitive advantage. |
+| Can be built quickly with standard web technologies. | Building a local user base and trust from scratch is challenging. |
+
+**Reason for Rejection:** Limited uniqueness compared to existing market solutions. **Score: 17/20**
+
+---
+
+#### Idea 5: Oyster – Diving Platform for Saudi Arabia ✅ Selected
+**Idea Owner:** Lara Alzannan
+
+**Overview:** A diving platform connecting users with diving centers, instructors, courses, and experiences across Saudi Arabia.
+
+**Problem Addressed:** Divers struggle to find trusted diving services on a single unified platform. No centralized digital hub exists for diving tourism in Saudi Arabia.
+
+**Target Audience:** Divers, tourists, beginners, professionals, and diving centers.
+
+**Key Features:** Center listings, trip and course browsing, booking requests, user reviews, and an interactive dive map.
+
+| Strengths | Weaknesses |
+|-----------|------------|
+| No direct competitor exists in Saudi Arabia — clear market gap. | Requires collecting reliable data from diving centers. |
+| Fully aligned with Saudi Vision 2030 marine tourism goals. | Building initial partnerships with diving centers may take time. |
+| High feasibility using standard web technologies within 3 months. | Content accuracy and availability data must be maintained regularly. |
+| Strong scalability potential for future features. | |
+
+**Reason for Selection:** Highest evaluation score (20/20) and best balance of feasibility, impact, team alignment, and scalability.
+
+---
+
+### 2.3 Evaluation Summary
 
 | Idea | Feasibility | Potential Impact | Technical Alignment | Scalability | Total Score |
-|------|-------------|------------------|--------------------|-------------|-------------|
+|------|-------------|-----------------|---------------------|-------------|-------------|
 | Murshid | 4/5 | 4/5 | 4/5 | 4/5 | 16/20 |
 | Baseer | 2/5 | 5/5 | 2/5 | 5/5 | 14/20 |
 | Mihan | 5/5 | 4/5 | 5/5 | 4/5 | 18/20 |
 | Qareeb | 5/5 | 3/5 | 5/5 | 4/5 | 17/20 |
-| Oyster | 5/5 | 5/5 | 5/5 | 5/5 | 20/20 |
-
-After evaluating all ideas, **Oyster** received the highest score and was selected as the final MVP idea. The idea was considered highly feasible for development within the three-month timeline while also offering strong market potential and future scalability.
-
-### Risks and Constraints
-
-Each idea included certain risks and constraints that affected the evaluation process:
-
-- **Murshid:** Requires accurate indoor navigation and airport mapping systems, which may increase development complexity.
-- **Baseer:** Depends heavily on artificial intelligence and computer vision technologies, requiring advanced implementation and extensive testing.
-- **Mihan:** Faces strong competition from existing service marketplace platforms.
-- **Qareeb:** Similar solutions already exist in the market, which may reduce uniqueness and competitive advantage.
-- **Oyster:** Requires collecting reliable information from diving centers and ensuring accurate booking and availability data.
-
-Additionally, the main constraint for all ideas was the limited development duration of three months. Therefore, the team prioritized ideas that are practical, achievable, and suitable for MVP development.
+| **Oyster** | **5/5** | **5/5** | **5/5** | **5/5** | **20/20** |
 
 ---
 
-# Task 3: Decision and Refinement
+## 3. Selected MVP Concept
 
-## 1. Select the Final MVP Idea
+### 3.1 MVP Summary
 
-### Final MVP Idea
-**Oyster** – a digital platform that aggregates diving centers, instructors, and trips in Saudi Arabia in one place, allowing users to explore dive sites, book trips and courses, and communicate with instructors easily.
-
-### Reason for Selection
-- **Feasibility:** Can be built as a web/mobile app using standard technologies such as React/Node.js or Flutter with a simple database.
-- **Market Need:** Growing interest in marine tourism in Saudi Arabia (Red Sea, NEOM) with no existing unified platform.
-- **Team Alignment:** The team has skills in web development, UX design, and business analysis.
-- **Scalability:** Future enhancements such as payments, maps, and instant booking can be added easily.
+**Oyster** is a digital platform that aggregates diving centers, instructors, and trips across Saudi Arabia in one place. It allows users to explore dive sites, browse available trips and courses, send booking requests, and read or leave reviews — all from a single, easy-to-use interface.
 
 ---
 
+### 3.2 Reasons for Selection
 
-## 2. Refine the Selected Concept
-
-### a. The Problem It Solves
-
-Diving enthusiasts in Saudi Arabia, including hobbyists, beginners, and tourists, struggle to find reliable diving centers, compare trips and courses, and book services due to the absence of a unified digital platform.
-
-This leads to wasted time, reduced trust, and missed tourism and economic opportunities.
+| Criteria | Justification |
+|----------|--------------|
+| **Feasibility** | Can be built as a web/mobile application using standard technologies (React, Node.js) with a relational database within three months. |
+| **Innovation** | No existing unified platform for diving tourism in Saudi Arabia — a clear and uncontested gap in the market. |
+| **Alignment with Goals** | The team has direct skills in web development, UX/UI design, and business analysis matching all project requirements. |
+| **Market Need** | Growing interest in marine tourism driven by Saudi Vision 2030 and coastal development in Jeddah, Yanbu, Dammam, NEOM, and Al Wajh. |
+| **Scalability** | Future enhancements (online payments, interactive maps, instant booking, mobile app) can be added incrementally after MVP launch. |
 
 ---
 
-### b. Target Audience or Users
+### 3.3 Target Audience
 
 | User Type | Description |
-|---|---|
-| Hobbyists & Beginners | People aged 20–45 looking for first dive experiences or certified courses and seeking safe organized trips. |
-| Local & International Tourists | Visitors to coastal cities such as Jeddah, Yanbu, Dammam, NEOM, and Al Wajh interested in marine activities. |
+|-----------|-------------|
+| Hobbyists & Beginners | People aged 20–45 seeking first dive experiences, certified courses, and safe organized trips. |
+| Local & International Tourists | Visitors to Saudi coastal cities interested in marine activities. |
 | Professional Divers | Experienced divers searching for advanced diving trips and new dive sites. |
-| Diving Centers & Instructors | Service providers who need a marketing channel and an additional booking system. |
+| Diving Centers & Instructors | Service providers needing a digital marketing channel and an easy booking system. |
 
 ---
 
-### c. Key Features (MVP Only)
+### 3.4 Key MVP Features
 
 | # | Feature | Description |
-|---|---|---|
-| 1 | Browse Diving Centers by City | Display a list of diving centers including name, address, license number, approximate price, and short description. |
-| 2 | View Trips and Courses | Each center page displays available trips, duration, diving level, prices, and offered courses. |
-| 3 | Simple Booking Request | Users can send booking requests through a form. Centers respond via email or WhatsApp. |
+|---|---------|-------------|
+| 1 | Browse Diving Centers by City | Display a list of diving centers with name, address, license number, approximate price, and short description. |
+| 2 | View Trips and Courses | Each center page shows available trips, duration, diving level, prices, and offered courses. |
+| 3 | Simple Booking Request | Users send booking requests via a form; centers respond by email or WhatsApp. |
 | 4 | User Ratings & Reviews | Users can rate centers and trips using a 5-star system and leave written reviews. |
 
 ---
 
-### d. Expected Outcomes
+### 3.5 Potential Challenges and Opportunities
 
-| Outcome | Metric |
-|---|---|
-| Reduce search time for diving centers and trips | From several hours to less than 10 minutes |
+**Challenges:**
+- Collecting accurate and up-to-date information from diving centers and ensuring availability data is reliable.
+- Building initial trust and partnerships with diving center operators to list their services.
+- Delivering a polished, functional product within the three-month development window.
+
+**Opportunities:**
+- Saudi Vision 2030 is actively promoting marine and adventure tourism, creating a highly favorable environment for the platform.
+- The absence of direct competitors in this niche makes early adoption and brand establishment significantly easier.
+- Partnerships with diving certification bodies (e.g., PADI, SSI) could enhance platform credibility and user reach.
+
+---
+
+### 3.6 Expected Outcomes
+
+| Outcome | Target Metric |
+|---------|--------------|
+| Reduce search time for diving services | From several hours to less than 10 minutes |
 | Increase bookings for participating centers | At least 30% within 3 months of launch |
-| Number of registered diving centers | 50+ licensed Saudi diving centers |
-| Monthly active users during MVP phase | 500 users |
-| User satisfaction regarding booking experience | Average rating of 4.2/5 from surveys |
+| Registered diving centers on platform | 50+ licensed Saudi diving centers |
+| Monthly active users during MVP phase | 500+ users |
+| User satisfaction rating | Average 4.2/5 from post-booking surveys |
+
+---
+
+*Report prepared by: Lara Mubarak Alzannan, Maryam Alessa, Solaf Alessa, Ebtihal Alomari*
+*Stage 1 – Portfolio Project | Holberton School*
