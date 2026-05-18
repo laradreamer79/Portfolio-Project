@@ -22,8 +22,7 @@ The project aims to simplify the process of discovering and booking diving exper
 
 | Type | Stakeholder | Role / Interest |
 |---|---|---|
-| Internal | Project Team Members | Responsible for planning, designing, developing, and documenting the project. |
-| 
+| Internal | Project Team Members | Responsible for planning, designing, developing, and documenting the project. | 
 | External | Diving Centers | Service providers who will list trips, courses, and diving services on the platform. |
 | External | Diving Instructors | Offer diving courses and training opportunities through the platform. |
 | External | End Users (Divers & Tourists) | Use the platform to explore diving centers, trips, and courses. |
