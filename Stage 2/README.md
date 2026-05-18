@@ -38,3 +38,29 @@ The project aims to simplify the process of discovering and booking diving exper
 | Maryam Alessa | Full Stack Developer | Develop frontend and backend features, APIs, and database functionality. |
 | Solaf Alessa | UI/UX Designer | Design user interfaces, wireframes, and improve user experience. |
 | Ebtihal Alomari | Research Lead / Full Stack Developer | Conduct technical research, assist with development, and maintain project documentation. |
+
+## 2. Define Scope
+
+### Project Scope Overview
+Oyster is a digital platform designed to connect users with diving centers, instructors, diving trips, and training courses across Saudi Arabia through a single, user-friendly platform. The MVP focuses on simplifying the discovery and booking process for diving experiences while helping diving centers improve their digital visibility.
+
+### In-Scope (Included in MVP)
+- Browse diving centers by city across Saudi Arabia
+- View diving center details, including descriptions, approximate pricing, and contact information
+- Browse available diving trips and training courses
+- Submit booking requests through the platform
+- User registration and login
+- Ratings and reviews system for diving centers and experiences
+- Responsive web interface for desktop and mobile users
+- Admin dashboard for basic content management
+- Direct online payment processing
+
+### Out-of-Scope (Excluded from MVP)
+- Real-time booking confirmation and live availability synchronization
+- Mobile native application (iOS/Android)
+- AI-based personalized diving recommendations
+- Integration with external certification providers (e.g., PADI/SSI APIs)
+- Advanced map navigation with real-time geolocation tracking
+- Live chat support between users and diving centers
+- Multi-language support beyond the initial launch language
+
