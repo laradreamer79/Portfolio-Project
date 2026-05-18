@@ -24,7 +24,7 @@ The project began with an initial team meeting to introduce members and align ex
 
 | Role | Assigned To | Responsibilities |
 |------|-------------|-----------------|
-| Temporary Project Manager | Lara Alzannan | Coordinate the initial project phase, organize team activities, facilitate communication, and support task planning and distribution. |
+| Project Manager | Lara Alzannan | Coordinate the initial project phase, organize team activities, facilitate communication, and support task planning and distribution. |
 | Full Stack Developer | Maryam Alessa | Backend and frontend development, database design, and API integration. |
 | UI/UX Designer | Solaf Alessa | Interface design, wireframing, prototyping using Figma, and ensuring a consistent user experience. |
 | Full Stack Developer / Research Lead | Ebtihal Alomari | Idea generation, technical research, frontend and backend development, and documentation. |
@@ -164,7 +164,7 @@ The team applied structured brainstorming frameworks to generate and refine idea
 
 ---
 
-#### Idea 5: Oyster – Diving Platform for Saudi Arabia ✅ Selected
+#### Idea 5: Oyster – Diving Platform for Saudi Arabia Selected
 **Idea Owner:** Lara Alzannan
 
 **Overview:** A diving platform connecting users with diving centers, instructors, courses, and experiences across Saudi Arabia.
