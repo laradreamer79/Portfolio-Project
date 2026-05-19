@@ -22,14 +22,14 @@ The project began with an initial team meeting to introduce members and align ex
 
 ### 1.2 Team Members and Roles
 
-All team members contribute to full stack development throughout the project. Responsibilities rotate across phases to ensure balanced technical contribution and knowledge sharing. Each member also holds a focus area to provide structure and ownership.
+All team members contribute to full stack development throughout the project. Each member has a specialized focus area while actively collaborating across all project phases.
 
-| Team Member | Focus Area | Phase Responsibilities |
-|-------------|------------|----------------------|
-| Lara Alzannan | Project Management & Backend | Lead project coordination and task planning. Contribute to backend development, API design, and database architecture in development phases. |
-| Maryam Alessa | Backend & Database | Lead backend development, database design, and API integration. Contribute to frontend development and testing across all phases. |
-| Solaf Alessa | Frontend & UI/UX | Lead interface design, wireframing, and prototyping. Contribute to frontend implementation and ensure consistent user experience across the platform. |
-| Ebtihal Alomari | Frontend & Research | Lead technical research and documentation. Contribute to frontend and backend development, and support integration and testing phases. |
+| Team Member | Specialization | Responsibilities |
+|-------------|---------------|-----------------|
+| Lara Alzannan | Frontend Developer & Project Manager | Lead project coordination and task planning. Develop frontend interfaces, implement UI components, and ensure responsive design across the platform. |
+| Ebtihal Alomari | Frontend Developer & Research Lead | Lead technical research and documentation. Develop frontend features, implement UI/UX designs, and support integration and testing phases. |
+| Maryam Alessa | Backend Developer | Lead backend development, design and implement RESTful APIs, manage server-side logic, and handle database integration. |
+| Solaf Alessa | Backend Developer & UI/UX Designer | Develop backend features and database architecture. Design wireframes and prototypes to guide frontend implementation and ensure a consistent user experience. |
 
 ---
 
