@@ -22,12 +22,14 @@ The project began with an initial team meeting to introduce members and align ex
 
 ### 1.2 Team Members and Roles
 
-| Role | Assigned To | Responsibilities |
-|------|-------------|-----------------|
-| Project Manager | Lara Alzannan | Coordinate the initial project phase, organize team activities, facilitate communication, and support task planning and distribution. |
-| Full Stack Developer | Maryam Alessa | Backend and frontend development, database design, and API integration. |
-| UI/UX Designer | Solaf Alessa | Interface design, wireframing, prototyping using Figma, and ensuring a consistent user experience. |
-| Full Stack Developer / Research Lead | Ebtihal Alomari | Idea generation, technical research, frontend and backend development, and documentation. |
+All team members contribute to full stack development throughout the project. Responsibilities rotate across phases to ensure balanced technical contribution and knowledge sharing. Each member also holds a focus area to provide structure and ownership.
+
+| Team Member | Focus Area | Phase Responsibilities |
+|-------------|------------|----------------------|
+| Lara Alzannan | Project Management & Backend | Lead project coordination and task planning. Contribute to backend development, API design, and database architecture in development phases. |
+| Maryam Alessa | Backend & Database | Lead backend development, database design, and API integration. Contribute to frontend development and testing across all phases. |
+| Solaf Alessa | Frontend & UI/UX | Lead interface design, wireframing, and prototyping. Contribute to frontend implementation and ensure consistent user experience across the platform. |
+| Ebtihal Alomari | Frontend & Research | Lead technical research and documentation. Contribute to frontend and backend development, and support integration and testing phases. |
 
 ---
 
