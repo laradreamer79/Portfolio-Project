@@ -77,21 +77,18 @@ The following table outlines potential risks that may arise during the developme
 
 | # | Risk | Category | Likelihood | Impact | Mitigation Strategy |
 |---|------|----------|------------|--------|---------------------|
-| 1 | Team members lack experience with required tools or frameworks (e.g., React, Node.js) | Technology | Medium | High | Schedule dedicated learning sessions in the first two weeks. Assign simpler tasks to less experienced members while they upskill. Use well-documented frameworks to reduce the learning curve. |
-| 2 | Difficulty collecting accurate and up-to-date data from diving centers | Data & Content | High | High | Contact diving centers directly via phone and email early in the project. Create a simple data submission form for centers to fill in their details. Use placeholder data during development and replace with real data before launch. |
-| 3 | Project timeline delays due to underestimation of task complexity | Timeline | Medium | High | Break tasks into smaller, manageable subtasks with clear deadlines. Hold weekly progress check-ins to identify blockers early. Build a 1-week buffer at the end of each phase to absorb delays. |
-| 4 | Team member becomes unavailable due to illness or personal emergency | Team Dynamics | Low | High | Document all work clearly so any team member can continue another's task. Distribute knowledge across the team to avoid single points of failure. Reassign tasks immediately if a member is unavailable for more than 2 days. |
-| 5 | Diving centers are reluctant to list their services on an unproven platform | Adoption | High | Medium | Offer free listings during the MVP phase to reduce barriers to entry. Highlight the platform's alignment with Vision 2030 and growing marine tourism demand. Reach out to at least 10 diving centers before launch to secure initial content. |
-| 6 | Scope creep — adding features beyond the MVP agreement | Scope | Medium | Medium | Define and freeze the MVP scope in the Project Charter. Use a change request process for any new feature proposals. Evaluate new requests against timeline and resource constraints before approval. |
-| 7 | Poor user experience leads to low adoption | UX & Design | Medium | High | Conduct usability testing with at least 5 users before launch. Incorporate feedback early in the design phase. Follow established UX best practices and accessibility guidelines throughout design. |
-| 8 | Security vulnerabilities in user data or booking information | Security | Low | High | Follow secure coding practices and input validation from the start. Use HTTPS and encrypted storage for sensitive user data. Conduct a basic security review before deployment. |
+| 1 | Project timeline delays due to underestimation of task complexity | Timeline | Medium | High | Break tasks into subtasks with clear deadlines. Hold weekly check-ins to catch blockers early. |
+| 2 | Team member becomes unavailable due to illness or emergency | Team Dynamics | Low | High | Document all work clearly. Redistribute tasks immediately if a member is unavailable. |
+| 3 | Diving centers are reluctant to list on an unproven platform | Adoption | High | Medium | Offer free listings during MVP phase. Highlight Vision 2030 alignment and reach out to 10+ centers before launch. |
+| 4 | Scope creep — adding features beyond MVP agreement | Scope | Medium | Medium | Freeze MVP scope in the Project Charter. Evaluate any new requests against timeline before approval. |
+| 5 | Security vulnerabilities in user data or booking information | Security | Low | High | Use HTTPS, encrypted storage, and secure coding practices. Run a basic security review before deployment. |
 
 ### Risk Priority Matrix
 
 | Priority | Risks |
 |----------|-------|
-| 🔴 High Priority | Risks 1, 2, 3, 4, 7, 8 |
-| 🟡 Medium Priority | Risks 5, 6 |
+| 🔴 High Priority | Risks 1, 2, 5 |
+| 🟡 Medium Priority | Risks 3, 4 |
 | 🟢 Low Priority | None identified at this stage |
 
 # 4. Develop a High-Level Plan
