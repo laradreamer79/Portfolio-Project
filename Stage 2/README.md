@@ -91,6 +91,8 @@ The following table outlines potential risks that may arise during the developme
 | 🟡 Medium Priority | Risks 3, 4 |
 | 🟢 Low Priority | None identified at this stage |
 
+---
+
 # 4. Develop a High-Level Plan
 
 ### Timeline (12 Weeks)
