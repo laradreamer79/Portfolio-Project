@@ -36,3 +36,63 @@ After evaluating multiple concepts, the team selected **Oyster** as the final MV
 - Maryam Alessa
 - Solaf Alessa
 - Ebtihal Alomari
+
+
+
+
+## Stage 2 – Project Charter Development
+
+During Stage 2, the team established a comprehensive Project Charter to define the project's vision, objectives, scope, stakeholders, risks, and high-level execution plan. This stage served as the foundation for aligning team members, clarifying expectations, and ensuring a shared understanding of the project's direction.
+
+The team identified the core purpose of **Oyster**, a platform designed to simplify the discovery and booking of diving experiences across Saudi Arabia while supporting the growth of marine tourism and contributing to the goals of Saudi Vision 2030.
+
+### Objectives
+
+* Create a centralized platform for discovering diving centers, trips, and training courses.
+* Reduce the effort and time required to find reliable diving services.
+* Enable diving centers to improve their digital presence and receive booking requests through a unified platform.
+
+### Stakeholders
+
+The project involves both internal and external stakeholders, including:
+
+* Project team members
+* Diving centers and instructors
+* Divers and tourists
+* Potential tourism and marine activity partners
+
+### MVP Scope
+
+The Minimum Viable Product (MVP) focuses on delivering the platform's core functionality, including:
+
+* Browsing diving centers by city
+* Viewing diving trips and training courses
+* User registration and authentication
+* Booking request submission
+* Ratings and reviews
+* Basic administrative content management
+
+### Risk Assessment
+
+Several potential risks were identified during the planning phase, including:
+
+* Limited experience with certain technologies
+* Challenges in collecting accurate diving center data
+* Project timeline constraints
+* User adoption and platform visibility challenges
+
+Mitigation strategies were defined for each identified risk to support successful project delivery.
+
+### High-Level Roadmap
+
+The project roadmap outlines the progression from technical planning and system design to MVP development, testing, refinement, and final delivery.
+
+By completing this stage, the team established a clear project framework and prepared for the technical design and implementation phases that follow.
+
+
+### Team Members
+- Lara Mubarak Alzannan
+- Maryam Alessa
+- Solaf Alessa
+- Ebtihal Alomari
+
