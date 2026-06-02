@@ -93,25 +93,15 @@ The following table outlines potential risks that may arise during the developme
 
 # 4. Develop a High-Level Plan
 
-### High-Level Project Plan
+### Timeline (12 Weeks)
 
-The Oyster project will be developed through several structured phases to ensure proper planning, development, testing, and delivery of the MVP.
-
-| Stage                                             | Timeline | Key Activities                                                                                              | Deliverables                               |
-| ------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| **Stage 1: Idea Development**                     | Week 1   | Brainstorming ideas, identifying user problems, and selecting the project concept                           | Finalized project idea                     |
-| **Stage 2: Project Charter Development**          | Week 2   | Defining objectives, scope, stakeholders, risks, and project planning                                       | Completed Project Charter                  |
-| **Stage 3: Technical Documentation**              | Week 3–4 | Designing system architecture, database schema, wireframes, and technical specifications                    | Technical Documentation & UI/UX Wireframes |
-| **Stage 4: MVP Development**                      | Week 5–8 | Frontend and backend development, database integration, authentication, and implementation of core features | Functional MVP Prototype                   |
-| **Stage 5: Testing & Refinement**                 | Week 9   | Conduct usability testing, fix bugs, improve UI/UX, and optimize performance                                | Tested and Improved MVP                    |
-| **Stage 6: Final Presentation & Project Closure** | Week 10  | Prepare final presentation, project report, and MVP demonstration                                           | Final Presentation & Project Submission    |
-
----
+![Project Timeline](assets/timeline.png)
 
 ### Key Milestones
 
-* Completion of the Project Charter
-* Finalization of technical documentation and UI/UX designs
-* Completion of core MVP features
-* Successful user testing and bug fixing
-* Final MVP presentation and project submission
+| Milestone | Target |
+|-----------|--------|
+| Project Charter approved | End of Week 4 |
+| Technical documentation finalized | End of Week 6 |
+| Core MVP features working | End of Week 10 |
+| Final presentation & submission | End of Week 12 |
