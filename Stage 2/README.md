@@ -75,13 +75,13 @@ The following table outlines potential risks that may arise during the developme
 
 ### Risk Register
 
-| # | Risk | Category | Likelihood | Impact | Mitigation Strategy |
-|---|------|----------|------------|--------|---------------------|
-| 1 | Project timeline delays due to underestimation of task complexity | Timeline | Medium | High | Break tasks into subtasks with clear deadlines. Hold weekly check-ins to catch blockers early. |
-| 2 | Team member becomes unavailable due to illness or emergency | Team Dynamics | Low | High | Document all work clearly. Redistribute tasks immediately if a member is unavailable. |
-| 3 | Diving centers are reluctant to list on an unproven platform | Adoption | High | Medium | Offer free listings during MVP phase. Highlight Vision 2030 alignment and reach out to 10+ centers before launch. |
-| 4 | Scope creep — adding features beyond MVP agreement | Scope | Medium | Medium | Freeze MVP scope in the Project Charter. Evaluate any new requests against timeline before approval. |
-| 5 | Security vulnerabilities in user data or booking information | Security | Low | High | Use HTTPS, encrypted storage, and secure coding practices. Run a basic security review before deployment. |
+| # | Risk | Category | Project Phase | Likelihood | Impact | Mitigation Strategy |
+|---|------|----------|--------------|------------|--------|---------------------|
+| 1 | Project timeline delays due to underestimation of task complexity | Timeline | All Phases (Week 1–12) | Medium | High | Break tasks into subtasks with clear deadlines. Hold weekly check-ins to catch blockers early. |
+| 2 | Team member becomes unavailable due to illness or emergency | Team Dynamics | All Phases (Week 1–12) | Low | High | Document all work clearly. Redistribute tasks immediately if a member is unavailable. |
+| 3 | Diving centers are reluctant to list on an unproven platform | Adoption | Stage 4 – MVP Development (Week 7–10) | High | Medium | Offer free listings during MVP phase. Highlight Vision 2030 alignment and reach out to 10+ centers before launch. |
+| 4 | Scope creep — adding features beyond MVP agreement | Scope | Stage 3 & 4 (Week 5–10) | Medium | Medium | Freeze MVP scope in the Project Charter. Evaluate any new requests against timeline before approval. |
+| 5 | Security vulnerabilities in user data or booking information | Security | Stage 4 & 5 (Week 7–12) | Low | High | Use HTTPS, encrypted storage, and secure coding practices. Run a basic security review before deployment. |
 
 ### Risk Priority Matrix
 
