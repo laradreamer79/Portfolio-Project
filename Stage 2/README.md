@@ -34,10 +34,10 @@ The project aims to simplify the process of discovering and booking diving exper
 
 | Team Member | Role | Responsibilities |
 |---|---|---|
-| Lara Mubarak Alzannan | Project Manager , Full Stack Developer| Coordinate the team, organize tasks, manage communication, and track project progress. |
-| Maryam Alessa | Full Stack Developer | Develop frontend and backend features, APIs, and database functionality. |
-| Solaf Alessa | UI/UX Designer | Design user interfaces, wireframes, and improve user experience. |
-| Ebtihal Alomari | Research Lead / Full Stack Developer | Conduct technical research, assist with development, and maintain project documentation. |
+| Lara Mubarak Alzannan | Project Manager & Frontend Developer| Lead project coordination and task planning. Develop frontend interfaces, implement UI components, and ensure responsive design across the platform. |
+| Maryam Alessa | Backend Developer | Lead backend development, design and implement RESTful APIs, manage server-side logic, and handle database integration. |
+| Solaf Alessa | Backend Developer | Develop backend features and database architecture. Design wireframes and prototypes to guide frontend implementation and ensure a consistent user experience. |
+| Ebtihal Alomari | Frontend Developer & Research Lead | Lead technical research and documentation. Develop frontend features, implement UI/UX designs, and support integration and testing phases. |
 
 ## 2. Define Scope
 
