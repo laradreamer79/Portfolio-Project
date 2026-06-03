@@ -32,12 +32,12 @@ The project aims to simplify the process of discovering and booking diving exper
 
 ## Team Roles
 
-| Team Member | Role | Responsibilities |
-|---|---|---|
-| Lara Mubarak Alzannan | Project Manager & Frontend Developer| Lead project coordination and task planning. Develop frontend interfaces, implement UI components, and ensure responsive design across the platform. |
-| Maryam Alessa | Backend Developer | Lead backend development, design and implement RESTful APIs, manage server-side logic, and handle database integration. |
-| Solaf Alessa | Backend Developer | Develop backend features and database architecture. Design wireframes and prototypes to guide frontend implementation and ensure a consistent user experience. |
-| Ebtihal Alomari | Frontend Developer & Research Lead | Lead technical research and documentation. Develop frontend features, implement UI/UX designs, and support integration and testing phases. |
+| Team Member               | Role                               | Responsibilities                                                                                                                                                                                                                          |
+| ------------------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Lara Alzannan** | Project Manager & Frontend Lead    | Manage project planning, task allocation, and team coordination. Monitor progress and ensure milestones are met. Lead frontend development, implement responsive user interfaces, and oversee frontend integration with backend services. |
+| **Maryam Alessa**         | Backend Lead Developer             | Design and develop the backend architecture. Build and maintain RESTful APIs, implement business logic, manage database operations, and ensure system performance, security, and scalability.                                             |
+| **Solaf Alessa**          | Backend Developer & UI/UX Designer | Develop backend functionalities and database models. Create wireframes, user flows, and prototypes to support development. Collaborate with frontend developers to ensure a consistent and user-friendly experience.                      |
+| **Ebtihal Alomari**       | Frontend Developer & Research Lead | Conduct technical and market research to support project decisions. Maintain project documentation and requirements. Develop frontend features, assist with UI/UX implementation, and support testing and quality assurance activities.   |
 
 ## 2. Define Scope
 
