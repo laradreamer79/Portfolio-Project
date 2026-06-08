@@ -216,7 +216,7 @@ The team applied structured brainstorming frameworks to generate and refine idea
 | **Innovation** | No existing unified platform for diving tourism in Saudi Arabia — a clear and uncontested gap in the market. |
 | **Alignment with Goals** | The team has direct skills in web development, UX/UI design, and business analysis matching all project requirements. |
 | **Market Need** | Growing interest in marine tourism driven by Saudi Vision 2030 and coastal development in Jeddah, Yanbu, Dammam, NEOM, and Al Wajh. |
-| **Scalability** | Future enhancements (online payments, interactive maps, instant booking, mobile app) can be added incrementally after MVP launch. |
+| **Scalability** | Future enhancements (interactive maps, instant booking, mobile app) can be added incrementally after MVP launch. |
 
 ---
 
@@ -239,6 +239,7 @@ The team applied structured brainstorming frameworks to generate and refine idea
 | 2 | View Trips and Courses | Each center page shows available trips, duration, diving level, prices, and offered courses. |
 | 3 | Simple Booking Request | Users send booking requests via a form; centers respond by email or WhatsApp. |
 | 4 | User Ratings & Reviews | Users can rate centers and trips using a 5-star system and leave written reviews. |
+| 5 | Online Payment Processing | Users can pay for bookings securely through the platform using integrated payment gateways. |
 
 ---
 
