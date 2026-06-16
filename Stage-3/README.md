@@ -366,3 +366,17 @@ Prevents duplicate reviews for the same trip.
 | AdminPanel | /admin | Manage centers and trips |
 | ProtectedRoute | Wrapper | Authentication guard |
 
+---
+
+# 6. Technical Justifications
+
+| Design Decision | Justification |
+|----------------|--------------|
+| PostgreSQL | Provides strong relational integrity for users, diving centers, trips, bookings, and reviews. |
+| Index on `city` and `schedule_date` | Improves query performance for city-based searches and upcoming trip listings. |
+| ON DELETE CASCADE | Automatically removes dependent records, such as trips when a diving center is deleted. |
+| ON DELETE SET NULL | Preserves reviews when an associated trip is deleted by removing only the trip reference. |
+| UNIQUE (`user_id`, `trip_id`) | Ensures that each user can submit only one review per trip. |
+| CHECK Constraints | Enforces valid data such as positive numbers and ratings within the allowed range. |
+
+---
