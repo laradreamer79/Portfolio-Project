@@ -1,99 +1,87 @@
-# 🐚 Oyster – Diving Platform for Saudi Arabia
+# 🗂️ Task 2 – Components, Classes, and Database Design
 
-## Task 2 – Components, Classes, and Database Design
+## Oyster: Diving Platform for Saudi Arabia
 
 ---
 
-# 1. Class Diagram (UML)
+### 1. Class Diagram (UML)
 
 ```mermaid
 classDiagram
+    class User {
+        id int
+        name string
+        email string
+        passwordHash string
+        role string
+        createdAt datetime
+        +register() User
+        +login() JWT
+        +updateProfile() User
+        +findById() User
+    }
+    class DivingCenter {
+        id int
+        name string
+        city string
+        address string
+        licenseNumber string
+        description string
+        priceRange string
+        contactEmail string
+        contactPhone string
+        ownerId int
+        createdAt datetime
+        +addTrip() Trip
+        +getTrips() List~Trip~
+        +getAverageRating() float
+        +addReview() Review
+        +findByCity() List~DivingCenter~
+    }
+    class Trip {
+        id int
+        centerId int
+        title string
+        description string
+        durationHours int
+        difficultyLevel string
+        pricePerPerson decimal
+        maxCapacity int
+        scheduleDate date
+        +checkAvailability() bool
+        +getBookings() List~Booking~
+        +getUpcoming() List~Trip~
+    }
+    class Booking {
+        id int
+        userId int
+        tripId int
+        numberOfPeople int
+        totalPrice decimal
+        status string
+        paymentIntentId string
+        createdAt datetime
+        +confirmPayment() void
+        +cancel() void
+        +findByUser() List~Booking~
+    }
+    class Review {
+        id int
+        userId int
+        centerId int
+        tripId int
+        rating int
+        comment string
+        createdAt datetime
+        +validate() bool
+        +getByCenter() List~Review~
+    }
 
-class User {
-    int id
-    string name
-    string email
-    string passwordHash
-    string role
-    datetime createdAt
-
-    register(name, email, password) User
-    login(email, password) JWT
-    updateProfile(data) User
-    findById(id) User
-}
-
-class DivingCenter {
-    int id
-    string name
-    string city
-    string address
-    string licenseNumber
-    string description
-    string priceRange
-    string contactEmail
-    string contactPhone
-    int ownerId
-    datetime createdAt
-
-    addTrip(tripData) Trip
-    getTrips() List~Trip~
-    getAverageRating() float
-    addReview(reviewData) Review
-    findByCity(city) List~DivingCenter~
-}
-
-class Trip {
-    int id
-    int centerId
-    string title
-    string description
-    int durationHours
-    string difficultyLevel
-    decimal pricePerPerson
-    int maxCapacity
-    date scheduleDate
-
-    checkAvailability() bool
-    getBookings() List~Booking~
-    getUpcoming() List~Trip~
-}
-
-class Booking {
-    int id
-    int userId
-    int tripId
-    int numberOfPeople
-    decimal totalPrice
-    string status
-    string paymentIntentId
-    datetime createdAt
-
-    confirmPayment(paymentIntentId)
-    cancel()
-    findByUser(userId) List~Booking~
-}
-
-class Review {
-    int id
-    int userId
-    int centerId
-    int tripId
-    int rating
-    string comment
-    datetime createdAt
-
-    validate() bool
-    getByCenter(centerId) List~Review~
-}
-
-User "1" --> "0..*" Booking
-User "1" --> "0..*" Review
-DivingCenter "1" --> "0..*" Trip
-DivingCenter "1" --> "0..*" Review
-Trip "1" --> "0..*" Booking
-```
-
+    User "1" --> "0..*" Booking
+    User "1" --> "0..*" Review
+    DivingCenter "1" --> "0..*" Trip
+    DivingCenter "1" --> "0..*" Review
+    Trip "1" --> "0..*" Booking
 ---
 
 # 2. Backend Class Definitions
