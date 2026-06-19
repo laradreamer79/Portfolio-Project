@@ -51,22 +51,20 @@ sequenceDiagram
     actor User
     participant Frontend
     participant Backend
-    participant PaymentGateway
     participant Database
+    participant PaymentGateway
 
-    User->>Frontend: Select an available date and time
-    Frontend->>Backend: Submit booking details
+    User->>Frontend: Select available time slot
+    Frontend->>Backend: Reserve selected slot
+    Backend->>Database: Mark slot as Reserved
 
     Backend->>PaymentGateway: Create payment session
-    PaymentGateway-->>Backend: Return payment session
+    PaymentGateway-->>Frontend: Display payment page
 
-    Backend-->>Frontend: Redirect to payment
     User->>PaymentGateway: Complete payment
     PaymentGateway-->>Backend: Payment successful
 
-    Backend->>Database: Save booking and mark slot as booked
-    Database-->>Backend: Booking confirmed
-
-    Backend-->>Frontend: Return confirmation
-    Frontend-->>User: Display booking confirmation
+    Backend->>Database: Update slot to Booked
+    Backend-->>Frontend: Booking confirmed
+    Frontend-->>User: Display confirmation
 ```
