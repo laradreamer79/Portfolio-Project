@@ -51,14 +51,26 @@ sequenceDiagram
     actor User
     participant Frontend
     participant Backend
+    participant PaymentGateway
     participant Database
-    participant DivingCenter
 
-    User->>Frontend: Fill booking request form
-    Frontend->>Backend: Submit booking request
-    Backend->>Database: Save booking request
-    Database-->>Backend: Confirm request saved
-    Backend-->>DivingCenter: Send booking request notification
-    Backend-->>Frontend: Return confirmation message
-    Frontend-->>User: Display booking request submitted
+    User->>Frontend: Select available date and time
+    Frontend->>Backend: Send booking details
+    Backend->>Database: Check slot availability
+    Database-->>Backend: Slot is available
+
+    Backend->>PaymentGateway: Create payment session
+    PaymentGateway-->>Backend: Return payment session
+
+    Backend-->>Frontend: Send payment session
+    Frontend-->>User: Redirect to payment page
+
+    User->>PaymentGateway: Complete payment
+    PaymentGateway-->>Backend: Confirm successful payment
+
+    Backend->>Database: Save booking as confirmed
+    Database-->>Backend: Confirm booking saved
+
+    Backend-->>Frontend: Return booking confirmation
+    Frontend-->>User: Display successful booking message
 ```
