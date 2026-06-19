@@ -1,98 +1,34 @@
-## Stage 1 – Team Formation and Idea Development
+## 2. Idea Evaluation
 
-In Stage 1, the team focused on building a collaborative and organized working environment while exploring potential project ideas for the portfolio project.
+To evaluate and prioritize the proposed ideas, the team established a set of evaluation criteria based on the project requirements and the limited development timeline of three months. The selected criteria included feasibility, potential impact, technical alignment, and scalability.
 
-The team held initial meetings to introduce members, discuss strengths and interests, assign temporary roles, and establish communication and collaboration strategies using tools such as Discord, GitHub Projects, Notion, and Figma.
+### Evaluation Criteria
 
-Several project ideas were brainstormed and evaluated based on:
-- Feasibility
-- Technical alignment
-- Potential impact
-- Scalability
-- Market need
+- **Feasibility:** Measures how realistic and achievable the idea is within the available time and resources.
+- **Potential Impact:** Evaluates the value and benefits the idea can provide to users and the market.
+- **Technical Alignment:** Assesses how well the idea matches the team’s technical skills and available technologies.
+- **Scalability:** Determines the possibility of expanding and improving the system in the future.
 
-The team used brainstorming techniques such as Mind Mapping, SCAMPER, and “How Might We” questions to generate and refine ideas.
+### Evaluation Rubric
 
-After evaluating multiple concepts, the team selected **Oyster** as the final MVP idea. Oyster is a digital platform designed to connect users with diving centers, instructors, diving trips, and courses across Saudi Arabia through one unified and user-friendly platform.
+| Idea | Feasibility | Potential Impact | Technical Alignment | Scalability | Total Score |
+|------|-------------|------------------|--------------------|-------------|-------------|
+| Murshid | 4/5 | 4/5 | 4/5 | 4/5 | 16/20 |
+| Baseer | 2/5 | 5/5 | 2/5 | 5/5 | 14/20 |
+| Mihan | 5/5 | 4/5 | 5/5 | 4/5 | 18/20 |
+| Qareeb | 5/5 | 3/5 | 5/5 | 4/5 | 17/20 |
+| Oyster | 5/5 | 5/5 | 5/5 | 5/5 | 20/20 |
 
-### Main MVP Features
-- Browse diving centers by city
-- View available diving trips and courses
-- Send booking requests
-- Ratings and reviews system
+After evaluating all ideas, **Oyster** received the highest score and was selected as the final MVP idea. The idea was considered highly feasible for development within the three-month timeline while also offering strong market potential and future scalability.
 
-### Challenges Identified
-- Collecting reliable and updated diving center information
-- Building partnerships with diving centers
-- Delivering a functional MVP within the project timeline
+### Risks and Constraints
 
-### Opportunities
-- Growing marine tourism in Saudi Arabia
-- Alignment with Saudi Vision 2030 tourism goals
-- Strong scalability for future enhancements
+Each idea included certain risks and constraints that affected the evaluation process:
 
-### Team Members
-- Lara Mubarak Alzannan
-- Maryam Alessa
-- Solaf Alessa
-- Ebtihal Alomari
+- **Murshid:** Requires accurate indoor navigation and airport mapping systems, which may increase development complexity.
+- **Baseer:** Depends heavily on artificial intelligence and computer vision technologies, requiring advanced implementation and extensive testing.
+- **Mihan:** Faces strong competition from existing service marketplace platforms.
+- **Qareeb:** Similar solutions already exist in the market, which may reduce uniqueness and competitive advantage.
+- **Oyster:** Requires collecting reliable information from diving centers and ensuring accurate booking and availability data.
 
-
-
-
-## Stage 2 – Project Charter Development
-
-During Stage 2, the team established a comprehensive Project Charter to define the project's vision, objectives, scope, stakeholders, risks, and high-level execution plan. This stage served as the foundation for aligning team members, clarifying expectations, and ensuring a shared understanding of the project's direction.
-
-The team identified the core purpose of **Oyster**, a platform designed to simplify the discovery and booking of diving experiences across Saudi Arabia while supporting the growth of marine tourism and contributing to the goals of Saudi Vision 2030.
-
-### Objectives
-
-* Create a centralized platform for discovering diving centers, trips, and training courses.
-* Reduce the effort and time required to find reliable diving services.
-* Enable diving centers to improve their digital presence and receive booking requests through a unified platform.
-
-### Stakeholders
-
-The project involves both internal and external stakeholders, including:
-
-* Project team members
-* Diving centers and instructors
-* Divers and tourists
-* Potential tourism and marine activity partners
-
-### MVP Scope
-
-The Minimum Viable Product (MVP) focuses on delivering the platform's core functionality, including:
-
-* Browsing diving centers by city
-* Viewing diving trips and training courses
-* User registration and authentication
-* Booking request submission
-* Ratings and reviews
-* Basic administrative content management
-
-### Risk Assessment
-
-Several potential risks were identified during the planning phase, including:
-
-* Limited experience with certain technologies
-* Challenges in collecting accurate diving center data
-* Project timeline constraints
-* User adoption and platform visibility challenges
-
-Mitigation strategies were defined for each identified risk to support successful project delivery.
-
-### High-Level Roadmap
-
-The project roadmap outlines the progression from technical planning and system design to MVP development, testing, refinement, and final delivery.
-
-By completing this stage, the team established a clear project framework and prepared for the technical design and implementation phases that follow.
-
-
-### Team Members
-- Lara Mubarak Alzannan
-- Maryam Alessa
-- Solaf Alessa
-- Ebtihal Alomari
-
+Additionally, the main constraint for all ideas was the limited development duration of three months. Therefore, the team prioritized ideas that are practical, achievable, and suitable for MVP development.
