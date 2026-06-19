@@ -34,8 +34,8 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ```json
 {
-  "name": "Ahmed Ali",
-  "email": "ahmed@example.com",
+  "name": "Solaf ALessa",
+  "email": "solaf@gmail.com",
   "password": "123456"
 }
 ```
@@ -63,7 +63,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ```json
 {
-  "email": "ahmed@example.com",
+  "email": "solaf@gmail.com",
   "password": "123456"
 }
 ```
