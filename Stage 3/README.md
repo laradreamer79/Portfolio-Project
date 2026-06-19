@@ -1,11 +1,5 @@
 # Task 4 – Document External and Internal APIs
-
-## Overview
-
-This section documents the external services used by Oyster and defines the internal RESTful API endpoints that enable communication between the frontend and backend.
-
 ---
-
 # 1. External APIs
 
 The Oyster platform relies on several third-party services to provide additional functionality and reduce infrastructure complexity.
