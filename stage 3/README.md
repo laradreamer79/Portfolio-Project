@@ -54,23 +54,19 @@ sequenceDiagram
     participant PaymentGateway
     participant Database
 
-    User->>Frontend: Select available date and time
-    Frontend->>Backend: Send booking details
-    Backend->>Database: Check slot availability
-    Database-->>Backend: Slot is available
+    User->>Frontend: Select an available date and time
+    Frontend->>Backend: Submit booking details
 
     Backend->>PaymentGateway: Create payment session
     PaymentGateway-->>Backend: Return payment session
 
-    Backend-->>Frontend: Send payment session
-    Frontend-->>User: Redirect to payment page
-
+    Backend-->>Frontend: Redirect to payment
     User->>PaymentGateway: Complete payment
-    PaymentGateway-->>Backend: Confirm successful payment
+    PaymentGateway-->>Backend: Payment successful
 
-    Backend->>Database: Save booking as confirmed
-    Database-->>Backend: Confirm booking saved
+    Backend->>Database: Save booking and mark slot as booked
+    Database-->>Backend: Booking confirmed
 
-    Backend-->>Frontend: Return booking confirmation
-    Frontend-->>User: Display successful booking message
+    Backend-->>Frontend: Return confirmation
+    Frontend-->>User: Display booking confirmation
 ```
