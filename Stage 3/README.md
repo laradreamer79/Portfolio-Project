@@ -6,7 +6,7 @@
 
 ### Overview
 
-This document defines the high-level system architecture for **Oyster**, a digital platform connecting divers and tourists with diving centers, trips, and courses across Saudi Arabia.
+This document defines the high-level system architecture for **Oyster**, a digital platform connecting divers and tourists with diving centers and trips across Saudi Arabia.
 
 The architecture follows a standard **3-tier web application** model: Frontend, Backend, and Database — with integration to external third-party services.
 
@@ -29,7 +29,7 @@ The architecture follows a standard **3-tier web application** model: Frontend, 
          |              Frontend — React.js                 |
          |                                                  |
          |  • Home / Browse Centers by City                 |
-         |  • Center Details (Trips, Courses, Reviews)      |
+         |  • Center Details (Trips, Reviews)               |
          |  • User Registration & Login                     |
          |  • Booking Request Form                          |
          |  • Ratings & Reviews                             |
@@ -45,7 +45,7 @@ The architecture follows a standard **3-tier web application** model: Frontend, 
          |                                                  |
          |  • Authentication & Authorization (JWT)          |
          |  • Centers Management                            |
-         |  • Trips & Courses Management                    |
+         |  • Trips Management                              |
          |  • Booking Request Handling                      |
          |  • Ratings & Reviews Logic                       |
          |  • Admin Controls                                |
@@ -59,11 +59,11 @@ The architecture follows a standard **3-tier web application** model: Frontend, 
     |     PostgreSQL      |       |    External Services   |
     |                     |       |                        |
     |  • users            |       |  • Google Maps API     |
-    |  • centers          |       |    (Center Locations)  |
+    |  • diving_centers   |       |    (Center Locations)  |
     |  • trips            |       |                        |
-    |  • courses          |       |  • Cloudinary          |
-    |  • bookings         |       |    (Image Storage)     |
-    |  • reviews          |       |                        |
+    |  • bookings         |       |  • Cloudinary          |
+    |  • reviews          |       |    (Image Storage)     |
+    |                     |       |                        |
     +---------------------+       |  • Nodemailer          |
                                   |    (Email Notifications)|
                                   +------------------------+
