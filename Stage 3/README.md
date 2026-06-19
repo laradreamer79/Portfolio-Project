@@ -141,3 +141,72 @@ Every technology in this architecture was chosen based on the team's functional 
 
 *Stage 3 — Technical Documentation | Oyster Platform | Holberton School SAU-0825 · 2026*  
 *Author: Ebtihal Alomari*
+
+---
+
+## Task 5: SCM and QA Strategies
+
+### Source Control Management (SCM) Strategy
+
+The team uses **Git** and **GitHub** to manage code changes and collaboration across the 4-person team.
+
+#### Branching Strategy
+
+| Branch | Purpose |
+|--------|---------|
+| `main` | Stable, production-ready code only. Protected branch — no direct pushes. |
+| `develop` | Integration branch where completed features are merged before release. |
+| `feature/<name>` | Individual branches for new features (e.g., `feature/booking-form`). |
+| `fix/<name>` | Branches for bug fixes (e.g., `fix/login-validation`). |
+
+#### Workflow
+
+1. Each team member creates a `feature/*` branch from `develop` for their assigned task.
+2. Commits use clear, descriptive messages (e.g., `feat: add booking confirmation email`).
+3. A **Pull Request (PR)** is opened against `develop` once the feature is complete.
+4. At least **one other team member reviews** the PR before merging.
+5. After QA validation, `develop` is merged into `main` for deployment.
+
+#### Code Review Checklist
+
+- Code follows the project's naming and folder conventions
+- No hardcoded credentials or sensitive data
+- New endpoints are documented (matches Task 4 API specs)
+- No conflicts with existing database schema (Task 2)
+
+---
+
+### Quality Assurance (QA) Strategy
+
+#### Testing Types
+
+| Test Type | Purpose | Scope |
+|-----------|---------|-------|
+| **Unit Testing** | Verify individual functions (e.g., booking price calculation, rating validation) | Backend logic |
+| **Integration Testing** | Verify API endpoints interact correctly with PostgreSQL | Backend + Database |
+| **Manual Testing** | Verify critical user flows (registration, browsing, booking, reviews) | Full stack |
+
+#### Testing Tools
+
+| Tool | Purpose |
+|------|---------|
+| **Jest** | Unit testing for backend logic (Node.js/Express) |
+| **Postman** | Manual and automated testing of REST API endpoints defined in Task 4 |
+| **React Testing Library** | Component-level testing for frontend UI |
+
+#### Deployment Pipeline
+
+| Stage | Description |
+|-------|-------------|
+| **Local Development** | Each developer runs the app locally with a local PostgreSQL instance |
+| **Staging** | Deployed from `develop` branch to test new features before release |
+| **Production** | Deployed from `main` branch — stable version available to end users |
+
+#### Example QA Flow
+
+1. Developer pushes feature branch and opens a PR.
+2. Reviewer checks code quality and runs unit tests locally (`npm test`).
+3. API endpoints are manually verified in Postman against Task 4 specifications.
+4. Once approved, the PR is merged into `develop` and deployed to staging.
+5. After staging verification, `develop` is merged into `main` for production release.
+
