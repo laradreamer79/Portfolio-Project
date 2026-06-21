@@ -1,4 +1,4 @@
-# 🗂️ Task 2 – Components, Classes, and Database Design
+# Task 2 – Components, Classes, and Database Design
 
 ## Oyster: Diving Platform for Saudi Arabia
 
