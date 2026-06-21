@@ -1,4 +1,4 @@
-# Stage 3: Technical Documentation — Oyster 🌊
+# Stage 3: Technical Documentation — Oyster
 
 ## Task 1: System Architecture
 
