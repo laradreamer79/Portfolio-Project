@@ -58,8 +58,8 @@ The architecture follows a standard **3-tier web application** model: Frontend, 
     +---------------------+       +------------------------+
     |     PostgreSQL      |       |    External Services   |
     |                     |       |                        |
-    |  • users            |       |  • Google Maps API     |
-    |  • diving_centers   |       |    (Center Locations)  |
+    |  • users            |       |  • Payment Gateway     |
+    |  • diving_centers   |       |    (e.g., Moyasar)     |
     |  • trips            |       |                        |
     |  • bookings         |       |  • Cloudinary          |
     |  • reviews          |       |    (Image Storage)     |
@@ -80,7 +80,7 @@ The architecture follows a standard **3-tier web application** model: Frontend, 
 | **Database** | PostgreSQL | Stores all application data: users, diving centers, trips, bookings, and reviews. Uses relational tables with foreign key constraints to enforce data integrity. |
 | **Auth Layer** | JWT (JSON Web Tokens) | Manages stateless authentication. Issues tokens on login, verifies identity on protected routes. Supports 3 roles: Diver, Diving Center, Admin. |
 | **Image Storage** | Cloudinary | Stores and serves images for diving centers and trips. Provides CDN delivery and automatic optimization. |
-| **Map Service** | Google Maps API | Displays the geographical location of diving centers on an interactive map. Supports filtering by city/region. |
+| **Payment Gateway** | Moyasar / Stripe | Processes online payments for bookings securely. Handles payment confirmation and links it to the corresponding booking record. |
 | **Email Service** | Nodemailer | Sends booking confirmation and notification emails to users and diving centers. |
 
 ---
@@ -96,7 +96,7 @@ The following steps describe how data moves through the system for a typical use
 5. PostgreSQL returns the result to the backend, which formats it as a **JSON response**.
 6. React.js receives the JSON and renders the updated UI to the user.
 7. When images are involved, they are fetched directly from **Cloudinary** via CDN URLs.
-8. When map data is needed, the frontend calls the **Google Maps API** directly using the center's coordinates stored in PostgreSQL.
+8. When a user confirms a booking, the backend calls the **Payment Gateway API** to process payment, then updates the booking status in PostgreSQL upon confirmation.
 9. When a booking is confirmed, the backend triggers **Nodemailer** to send a confirmation email.
 
 ---
@@ -121,7 +121,7 @@ Every technology in this architecture was chosen based on the team's functional 
 | **Node.js + Express** | Backend Framework | Using the same language (JavaScript) for both frontend and backend reduces context-switching and learning overhead for a 4-person student team. Express is lightweight and well-suited for building RESTful APIs quickly. |
 | **PostgreSQL** | Database | A relational database was chosen over a non-relational one for Oyster's core data model. <br><br>**PostgreSQL** (Relational — interconnected tables): Best suited for a booking-based platform because it enforces strong relationships between users, diving centers, and bookings, and guarantees data integrity (e.g., a booking cannot exist without a valid user). Foreign key constraints prevent orphaned or invalid records. <br><br>**MongoDB** (Non-relational — JSON documents): Was considered but not selected, as it does not enforce relational integrity by default, which is riskier for a system where bookings must always be tied to a valid user and trip. |
 | **JWT** | Authentication | Stateless authentication eliminates the need for session management on the server. JWT tokens support role-based access control for 3 user types: Diver, Diving Center Admin, and Platform Admin. |
-| **Google Maps API** | Location Service | Provides accurate map data for Saudi Arabian cities and coastal regions. Required by the user story: "As a user, I want to browse diving centers by city." Well-documented and easy to integrate with React. |
+| **Payment Gateway (Moyasar)** | Payment Processing | Enables secure online payment for bookings, as defined in the MVP scope (Stage 2). Moyasar supports local Saudi payment methods (mada, Apple Pay) alongside international cards. |
 | **Cloudinary** | Image Hosting | Provides a free-tier CDN for image storage and delivery. Eliminates the need to manage file storage infrastructure. Supports automatic image optimization and resizing — essential for center profile images and trip photos. |
 | **Nodemailer** | Email Notifications | A lightweight and free Node.js library for sending transactional emails. Covers the requirement for booking confirmation emails without the cost of a paid email API at MVP stage. |
 
@@ -135,7 +135,7 @@ Every technology in this architecture was chosen based on the team's functional 
 | **Scalability** | PostgreSQL supports indexing and read replicas for horizontal read scaling. Node.js handles concurrent requests efficiently with its non-blocking I/O model. |
 | **Security** | JWT ensures only authenticated users access protected routes. HTTPS encrypts all client-server communication. Passwords are hashed using bcrypt. |
 | **Maintainability** | Separation of concerns: frontend, backend, and database are fully decoupled. Each layer can be updated independently. |
-| **Usability** | React enables a responsive, fast UI. Google Maps provides familiar, intuitive location browsing. |
+| **Usability** | React enables a responsive, fast UI. A streamlined payment flow reduces booking drop-off. |
 
 ---
 
