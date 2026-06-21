@@ -32,6 +32,7 @@ The architecture follows a standard **3-tier web application** model: Frontend, 
          |  • Center Details (Trips, Reviews)               |
          |  • User Registration & Login                     |
          |  • Booking Request Form                          |
+         |  • Payment Page                                  |
          |  • Ratings & Reviews                             |
          |  • Admin Dashboard                               |
          |  • Diving Center Dashboard                       |
@@ -47,6 +48,7 @@ The architecture follows a standard **3-tier web application** model: Frontend, 
          |  • Centers Management                            |
          |  • Trips Management                              |
          |  • Booking Request Handling                      |
+         |  • Payment Processing                            |
          |  • Ratings & Reviews Logic                       |
          |  • Admin Controls                                |
          |  • Search & Filter Logic                         |
