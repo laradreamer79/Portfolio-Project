@@ -115,8 +115,9 @@ Steps describing how data moves through the system for a typical user interactio
 | 6 | React.js receives the JSON and renders the updated UI to the user. |
 | 7 | When images are involved, they are fetched directly from **Cloudinary** via CDN URLs. |
 | 8 | The backend temporarily reserves the selected time slot in **PostgreSQL** (status: `Reserved`) before initiating the payment process. |
-| 9 | The backend calls the **Payment Gateway API** to process payment for the reserved booking. |
-| 10 | Once payment is confirmed, the backend updates the booking status in PostgreSQL from `Reserved` to `Booked`. |
+| 9 | The backend creates a payment session with the **Payment Gateway**, which is displayed to the user through the frontend. |
+| 10 | The user completes the payment directly with the **Payment Gateway**, which notifies the backend of success. |
+| 11 | The backend updates the booking status in PostgreSQL from `Reserved` to `Booked`. |
 
 > **Note:** Email notifications (Nodemailer) are part of the system's external services but are **out of scope** for this sequence and not included in the steps above.
 
