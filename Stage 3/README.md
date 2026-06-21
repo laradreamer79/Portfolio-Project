@@ -1,15 +1,16 @@
 # Task 4 – Document External and Internal APIs
+
 ---
+
 # 1. External APIs
 
 The Oyster platform relies on several third-party services to provide additional functionality and reduce infrastructure complexity.
 
 | External API | Purpose | Justification |
 |--------------|---------|---------------|
-| Google Maps API | Display diving center locations on maps | Provides accurate geographic information and supports Saudi cities |
 | Cloudinary API | Store and deliver images | Eliminates the need for local file storage and provides CDN optimization |
 | Nodemailer | Send booking confirmation emails | Lightweight and free email solution for MVP stage |
-| Stripe Payment API | Process secure online payments | Reliable and secure payment gateway |
+| Moyasar Payment API | Process secure online payments | Supports local Saudi payment methods such as mada and Apple Pay |
 
 ---
 
@@ -34,7 +35,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ```json
 {
-  "name": "Solaf ALessa",
+  "name": "Solaf Alessa",
   "email": "solaf@gmail.com",
   "password": "123456"
 }
@@ -138,6 +139,19 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ---
 
+## Courses APIs
+
+### Get Courses for a Diving Center
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/courses/:centerId` |
+| Method | GET |
+| Input Format | URL Parameter |
+| Output Format | JSON |
+
+---
+
 ## Booking APIs
 
 ### Create Booking
@@ -187,6 +201,36 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Method | DELETE |
 | Input Format | URL Parameter |
 | Output Format | JSON |
+
+---
+
+## Payment APIs
+
+### Process Payment
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/payments` |
+| Method | POST |
+| Input Format | JSON |
+| Output Format | JSON |
+
+### Request
+
+```json
+{
+  "bookingId": 10,
+  "paymentMethod": "mada"
+}
+```
+
+### Response
+
+```json
+{
+  "message": "Payment processed successfully"
+}
+```
 
 ---
 
@@ -274,10 +318,10 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | REST API | Simple, scalable, and widely adopted architecture |
 | JSON Format | Lightweight and easy for frontend and backend communication |
 | JWT Authentication | Secure stateless authentication mechanism |
-| Stripe API | Reliable payment processing solution |
-| Google Maps API | Accurate location services for Saudi cities |
+| Moyasar API | Supports secure online payments and local Saudi payment methods |
 | Cloudinary | Efficient cloud image hosting and optimization |
+| Nodemailer | Lightweight solution for transactional email notifications |
 
 ---
 
-*Stage 3 – Technical Documentation | Oyster Platform | Solaf ALessa
+*Stage 3 – Technical Documentation | Oyster Platform | Solaf ALessa*
