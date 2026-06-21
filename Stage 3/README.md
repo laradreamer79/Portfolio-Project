@@ -103,23 +103,44 @@ The architecture follows a standard **3-tier web application** model — Fronten
 
 ### Data Flow
 
-Steps describing how data moves through the system for a typical user interaction:
+Steps describing how data moves through the system, covering the three key use cases defined in the sequence diagrams (Task 3):
+
+#### Use Case 1: User Login
 
 | # | Step |
 |---|---|
-| 1 | The user (Diver, Diving Center, or Admin) opens the platform in a web browser. |
-| 2 | **React.js** renders the UI and sends HTTP requests to the backend API over HTTPS. |
-| 3 | **Express.js** receives the request, validates the JWT token (if required), and processes the business logic. |
-| 4 | The backend queries **PostgreSQL** to retrieve or store relational data. |
-| 5 | PostgreSQL returns the result to the backend, which formats it as a **JSON response**. |
-| 6 | React.js receives the JSON and renders the updated UI to the user. |
-| 7 | When images are involved, they are fetched directly from **Cloudinary** via CDN URLs. |
-| 8 | The backend temporarily reserves the selected time slot in **PostgreSQL** (status: `Reserved`) before initiating the payment process. |
-| 9 | The backend creates a payment session with the **Payment Gateway**, which is displayed to the user through the frontend. |
-| 10 | The user completes the payment directly with the **Payment Gateway**, which notifies the backend of success. |
-| 11 | The backend updates the booking status in PostgreSQL from `Reserved` to `Booked`. |
+| 1 | The user enters their email and password on the **Frontend (React.js)**. |
+| 2 | The frontend sends a login request to the **Backend (Express.js)** over HTTPS. |
+| 3 | The backend checks the user's credentials against **PostgreSQL**. |
+| 4 | PostgreSQL returns the matching user record to the backend. |
+| 5 | The backend returns an authentication response (JWT token) to the frontend. |
+| 6 | The frontend displays a login success or error message to the user. |
 
-> **Note:** Email notifications (Nodemailer) are part of the system's external services but are **out of scope** for this sequence and not included in the steps above.
+#### Use Case 2: Browse Diving Centers by City
+
+| # | Step |
+|---|---|
+| 1 | The user selects a city on the **Frontend**. |
+| 2 | The frontend requests diving centers filtered by the selected city from the **Backend**. |
+| 3 | The backend queries **PostgreSQL** for centers matching the selected city. |
+| 4 | PostgreSQL returns the matching diving centers to the backend. |
+| 5 | The backend sends the centers list to the frontend as a **JSON response**. |
+| 6 | The frontend renders the list of diving centers for the user. |
+| 7 | When images are involved, they are fetched directly from **Cloudinary** via CDN URLs. |
+
+#### Use Case 3: Submit Booking Request
+
+| # | Step |
+|---|---|
+| 1 | The user selects an available time slot on the **Frontend**. |
+| 2 | The frontend sends a request to the **Backend** to reserve the selected slot. |
+| 3 | The backend temporarily reserves the selected time slot in **PostgreSQL** (status: `Reserved`) before initiating the payment process. |
+| 4 | The backend creates a payment session with the **Payment Gateway**, which is displayed to the user through the frontend. |
+| 5 | The user completes the payment directly with the **Payment Gateway**, which notifies the backend of success. |
+| 6 | The backend updates the booking status in PostgreSQL from `Reserved` to `Booked`. |
+| 7 | The backend confirms the booking to the frontend, which displays the confirmation to the user. |
+
+> **Note:** Email notifications (Nodemailer) are part of the system's external services but are **out of scope** for these sequences and not included in the steps above.
 
 ---
 
