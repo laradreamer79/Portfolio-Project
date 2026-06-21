@@ -15,6 +15,9 @@ The architecture follows a standard **3-tier web application** model: Frontend, 
 ## Architecture Diagram
 
 ```
+                                User Roles
+         ──────────────────────────────────────────────────
+
 +------------------+     +--------------------+     +------------------+
 |     Diver /      |     |   Diving Center    |     |     Admin        |
 |     Tourist      |     |   (Provider)       |     |   (Platform)     |
@@ -25,6 +28,10 @@ The architecture follows a standard **3-tier web application** model: Frontend, 
                           HTTPS Requests
                                   |
                                   v
+
+                              System Components
+         ──────────────────────────────────────────────────
+
          +--------------------------------------------------+
          |              Frontend — React.js                 |
          |                                                  |
