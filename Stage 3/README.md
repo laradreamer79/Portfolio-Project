@@ -81,6 +81,10 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ## Diving Centers APIs
 
+| Route | Page | Responsibility |
+|---------|------|---------------|
+| `/dashboard` | Center Dashboard | Allows diving center owners to manage bookings, trips, courses, and center information. |
+
 ### Get All Diving Centers
 
 | Property | Value |
@@ -277,6 +281,10 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 ---
 
 ## Admin APIs
+
+| Route | Page | Responsibility |
+|---------|------|---------------|
+| `/admin` | Admin Dashboard | Allows administrators to manage users, diving centers, and overall platform content. |
 
 ### Add Diving Center
 
