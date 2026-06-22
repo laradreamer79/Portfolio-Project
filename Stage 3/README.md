@@ -9,7 +9,7 @@ The Oyster platform relies on several third-party services to provide additional
 | External API | Purpose | Justification |
 |--------------|---------|---------------|
 | Cloudinary API | Store and deliver images | Eliminates the need for local file storage and provides CDN optimization |
-| Nodemailer | Send booking confirmation emails | Lightweight and free email solution for MVP stage |
+| Calendly API | Schedule diving sessions and appointments | Simplifies booking and scheduling processes by allowing users to select available time slots without building a custom scheduling system |
 | Moyasar Payment API | Process secure online payments | Supports local Saudi payment methods such as mada and Apple Pay |
 
 ---
