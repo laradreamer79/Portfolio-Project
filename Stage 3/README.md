@@ -320,7 +320,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | JWT Authentication | Secure stateless authentication mechanism |
 | Moyasar API | Supports secure online payments and local Saudi payment methods |
 | Cloudinary | Efficient cloud image hosting and optimization |
-| Nodemailer | Lightweight solution for transactional email notifications |
+| Calendly API | Provides an easy scheduling solution and avoids building a custom booking system |
 
 ---
 
