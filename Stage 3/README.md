@@ -61,7 +61,6 @@ flowchart TB
         direction TB
         E1["Payment Gateway — Moyasar"]
         E2["Cloudinary — Image Storage"]
-        E3["Nodemailer — Email Notifications"]
     end
 
     classDef roles fill:#F5F5F5,stroke:#9E9E9E,stroke-width:1px,color:#212121
@@ -74,7 +73,7 @@ flowchart TB
     class F1,F2 frontend
     class B1,B2 backend
     class D1,D2 database
-    class E1,E2,E3 external
+    class E1,E2 external
 ```
 
 ---
@@ -89,7 +88,6 @@ flowchart TB
 | **Auth Layer** | JWT (JSON Web Tokens) | Manages stateless authentication. Issues tokens on login, verifies identity on protected routes. Supports 3 roles: Diver, Diving Center, Admin. |
 | **Image Storage** | Cloudinary | Stores and serves images for diving centers and trips. Provides CDN delivery and automatic optimization. |
 | **Payment Gateway** | Moyasar / Stripe | Processes online payments for bookings securely. Handles payment confirmation and links it to the corresponding booking record. |
-| **Email Service** | Nodemailer | Sends booking confirmation and notification emails to users and diving centers. |
 
 ---
 
@@ -132,7 +130,6 @@ Steps describing how data moves through the system, covering the three key use c
 | 6 | The backend updates the booking status in PostgreSQL from `Reserved` to `Booked`. |
 | 7 | The backend confirms the booking to the frontend, which displays the confirmation to the user. |
 
-> **Note:** Email notifications (Nodemailer) are part of the system's external services but are **out of scope** for these sequences and not included in the steps above.
 
 ---
 
@@ -158,7 +155,6 @@ Every technology in this architecture was chosen based on the team's functional 
 | **JWT** | Authentication | Stateless authentication eliminates the need for session management on the server. JWT tokens support role-based access control for 3 user types: Diver, Diving Center Admin, and Platform Admin. |
 | **Payment Gateway (Moyasar)** | Payment Processing | Enables secure online payment for bookings, as defined in the MVP scope (Stage 2). Moyasar supports local Saudi payment methods (mada, Apple Pay) alongside international cards. |
 | **Cloudinary** | Image Hosting | Provides a free-tier CDN for image storage and delivery. Eliminates the need to manage file storage infrastructure. Supports automatic image optimization and resizing — essential for center profile images and trip photos. |
-| **Nodemailer** | Email Notifications | A lightweight and free Node.js library for sending transactional emails. Covers the requirement for booking confirmation emails without the cost of a paid email API at MVP stage. |
 
 ---
 
@@ -203,8 +199,8 @@ The team uses **Git** and **GitHub** to manage code changes and collaboration ac
 
 - Code follows the project's naming and folder conventions
 - No hardcoded credentials or sensitive data
-- New endpoints are documented (matches Task 4 API specs)
-- No conflicts with existing database schema (Task 2)
+- New endpoints are documented
+- No conflicts with existing database schema
 
 ---
 
@@ -223,7 +219,7 @@ The team uses **Git** and **GitHub** to manage code changes and collaboration ac
 | Tool | Purpose |
 |---|---|
 | **Jest** | Unit testing for backend logic (Node.js/Express) |
-| **Postman** | Manual and automated testing of REST API endpoints defined in Task 4 |
+| **Postman** | Manual and automated testing of REST API endpoints |
 | **React Testing Library** | Component-level testing for frontend UI |
 
 #### Deployment Pipeline
@@ -240,7 +236,7 @@ The team uses **Git** and **GitHub** to manage code changes and collaboration ac
 |---|---|
 | 1 | Developer pushes feature branch and opens a PR. |
 | 2 | Reviewer checks code quality and runs unit tests locally (`npm test`). |
-| 3 | API endpoints are manually verified in Postman against Task 4 specifications. |
+| 3 | API endpoints are manually verified in Postman. |
 | 4 | Once approved, the PR is merged into `develop` and deployed to staging. |
 | 5 | After staging verification, `develop` is merged into `main` for production release. |
 
