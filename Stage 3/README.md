@@ -25,57 +25,56 @@ The architecture follows a standard **3-tier web application** model — Fronten
 
 ```mermaid
 flowchart TB
-    subgraph Roles["User Roles"]
+    subgraph Roles[" User Roles "]
         direction LR
-        U1["Diver / Tourist"]
-        U2["Diving Center<br/>(Provider)"]
-        U3["Admin<br/>(Platform)"]
+        U1["🤿 Diver / Tourist"]
+        U2["🏢 Diving Center"]
+        U3["🛠️ Admin"]
     end
 
-    U1 --> FE
-    U2 --> FE
-    U3 --> FE
+    Roles --> FE
 
-    subgraph FE["Frontend — React.js"]
-        F1["Home / Browse Centers by City"]
-        F2["Center Details (Trips, Reviews)"]
-        F3["User Registration & Login"]
-        F4["Booking Request Form"]
-        F5["Payment Page"]
-        F6["Ratings & Reviews"]
-        F7["Admin Dashboard"]
-        F8["Diving Center Dashboard"]
+    subgraph FE[" Frontend — React.js "]
+        direction LR
+        F1["Browse / Booking / Payment"]
+        F2["Reviews / Dashboards"]
     end
 
     FE -- "REST API (JSON)" --> BE
 
-    subgraph BE["Backend — Node.js / Express"]
-        B1["Authentication & Authorization (JWT)"]
-        B2["Centers Management"]
-        B3["Trips Management"]
-        B4["Booking Request Handling"]
-        B5["Payment Processing"]
-        B6["Ratings & Reviews Logic"]
-        B7["Admin Controls"]
-        B8["Search & Filter Logic"]
+    subgraph BE[" Backend — Node.js / Express "]
+        direction LR
+        B1["Auth (JWT) / Centers / Trips"]
+        B2["Bookings / Payments / Admin"]
     end
 
     BE -- "PostgreSQL Queries" --> DB
     BE -- "API Calls" --> EXT
 
-    subgraph DB["PostgreSQL"]
-        D1["users"]
-        D2["diving_centers"]
-        D3["trips"]
-        D4["bookings"]
-        D5["reviews"]
+    subgraph DB[" PostgreSQL "]
+        direction LR
+        D1["users · diving_centers"]
+        D2["trips · bookings · reviews"]
     end
 
-    subgraph EXT["External Services"]
-        E1["Payment Gateway (e.g., Moyasar)"]
-        E2["Cloudinary (Image Storage)"]
-        E3["Nodemailer (Email Notifications)"]
+    subgraph EXT[" External Services "]
+        direction TB
+        E1["💳 Payment Gateway — Moyasar"]
+        E2["🖼️ Cloudinary — Image Storage"]
+        E3["✉️ Nodemailer — Email Notifications"]
     end
+
+    classDef roles fill:#FFF4E5,stroke:#E8A33D,stroke-width:1px,color:#5C4317
+    classDef frontend fill:#E8F0FE,stroke:#4C7EE0,stroke-width:1px,color:#1A3D7C
+    classDef backend fill:#E6F4EA,stroke:#3F9142,stroke-width:1px,color:#1E4620
+    classDef database fill:#FCE8E6,stroke:#D14B43,stroke-width:1px,color:#6B1E18
+    classDef external fill:#F3E8FD,stroke:#9B59D0,stroke-width:1px,color:#4A2566
+
+    class U1,U2,U3 roles
+    class F1,F2 frontend
+    class B1,B2 backend
+    class D1,D2 database
+    class E1,E2,E3 external
 ```
 
 ---
