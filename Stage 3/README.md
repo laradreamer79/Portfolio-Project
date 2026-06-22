@@ -27,9 +27,9 @@ The architecture follows a standard **3-tier web application** model — Fronten
 flowchart TB
     subgraph Roles[" User Roles "]
         direction LR
-        U1["🤿 Diver / Tourist"]
-        U2["🏢 Diving Center"]
-        U3["🛠️ Admin"]
+        U1["Diver / Tourist"]
+        U2["Diving Center"]
+        U3["Admin"]
     end
 
     Roles --> FE
@@ -59,16 +59,16 @@ flowchart TB
 
     subgraph EXT[" External Services "]
         direction TB
-        E1["💳 Payment Gateway — Moyasar"]
-        E2["🖼️ Cloudinary — Image Storage"]
-        E3["✉️ Nodemailer — Email Notifications"]
+        E1["Payment Gateway — Moyasar"]
+        E2["Cloudinary — Image Storage"]
+        E3["Nodemailer — Email Notifications"]
     end
 
-    classDef roles fill:#FFF4E5,stroke:#E8A33D,stroke-width:1px,color:#5C4317
-    classDef frontend fill:#E8F0FE,stroke:#4C7EE0,stroke-width:1px,color:#1A3D7C
-    classDef backend fill:#E6F4EA,stroke:#3F9142,stroke-width:1px,color:#1E4620
-    classDef database fill:#FCE8E6,stroke:#D14B43,stroke-width:1px,color:#6B1E18
-    classDef external fill:#F3E8FD,stroke:#9B59D0,stroke-width:1px,color:#4A2566
+    classDef roles fill:#F5F5F5,stroke:#9E9E9E,stroke-width:1px,color:#212121
+    classDef frontend fill:#ECEFF1,stroke:#546E7A,stroke-width:1px,color:#102027
+    classDef backend fill:#E8EAF0,stroke:#3F4C6B,stroke-width:1px,color:#1A2238
+    classDef database fill:#EDE7E0,stroke:#8D6E63,stroke-width:1px,color:#3E2723
+    classDef external fill:#F0F0F0,stroke:#757575,stroke-width:1px,color:#212121
 
     class U1,U2,U3 roles
     class F1,F2 frontend
