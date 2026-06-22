@@ -23,66 +23,59 @@ The architecture follows a standard **3-tier web application** model — Fronten
 
 ### Architecture Diagram
 
-```
-                                  User Roles
-              ───────────────────────────────────────────────
+```mermaid
+flowchart TB
+    subgraph Roles["User Roles"]
+        direction LR
+        U1["Diver / Tourist"]
+        U2["Diving Center<br/>(Provider)"]
+        U3["Admin<br/>(Platform)"]
+    end
 
-   +------------------+     +--------------------+     +------------------+
-   |     Diver /      |     |   Diving Center    |     |      Admin       |
-   |     Tourist      |     |    (Provider)      |     |   (Platform)     |
-   +------------------+     +--------------------+     +------------------+
-            |                         |                          |
-            +-------------------------+--------------------------+
-                                       |
-                               HTTPS Requests
-                                       |
-                                       v
+    U1 --> FE
+    U2 --> FE
+    U3 --> FE
 
-                               System Components
-              ───────────────────────────────────────────────
+    subgraph FE["Frontend — React.js"]
+        F1["Home / Browse Centers by City"]
+        F2["Center Details (Trips, Reviews)"]
+        F3["User Registration & Login"]
+        F4["Booking Request Form"]
+        F5["Payment Page"]
+        F6["Ratings & Reviews"]
+        F7["Admin Dashboard"]
+        F8["Diving Center Dashboard"]
+    end
 
-            +----------------------------------------------+
-            |              Frontend — React.js              |
-            |------------------------------------------------|
-            |  • Home / Browse Centers by City               |
-            |  • Center Details (Trips, Reviews)             |
-            |  • User Registration & Login                   |
-            |  • Booking Request Form                        |
-            |  • Payment Page                                |
-            |  • Ratings & Reviews                           |
-            |  • Admin Dashboard                              |
-            |  • Diving Center Dashboard                      |
-            +----------------------------------------------+
-                                       |
-                                REST API (JSON)
-                                       |
-                                       v
-            +----------------------------------------------+
-            |           Backend — Node.js / Express          |
-            |------------------------------------------------|
-            |  • Authentication & Authorization (JWT)        |
-            |  • Centers Management                           |
-            |  • Trips Management                             |
-            |  • Booking Request Handling                     |
-            |  • Payment Processing                           |
-            |  • Ratings & Reviews Logic                      |
-            |  • Admin Controls                               |
-            |  • Search & Filter Logic                        |
-            +----------------------------------------------+
-                       |                          |
-               PostgreSQL Queries             API Calls
-                       |                          |
-                       v                          v
-        +----------------------+     +-------------------------+
-        |      PostgreSQL      |     |    External Services    |
-        |----------------------|     |--------------------------|
-        |  • users             |     |  • Payment Gateway      |
-        |  • diving_centers    |     |    (e.g., Moyasar)       |
-        |  • trips             |     |  • Cloudinary           |
-        |  • bookings          |     |    (Image Storage)      |
-        |  • reviews           |     |  • Nodemailer           |
-        +----------------------+     |    (Email Notifications)|
-                                      +-------------------------+
+    FE -- "REST API (JSON)" --> BE
+
+    subgraph BE["Backend — Node.js / Express"]
+        B1["Authentication & Authorization (JWT)"]
+        B2["Centers Management"]
+        B3["Trips Management"]
+        B4["Booking Request Handling"]
+        B5["Payment Processing"]
+        B6["Ratings & Reviews Logic"]
+        B7["Admin Controls"]
+        B8["Search & Filter Logic"]
+    end
+
+    BE -- "PostgreSQL Queries" --> DB
+    BE -- "API Calls" --> EXT
+
+    subgraph DB["PostgreSQL"]
+        D1["users"]
+        D2["diving_centers"]
+        D3["trips"]
+        D4["bookings"]
+        D5["reviews"]
+    end
+
+    subgraph EXT["External Services"]
+        E1["Payment Gateway (e.g., Moyasar)"]
+        E2["Cloudinary (Image Storage)"]
+        E3["Nodemailer (Email Notifications)"]
+    end
 ```
 
 ---
