@@ -53,10 +53,10 @@ Oyster is a digital platform designed to connect users with diving centers, inst
 - Ratings and reviews system for diving centers and experiences
 - Responsive web interface for desktop and mobile users
 - Admin dashboard for basic content management
+- Real-time booking confirmation and live availability synchronization
 - Online payment processing
 
 ### Out-of-Scope (Excluded from MVP)
-- Real-time booking confirmation and live availability synchronization
 - Mobile native application (iOS/Android)
 - AI-based personalized diving recommendations
 - Integration with external certification providers (e.g., PADI/SSI APIs)
