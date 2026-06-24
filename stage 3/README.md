@@ -84,9 +84,11 @@ flowchart TB
     Center([Diving Center])
     Admin([Admin])
 
-    Diver --> WebApp["React.js Website"]
-    Center --> WebApp
-    Admin --> WebApp
+    Diver --- Users(( ))
+    Center --- Users
+    Admin --- Users
+
+    Users ==> WebApp["React.js Website"]
 
     WebApp ==>|"REST API over HTTPS"| API["Express.js API Server"]
 
@@ -96,6 +98,8 @@ flowchart TB
     BL ==>|"SQL queries"| DB[("PostgreSQL Database")]
     BL ==>|"API requests"| Payment["Moyasar Payment Gateway"]
     BL ==>|"API requests"| Media["Cloudinary Image Storage"]
+
+    style Users fill:none,stroke:none
 ```
 
 ---
