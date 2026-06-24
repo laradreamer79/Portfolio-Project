@@ -91,20 +91,20 @@ flowchart TB
         WebApp["React.js Website"]
     end
 
-    WebApp -- "REST API over HTTPS" --> API
+    WebApp ==>|"1"| API
 
     subgraph Server["Application Layer"]
         API["Express.js API Server"]
         Auth["JWT Authentication"]
-        BL["Business Logic: Centers, Trips, Bookings, Reviews, Admin"]
+        BL["Business Logic:<br/>Centers · Trips · Bookings · Reviews · Admin"]
 
-        API --> Auth
-        API --> BL
+        API ==>|"2"| Auth
+        API ==>|"3"| BL
     end
 
-    BL -- "SQL queries" --> DB
-    BL -- "API requests" --> Payment
-    BL -- "API requests" --> Media
+    BL ==>|"4"| DB
+    BL ==>|"5"| Payment
+    BL ==>|"6"| Media
 
     subgraph Persistence["Data Layer"]
         DB[("PostgreSQL Database")]
@@ -115,6 +115,15 @@ flowchart TB
         Media["Cloudinary Image Storage"]
     end
 ```
+
+| # | Connection | Description |
+|---|---|---|
+| 1 | Client → Server | The website sends REST API requests to the server over HTTPS. |
+| 2 | API → Auth | The API server verifies the user's identity using a JWT token. |
+| 3 | API → Business Logic | The API server runs the core logic for centers, trips, bookings, reviews, and admin actions. |
+| 4 | Business Logic → Database | The logic layer reads and writes data using SQL queries to PostgreSQL. |
+| 5 | Business Logic → Payment | The logic layer calls the Moyasar API to process payments. |
+| 6 | Business Logic → Media | The logic layer calls the Cloudinary API to store and retrieve images. |
 
 ---
 
