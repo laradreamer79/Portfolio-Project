@@ -79,55 +79,38 @@ The architecture follows a standard **3-tier web application** model — Fronten
 
 ```mermaid
 flowchart TB
-    subgraph Roles[" User Roles "]
-        direction LR
-        U1["Diver / Tourist"]
-        U2["Diving Center"]
-        U3["Admin"]
+    actor1[Diver / Tourist]
+    actor2[Diving Center]
+    actor3[Admin]
+
+    actor1 --> Frontend
+    actor2 --> Frontend
+    actor3 --> Frontend
+
+    subgraph Frontend [Frontend - React.js]
+        F1[Browse / Booking / Payment]
+        F2[Reviews / Dashboards]
     end
 
-    Roles --> FE
+    Frontend -- REST API JSON --> Backend
 
-    subgraph FE[" Frontend — React.js "]
-        direction LR
-        F1["Browse / Booking / Payment"]
-        F2["Reviews / Dashboards"]
+    subgraph Backend [Backend - Node.js / Express]
+        B1[Auth JWT / Centers / Trips]
+        B2[Bookings / Payments / Admin]
     end
 
-    FE -- "REST API (JSON)" --> BE
+    Backend -- PostgreSQL Queries --> Database
+    Backend -- API Calls --> External
 
-    subgraph BE[" Backend — Node.js / Express "]
-        direction LR
-        B1["Auth (JWT) / Centers / Trips"]
-        B2["Bookings / Payments / Admin"]
+    subgraph Database [PostgreSQL]
+        D1[users / diving_centers]
+        D2[trips / bookings / reviews]
     end
 
-    BE -- "PostgreSQL Queries" --> DB
-    BE -- "API Calls" --> EXT
-
-    subgraph DB[" PostgreSQL "]
-        direction LR
-        D1["users · diving_centers"]
-        D2["trips · bookings · reviews"]
+    subgraph External [External Services]
+        E1[Payment Gateway - Moyasar]
+        E2[Cloudinary - Image Storage]
     end
-
-    subgraph EXT[" External Services "]
-        direction TB
-        E1["Payment Gateway — Moyasar"]
-        E2["Cloudinary — Image Storage"]
-    end
-
-    classDef roles fill:#F5F5F5,stroke:#9E9E9E,stroke-width:1px,color:#212121
-    classDef frontend fill:#ECEFF1,stroke:#546E7A,stroke-width:1px,color:#102027
-    classDef backend fill:#E8EAF0,stroke:#3F4C6B,stroke-width:1px,color:#1A2238
-    classDef database fill:#EDE7E0,stroke:#8D6E63,stroke-width:1px,color:#3E2723
-    classDef external fill:#F0F0F0,stroke:#757575,stroke-width:1px,color:#212121
-
-    class U1,U2,U3 roles
-    class F1,F2 frontend
-    class B1,B2 backend
-    class D1,D2 database
-    class E1,E2 external
 ```
 
 ---
