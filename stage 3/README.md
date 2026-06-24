@@ -88,31 +88,31 @@ flowchart TB
     Admin --> WebApp
 
     subgraph Client["Client Layer"]
-        WebApp[React.js Web Application]
+        WebApp["React.js Website"]
     end
 
-    WebApp -->|REST API requests over HTTPS| API
+    WebApp -- "REST API over HTTPS" --> API
 
     subgraph Server["Application Layer"]
-        API[Express.js API Server]
-        Auth[JWT Authentication]
+        API["Express.js API Server"]
+        Auth["JWT Authentication"]
         BL["Business Logic: Centers, Trips, Bookings, Reviews, Admin"]
 
         API --> Auth
         API --> BL
     end
 
-    BL -->|SQL queries| DB
-    BL -->|API requests| Payment
-    BL -->|API requests| Media
+    BL -- "SQL queries" --> DB
+    BL -- "API requests" --> Payment
+    BL -- "API requests" --> Media
 
     subgraph Persistence["Data Layer"]
-        DB[(PostgreSQL Database)]
+        DB[("PostgreSQL Database")]
     end
 
     subgraph Integrations["External Services"]
-        Payment[Moyasar Payment Gateway]
-        Media[Cloudinary Image Storage]
+        Payment["Moyasar Payment Gateway"]
+        Media["Cloudinary Image Storage"]
     end
 ```
 
