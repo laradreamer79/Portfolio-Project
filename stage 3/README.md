@@ -57,6 +57,14 @@
 6. **As a user, I want the platform to support multiple languages beyond the initial launch language, so that I can use it in my preferred language.**
 
 
+## Mockup Screens
+
+The following mockups illustrate the main user journey of the Diving Trip Booking Platform, covering trip discovery, booking, payment, confirmation, user authentication, booking management, and reviews.
+
+These screens were designed to visualize the MVP features and demonstrate the overall user experience and navigation flow across the platform.
+
+
+
 ## Task 1: System Architecture
 
 ### Overview
