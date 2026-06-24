@@ -83,37 +83,18 @@ flowchart TB
     Center([Diving Center])
     Admin([Admin])
 
-    Diver --> WebApp
+    Diver --> WebApp["React.js Website"]
     Center --> WebApp
     Admin --> WebApp
 
-    subgraph Client["Client Layer"]
-        WebApp["React.js Website"]
-    end
+    WebApp ==>|"1"| API["Express.js API Server"]
 
-    WebApp ==>|"1"| API
+    API ==>|"2"| Auth["JWT Authentication"]
+    API ==>|"3"| BL["Business Logic:<br/>Centers · Trips · Bookings · Reviews · Admin"]
 
-    subgraph Server["Application Layer"]
-        API["Express.js API Server"]
-        Auth["JWT Authentication"]
-        BL["Business Logic:<br/>Centers · Trips · Bookings · Reviews · Admin"]
-
-        API ==>|"2"| Auth
-        API ==>|"3"| BL
-    end
-
-    BL ==>|"4"| DB
-    BL ==>|"5"| Payment
-    BL ==>|"6"| Media
-
-    subgraph Persistence["Data Layer"]
-        DB[("PostgreSQL Database")]
-    end
-
-    subgraph Integrations["External Services"]
-        Payment["Moyasar Payment Gateway"]
-        Media["Cloudinary Image Storage"]
-    end
+    BL ==>|"4"| DB[("PostgreSQL Database")]
+    BL ==>|"5"| Payment["Moyasar Payment Gateway"]
+    BL ==>|"6"| Media["Cloudinary Image Storage"]
 ```
 
 | # | Connection | Description |
