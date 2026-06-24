@@ -78,28 +78,44 @@ The architecture follows a standard **3-tier web application** model — Fronten
 ### Architecture Diagram
 
 ```mermaid
-%%{init: {"flowchart": {"curve": "linear"}} }%%
 flowchart TB
-    Diver([Diver / Tourist])
-    Center([Diving Center])
-    Admin([Admin])
+    subgraph Roles[" User Roles "]
+        direction LR
+        U1["Diver / Tourist"]
+        U2["Diving Center"]
+        U3["Admin"]
+    end
 
-    Diver --- Users(( ))
-    Center --- Users
-    Admin --- Users
+    Roles --> FE
 
-    Users ==> WebApp["React.js Website"]
+    subgraph FE[" Frontend - React.js "]
+        direction LR
+        F1["Browse / Booking / Payment"]
+        F2["Reviews / Dashboards"]
+    end
 
-    WebApp ==>|"REST API over HTTPS"| API["Express.js API Server"]
+    FE -- "REST API JSON" --> BE
 
-    API ==>|"Verifies identity"| Auth["JWT Authentication"]
-    API ==>|"Core application logic"| BL["Business Logic:<br/>Centers · Trips · Bookings · Reviews · Admin"]
+    subgraph BE[" Backend - Node.js / Express "]
+        direction LR
+        B1["Auth JWT / Centers / Trips"]
+        B2["Bookings / Payments / Admin"]
+    end
 
-    BL ==>|"SQL queries"| DB[("PostgreSQL Database")]
-    BL ==>|"API requests"| Payment["Moyasar Payment Gateway"]
-    BL ==>|"API requests"| Media["Cloudinary Image Storage"]
+    BE -- "PostgreSQL Queries" --> DB
+    BE -- "API Calls" --> EXT
 
-    style Users fill:none,stroke:none
+    subgraph DB[" PostgreSQL "]
+        direction LR
+        D1["users / diving_centers"]
+        D2["trips / bookings / reviews"]
+    end
+
+    subgraph EXT[" External Services "]
+        direction TB
+        E1["Payment Gateway - Moyasar"]
+        E2["Cloudinary - Image Storage"]
+    end
 ```
 
 ---
