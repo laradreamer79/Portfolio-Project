@@ -78,6 +78,7 @@ The architecture follows a standard **3-tier web application** model — Fronten
 ### Architecture Diagram
 
 ```mermaid
+%%{init: {"flowchart": {"curve": "linear"}} }%%
 flowchart TB
     Diver([Diver / Tourist])
     Center([Diving Center])
@@ -87,24 +88,15 @@ flowchart TB
     Center --> WebApp
     Admin --> WebApp
 
-    WebApp ==>|"1"| API["Express.js API Server"]
+    WebApp ==>|"REST API over HTTPS"| API["Express.js API Server"]
 
-    API ==>|"2"| Auth["JWT Authentication"]
-    API ==>|"3"| BL["Business Logic:<br/>Centers · Trips · Bookings · Reviews · Admin"]
+    API ==>|"Verifies identity"| Auth["JWT Authentication"]
+    API ==>|"Core application logic"| BL["Business Logic:<br/>Centers · Trips · Bookings · Reviews · Admin"]
 
-    BL ==>|"4"| DB[("PostgreSQL Database")]
-    BL ==>|"5"| Payment["Moyasar Payment Gateway"]
-    BL ==>|"6"| Media["Cloudinary Image Storage"]
+    BL ==>|"SQL queries"| DB[("PostgreSQL Database")]
+    BL ==>|"API requests"| Payment["Moyasar Payment Gateway"]
+    BL ==>|"API requests"| Media["Cloudinary Image Storage"]
 ```
-
-| # | Connection | Description |
-|---|---|---|
-| 1 | Client → Server | The website sends REST API requests to the server over HTTPS. |
-| 2 | API → Auth | The API server verifies the user's identity using a JWT token. |
-| 3 | API → Business Logic | The API server runs the core logic for centers, trips, bookings, reviews, and admin actions. |
-| 4 | Business Logic → Database | The logic layer reads and writes data using SQL queries to PostgreSQL. |
-| 5 | Business Logic → Payment | The logic layer calls the Moyasar API to process payments. |
-| 6 | Business Logic → Media | The logic layer calls the Cloudinary API to store and retrieve images. |
 
 ---
 
