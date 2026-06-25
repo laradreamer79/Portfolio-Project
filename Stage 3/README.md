@@ -180,9 +180,9 @@ The team uses **Git** and **GitHub** to manage code changes and collaboration ac
 
 | Branch | Purpose |
 |---|---|
-| `main` | Stable, production-ready code only. Protected branch — no direct pushes. |
-| `develop` | Integration branch where completed features are merged before release. |
-| `feature/<name>` | Individual branches for new features (e.g., `feature/booking-form`). |
+| `main` | Stable, production-ready code only. Updated only by the **Project Manager** after `develop` is tested and confirmed. |
+| `develop` | Integration branch where each member's verified task is collected and tested together before release. |
+| `<member-name>` / `feature/<name>` | Each team member works individually on their own dedicated branch for their assigned task (e.g., `ebtihal`, `feature/booking-form`). |
 | `fix/<name>` | Branches for bug fixes (e.g., `fix/login-validation`). |
 
 #### Workflow
