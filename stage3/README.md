@@ -19,21 +19,13 @@ Diving platform connecting divers and tourists with diving centers across Saudi 
 ### Must Have
 
 1. **As a diver, I want to browse diving centers by city across Saudi Arabia, so that I can find diving centers near my preferred location.**
-
 2. **As a diver, I want to view diving center details, including descriptions, approximate pricing, and contact information, so that I can compare different centers before booking.**
-
 3. **As a diver, I want to browse available diving trips and training courses, so that I can choose the experience that best suits me.**
-
 4. **As a user, I want to register and log in to my account, so that I can securely access my profile and manage my bookings.**
-
 5. **As a diver, I want to submit booking requests through the platform, so that I can reserve a diving trip online.**
-
 6. **As a diver, I want to receive real-time booking confirmation and view live availability, so that I know immediately whether my booking is confirmed.**
-
 7. **As a user, I want to complete online payment securely, so that I can confirm my booking.**
-
 8. **As an admin, I want to manage diving centers, trips, users, and platform content, so that the platform remains accurate and up to date.**
-
 9. **As a diving center, I want to manage my trips and booking requests through a dashboard, so that I can efficiently manage my services.**
 
 ---
@@ -41,7 +33,6 @@ Diving platform connecting divers and tourists with diving centers across Saudi 
 ### Should Have
 
 1. **As a diver, I want to rate and review diving centers and diving experiences, so that I can help other users make informed decisions.**
-
 2. **As a user, I want the platform to be responsive on both desktop and mobile browsers, so that I can access it from any device.**
 
 ---
@@ -49,11 +40,8 @@ Diving platform connecting divers and tourists with diving centers across Saudi 
 ### Could Have
 
 1. **As a user, I want to receive a booking confirmation email, so that I have a record of my reservation and payment details.**
-
 2. **As a user, I want to receive SMS notifications about my booking status, so that I stay informed even when I am not using the platform.**
-
 3. **As a user, I want to receive in-app notifications about my booking status, so that I can track updates from within the platform.**
-
 4. **As a user, I want a native mobile application for iOS and Android, so that I can access the platform without using a web browser.**
 
 ---
@@ -61,15 +49,12 @@ Diving platform connecting divers and tourists with diving centers across Saudi 
 ### Won't Have
 
 1. **As a diver, I want AI-based personalized diving recommendations, so that I can discover trips tailored to my interests.**
-
 2. **As a diver, I want the platform to integrate with external certification providers (e.g., PADI and SSI), so that my certifications can be verified automatically.**
-
 3. **As a diver, I want advanced map navigation with real-time geolocation tracking, so that I can easily navigate to diving centers.**
-
 4. **As a user, I want live chat support with diving centers, so that I can communicate directly before making a booking.**
-
 5. **As a user, I want the platform to support multiple languages beyond the initial launch language, so that I can use it in my preferred language.**
 
+---
 
 ### Mockup Screens
 
@@ -88,7 +73,6 @@ These screens were designed to visualize the MVP features and demonstrate the ov
 This document defines the high-level system architecture for **Oyster**, a digital platform connecting divers and tourists with diving centers and trips across Saudi Arabia.
 
 The architecture follows a standard **3-tier web application** model — Frontend, Backend, and Database — with integration to external third-party services.
-
 
 ### Architecture Diagram
 
@@ -123,7 +107,6 @@ flowchart TB
     B2 -->|API calls| E2
 ```
 
-
 ### Component Descriptions
 
 | Component | Technology | Role |
@@ -134,7 +117,6 @@ flowchart TB
 | **Auth Layer** | JWT (JSON Web Tokens) | Manages stateless authentication. Issues tokens on login, verifies identity on protected routes. Supports 3 roles: Diver, Diving Center, Admin. |
 | **Image Storage** | Cloudinary | Stores and serves images for diving centers and trips. Provides CDN delivery and automatic optimization. |
 | **Payment Gateway** | Moyasar / Stripe | Processes online payments for bookings securely. Handles payment confirmation and links it to the corresponding booking record. |
-
 
 ### Data Flow
 
@@ -175,8 +157,6 @@ Steps describing how data moves through the system, covering the three key use c
 | 6 | The backend updates the booking status in PostgreSQL from `Reserved` to `Booked`. |
 | 7 | The backend confirms the booking to the frontend, which displays the confirmation to the user. |
 
-
-
 ### Deployment Architecture
 
 | Environment | Description |
@@ -184,7 +164,6 @@ Steps describing how data moves through the system, covering the three key use c
 | **Development** | Local machines — each developer runs the full stack locally using Node.js and PostgreSQL. |
 | **Staging** | Pre-production environment used for testing before release. |
 | **Production** | Deployed on a cloud platform (e.g., Render or Railway for backend, Vercel for frontend). |
-
 
 ### Technical Justifications
 
@@ -199,7 +178,6 @@ Every technology in this architecture was chosen based on the team's functional 
 | **Payment Gateway (Moyasar)** | Payment Processing | Enables secure online payment for bookings, as defined in the MVP scope (Stage 2). Moyasar supports local Saudi payment methods (mada, Apple Pay) alongside international cards. |
 | **Cloudinary** | Image Hosting | Provides a free-tier CDN for image storage and delivery. Eliminates the need to manage file storage infrastructure. Supports automatic image optimization and resizing — essential for center profile images and trip photos. |
 
-
 ### Non-Functional Requirements Addressed
 
 | Requirement | How the Architecture Addresses It |
@@ -212,11 +190,7 @@ Every technology in this architecture was chosen based on the team's functional 
 
 ---
 
----
-
 ## 2. Components, Classes, and Database Design
-
----
 
 ### 1. Class Diagram (UML)
 
@@ -343,13 +317,11 @@ Trip "1" --> "0..*" Booking
 Booking "1" --> "1" Payment
 ```
 
-
 ### 2. Backend Class Definitions
 
 #### 2.1 User
 The User class represents all system actors including regular users, instructors (diving trainers), and administrators.
 Access and permissions are controlled using the role attribute (user | instructor | admin).
-
 
 | Attribute / Method | Description |
 |----------|----------|
@@ -463,7 +435,6 @@ Access and permissions are controlled using the role attribute (user | instructo
 | validate() | Ensures rating is between 1–5 |
 | getByCenter() | Returns reviews for a center |
 
-
 ### 3. Entity Relationship Diagram (ERD)
 
 ```mermaid
@@ -559,7 +530,6 @@ diving_centers ||--o{ reviews : receives
 trips ||--o{ bookings : has
 bookings ||--|| payments : has
 ```
-
 
 ### 4. Database Schema
 
@@ -661,7 +631,6 @@ bookings ||--|| payments : has
 UNIQUE (user_id, trip_id)
 ```
 
-
 ### 5. Frontend Component Structure
 
 | Component | Route / Page | Responsibility |
@@ -681,7 +650,6 @@ UNIQUE (user_id, trip_id)
 | ReviewForm | /centers/:id/review | Submit reviews |
 | AdminPanel | /admin | Manage centers, trips, courses |
 | ProtectedRoute | Wrapper | Authentication guard |
-
 
 ### 6. Technical Justifications
 
@@ -706,7 +674,6 @@ UNIQUE (user_id, trip_id)
 
 The following sequence diagrams show the main interactions between the user, front-end, back-end, and database for key MVP features in Oyster.
 
-
 ### Use Case 1: User Login
 
 ```mermaid
@@ -724,7 +691,6 @@ sequenceDiagram
     Frontend-->>User: Display login success or error message
 ```
 
-
 ### Use Case 2: Browse Diving Centers by City
 
 ```mermaid
@@ -741,7 +707,6 @@ sequenceDiagram
     Backend-->>Frontend: Send centers list
     Frontend-->>User: Display diving centers
 ```
-
 
 ### Use Case 3: Submit Booking Request
 
@@ -772,8 +737,6 @@ sequenceDiagram
 
 ## 4. API Specifications
 
----
-
 ### 1. External APIs
 
 The Oyster platform relies on several third-party services to provide additional functionality and reduce infrastructure complexity.
@@ -784,11 +747,9 @@ The Oyster platform relies on several third-party services to provide additional
 | Calendly API | Schedule diving sessions and appointments | Simplifies booking and scheduling processes by allowing users to select available time slots without building a custom scheduling system |
 | Moyasar Payment API | Process secure online payments | Supports local Saudi payment methods such as mada and Apple Pay |
 
-
 ### 2. Internal REST APIs
 
 The backend exposes RESTful API endpoints that allow the frontend to communicate with the server using JSON.
-
 
 #### Authentication APIs
 
@@ -819,7 +780,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-
 ##### Login User
 
 | Property | Value |
@@ -845,7 +805,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
   "token": "JWT_TOKEN"
 }
 ```
-
 
 #### Diving Centers APIs
 
@@ -874,7 +833,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 ]
 ```
 
-
 ##### Get Diving Center Details
 
 | Property | Value |
@@ -884,7 +842,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
-
 ##### Search Centers by City
 
 | Property | Value |
@@ -893,7 +850,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Method | GET |
 | Input Format | Query Parameter |
 | Output Format | JSON |
-
 
 #### Trips APIs
 
@@ -906,7 +862,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
-
 #### Courses APIs
 
 ##### Get Courses for a Diving Center
@@ -917,7 +872,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Method | GET |
 | Input Format | URL Parameter |
 | Output Format | JSON |
-
 
 #### Booking APIs
 
@@ -947,7 +901,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-
 ##### Get User Bookings
 
 | Property | Value |
@@ -957,7 +910,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
-
 ##### Cancel Booking
 
 | Property | Value |
@@ -966,7 +918,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Method | DELETE |
 | Input Format | URL Parameter |
 | Output Format | JSON |
-
 
 #### Payment APIs
 
@@ -995,7 +946,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
   "message": "Payment processed successfully"
 }
 ```
-
 
 #### Reviews APIs
 
@@ -1026,7 +976,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-
 ##### Get Reviews for a Diving Center
 
 | Property | Value |
@@ -1035,7 +984,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Method | GET |
 | Input Format | URL Parameter |
 | Output Format | JSON |
-
 
 #### Admin APIs
 
@@ -1052,7 +1000,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | JSON |
 | Output Format | JSON |
 
-
 ##### Update Diving Center
 
 | Property | Value |
@@ -1062,7 +1009,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | JSON |
 | Output Format | JSON |
 
-
 ##### Delete Diving Center
 
 | Property | Value |
@@ -1071,8 +1017,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Method | DELETE |
 | Input Format | URL Parameter |
 | Output Format | JSON |
-
----
 
 ---
 
@@ -1106,7 +1050,6 @@ The team uses **Git** and **GitHub** to manage code changes and collaboration ac
 - No hardcoded credentials or sensitive data
 - New endpoints are documented
 - No conflicts with existing database schema
-
 
 ### Quality Assurance (QA) Strategy
 
@@ -1143,8 +1086,6 @@ The team uses **Git** and **GitHub** to manage code changes and collaboration ac
 | 3 | API endpoints are manually verified in Postman. |
 | 4 | Once verified, the work is merged into `develop` and deployed to staging. |
 | 5 | After staging verification, the **Project Manager** merges `develop` into `main` for production release. |
-
----
 
 ---
 
