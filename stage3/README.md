@@ -20,6 +20,8 @@
 
 8. **As an admin, I want to manage diving centers, trips, users, and platform content, so that the platform remains accurate and up to date.**
 
+9. **As a diving center, I want to manage my trips and booking requests through a dashboard, so that I can efficiently manage my services.**
+
 ---
 
 ## Should Have
@@ -27,8 +29,6 @@
 1. **As a diver, I want to rate and review diving centers and diving experiences, so that I can help other users make informed decisions.**
 
 2. **As a user, I want the platform to be responsive on both desktop and mobile browsers, so that I can access it from any device.**
-
-3. **As a diving center, I want to manage my trips and booking requests through a dashboard, so that I can efficiently manage my services.**
 
 ---
 
@@ -40,21 +40,21 @@
 
 3. **As a user, I want to receive in-app notifications about my booking status, so that I can track updates from within the platform.**
 
+4. 1. **As a user, I want a native mobile application for iOS and Android, so that I can access the platform without using a web browser.**
+
 ---
 
 ## Won't Have
 
-1. **As a user, I want a native mobile application for iOS and Android, so that I can access the platform without using a web browser.**
+1. **As a diver, I want AI-based personalized diving recommendations, so that I can discover trips tailored to my interests.**
 
-2. **As a diver, I want AI-based personalized diving recommendations, so that I can discover trips tailored to my interests.**
+2. **As a diver, I want the platform to integrate with external certification providers (e.g., PADI and SSI), so that my certifications can be verified automatically.**
 
-3. **As a diver, I want the platform to integrate with external certification providers (e.g., PADI and SSI), so that my certifications can be verified automatically.**
+3. **As a diver, I want advanced map navigation with real-time geolocation tracking, so that I can easily navigate to diving centers.**
 
-4. **As a diver, I want advanced map navigation with real-time geolocation tracking, so that I can easily navigate to diving centers.**
+4. **As a user, I want live chat support with diving centers, so that I can communicate directly before making a booking.**
 
-5. **As a user, I want live chat support with diving centers, so that I can communicate directly before making a booking.**
-
-6. **As a user, I want the platform to support multiple languages beyond the initial launch language, so that I can use it in my preferred language.**
+5. **As a user, I want the platform to support multiple languages beyond the initial launch language, so that I can use it in my preferred language.**
 
 
 ## Mockup Screens
