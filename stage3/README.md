@@ -702,26 +702,26 @@ UNIQUE (user_id, course_id)
 Prevents duplicate reviews for the same course.
 
 ---
-
 # 5. Frontend Component Structure
 
 | Component | Route / Page | Responsibility |
 |------------|------------|------------|
 | Navbar | Global | Navigation and user menu |
-| LoginForm | /login | User authentication |
-| RegisterForm | /register | User registration |
-| HomePage | / | Search and featured centers |
-| CenterCard | /centers | Center summary card |
-| CenterList | /centers | Filtered center listing |
-| CenterDetails | /centers/:id | Center details, trips, courses, reviews |
-| TripList | Inside CenterDetails | Displays available trips |
-| CourseList | Inside CenterDetails | Displays available courses |
-| BookingForm | /bookings/new | Creates trip or course booking |
-| PaymentModal | Global | Stripe payment popup |
-| UserDashboard | /dashboard | User bookings and history |
-| ReviewForm | /centers/:id/review | Submit reviews |
-| AdminPanel | /admin | Manage centers, trips, and courses |
-| ProtectedRoute | Wrapper | Authentication guard |
+| HomePage | / | Hero section, featured trips, statistics, and platform overview |
+| CenterList | /centers | Browse diving centers with city and rating filters |
+| CenterDetails | /centers/:id | Center details, gallery, trips, courses, and reviews |
+| TripsList | /trips | Browse all diving trips with filters and search |
+| TripDetail | /trips/:id | Trip details, reviews, availability, and similar trips |
+| CoursesList | /courses | Browse all diving courses with filters |
+| AboutPage | /about | Platform information, mission, and team |
+| BookingForm | /booking/:tripId | Create a booking for a selected trip |
+| AuthPage | /auth | User login and registration |
+| PaymentModal | Global | Stripe payment processing popup |
+| ReviewForm | /centers/:id/review | Submit reviews for centers, trips, or courses |
+| UserDashboard | /dashboard | User bookings, payments, and history |
+| CenterDashboard | /dashboard | Diving center management dashboard |
+| AdminPanel | /admin | Manage users, centers, trips, courses, and reviews |
+| ProtectedRoute | Wrapper | Authentication and authorization guard |
 
 ---
 
