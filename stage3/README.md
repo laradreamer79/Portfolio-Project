@@ -1,8 +1,22 @@
-# Task 0
+# Stage 3: Technical Documentation — Oyster
 
-# User Stories (MoSCoW Prioritization)
+Diving platform connecting divers and tourists with diving centers across Saudi Arabia.
 
-## Must Have
+## Table of Contents
+
+1. [User Stories and Mockups](#1-user-stories-and-mockups)
+2. [System Architecture](#2-system-architecture)
+3. [Components, Classes, and Database Design](#3-components-classes-and-database-design)
+4. [Sequence Diagrams](#4-sequence-diagrams)
+5. [API Specifications](#5-api-specifications)
+6. [SCM and QA Plans](#6-scm-and-qa-plans)
+7. [Technical Justifications](#7-technical-justifications)
+
+---
+
+## 1. User Stories and Mockups
+
+### Must Have
 
 1. **As a diver, I want to browse diving centers by city across Saudi Arabia, so that I can find diving centers near my preferred location.**
 
@@ -24,7 +38,7 @@
 
 ---
 
-## Should Have
+### Should Have
 
 1. **As a diver, I want to rate and review diving centers and diving experiences, so that I can help other users make informed decisions.**
 
@@ -32,7 +46,7 @@
 
 ---
 
-## Could Have
+### Could Have
 
 1. **As a user, I want to receive a booking confirmation email, so that I have a record of my reservation and payment details.**
 
@@ -44,7 +58,7 @@
 
 ---
 
-## Won't Have
+### Won't Have
 
 1. **As a diver, I want AI-based personalized diving recommendations, so that I can discover trips tailored to my interests.**
 
@@ -57,16 +71,17 @@
 5. **As a user, I want the platform to support multiple languages beyond the initial launch language, so that I can use it in my preferred language.**
 
 
-## Mockup Screens
+### Mockup Screens
 
 The following mockups illustrate the main user journey of the Diving Trip Booking Platform, covering trip discovery, booking, payment, confirmation, user authentication, booking management, and reviews.
 
 These screens were designed to visualize the MVP features and demonstrate the overall user experience and navigation flow across the platform.
 
 ![User Interface Mockups](Images/mockup1.png)
-![User Interface Mockups](Images/mokup2.png)
 
-## Task 1: System Architecture
+---
+
+## 2. System Architecture
 
 ### Overview
 
@@ -74,7 +89,6 @@ This document defines the high-level system architecture for **Oyster**, a digit
 
 The architecture follows a standard **3-tier web application** model — Frontend, Backend, and Database — with integration to external third-party services.
 
----
 
 ### Architecture Diagram
 
@@ -109,7 +123,6 @@ flowchart TB
     B2 -->|API calls| E2
 ```
 
----
 
 ### Component Descriptions
 
@@ -122,7 +135,6 @@ flowchart TB
 | **Image Storage** | Cloudinary | Stores and serves images for diving centers and trips. Provides CDN delivery and automatic optimization. |
 | **Payment Gateway** | Moyasar / Stripe | Processes online payments for bookings securely. Handles payment confirmation and links it to the corresponding booking record. |
 
----
 
 ### Data Flow
 
@@ -164,7 +176,6 @@ Steps describing how data moves through the system, covering the three key use c
 | 7 | The backend confirms the booking to the frontend, which displays the confirmation to the user. |
 
 
----
 
 ### Deployment Architecture
 
@@ -174,7 +185,6 @@ Steps describing how data moves through the system, covering the three key use c
 | **Staging** | Pre-production environment used for testing before release. |
 | **Production** | Deployed on a cloud platform (e.g., Render or Railway for backend, Vercel for frontend). |
 
----
 
 ### Technical Justifications
 
@@ -189,7 +199,6 @@ Every technology in this architecture was chosen based on the team's functional 
 | **Payment Gateway (Moyasar)** | Payment Processing | Enables secure online payment for bookings, as defined in the MVP scope (Stage 2). Moyasar supports local Saudi payment methods (mada, Apple Pay) alongside international cards. |
 | **Cloudinary** | Image Hosting | Provides a free-tier CDN for image storage and delivery. Eliminates the need to manage file storage infrastructure. Supports automatic image optimization and resizing — essential for center profile images and trip photos. |
 
----
 
 ### Non-Functional Requirements Addressed
 
@@ -203,14 +212,13 @@ Every technology in this architecture was chosen based on the team's functional 
 
 ---
 
+---
 
-# Task 2 – Components, Classes, and Database Design
-
-# Oyster: Diving Platform for Saudi Arabia
+## 3. Components, Classes, and Database Design
 
 ---
 
-# 1. Class Diagram (UML)
+### 1. Class Diagram (UML)
 
 ```mermaid
 classDiagram
@@ -335,11 +343,10 @@ Trip "1" --> "0..*" Booking
 Booking "1" --> "1" Payment
 ```
 
----
 
-# 2. Backend Class Definitions
+### 2. Backend Class Definitions
 
-## 2.1 User
+#### 2.1 User
 The User class represents all system actors including regular users, instructors (diving trainers), and administrators.
 Access and permissions are controlled using the role attribute (user | instructor | admin).
 
@@ -357,7 +364,7 @@ Access and permissions are controlled using the role attribute (user | instructo
 | updateProfile() | Updates user info |
 | findById() | Retrieves user by ID |
 
-## 2.2 DivingCenter
+#### 2.2 DivingCenter
 
 | Attribute / Method | Description |
 |----------|----------|
@@ -380,7 +387,7 @@ Access and permissions are controlled using the role attribute (user | instructo
 | addReview() | Adds a review |
 | findByCity() | Filters centers by city |
 
-## 2.3 Trip
+#### 2.3 Trip
 
 | Attribute / Method | Description |
 |----------|----------|
@@ -398,7 +405,7 @@ Access and permissions are controlled using the role attribute (user | instructo
 | getBookings() | Returns all bookings for this trip |
 | getUpcoming() | Returns upcoming trips |
 
-## 2.4 Course
+#### 2.4 Course
 
 | Attribute / Method | Description |
 |----------|----------|
@@ -412,7 +419,7 @@ Access and permissions are controlled using the role attribute (user | instructo
 | startDate : date | Course start date |
 | getUpcoming() | Returns upcoming courses |
 
-## 2.5 Booking
+#### 2.5 Booking
 
 | Attribute / Method | Description |
 |----------|----------|
@@ -428,7 +435,7 @@ Access and permissions are controlled using the role attribute (user | instructo
 | cancel() | Updates status to cancelled |
 | findByUser() | Returns user's bookings |
 
-## 2.6 Payment
+#### 2.6 Payment
 
 | Attribute / Method | Description |
 |----------|----------|
@@ -442,7 +449,7 @@ Access and permissions are controlled using the role attribute (user | instructo
 | processPayment() | Calls Stripe to charge |
 | refund() | Initiates refund via Stripe |
 
-## 2.7 Review
+#### 2.7 Review
 
 | Attribute / Method | Description |
 |----------|----------|
@@ -456,9 +463,8 @@ Access and permissions are controlled using the role attribute (user | instructo
 | validate() | Ensures rating is between 1–5 |
 | getByCenter() | Returns reviews for a center |
 
----
 
-# 3. Entity Relationship Diagram (ERD)
+### 3. Entity Relationship Diagram (ERD)
 
 ```mermaid
 erDiagram
@@ -554,11 +560,10 @@ trips ||--o{ bookings : has
 bookings ||--|| payments : has
 ```
 
----
 
-# 4. Database Schema
+### 4. Database Schema
 
-## 4.1 Users Table
+#### 4.1 Users Table
 
 | Column | Type | Constraints | Description |
 |----------|----------|----------|----------|
@@ -569,7 +574,7 @@ bookings ||--|| payments : has
 | role | VARCHAR(20) | DEFAULT 'user' | user, instructor, admin |
 | created_at | TIMESTAMP | DEFAULT NOW() | Creation timestamp |
 
-## 4.2 Diving Centers Table
+#### 4.2 Diving Centers Table
 
 | Column | Type | Constraints | Description |
 |----------|----------|----------|----------|
@@ -585,7 +590,7 @@ bookings ||--|| payments : has
 | owner_id | INT | FK → users.id | Center owner |
 | created_at | TIMESTAMP | DEFAULT NOW() | Creation timestamp |
 
-## 4.3 Trips Table
+#### 4.3 Trips Table
 
 | Column | Type | Constraints | Description |
 |----------|----------|----------|----------|
@@ -600,7 +605,7 @@ bookings ||--|| payments : has
 | max_capacity | INT | CHECK > 0 |
 | schedule_date | DATE | INDEX, NOT NULL |
 
-## 4.4 Courses Table
+#### 4.4 Courses Table
 
 | Column | Type | Constraints | Description |
 |----------|----------|----------|----------|
@@ -613,7 +618,7 @@ bookings ||--|| payments : has
 | price | DECIMAL(10,2) | CHECK > 0 |
 | start_date | DATE | INDEX, NOT NULL |
 
-## 4.5 Bookings Table
+#### 4.5 Bookings Table
 
 | Column | Type | Constraints | Description |
 |----------|----------|----------|----------|
@@ -626,7 +631,7 @@ bookings ||--|| payments : has
 | payment_intent_id | VARCHAR(255) | NULLABLE |
 | created_at | TIMESTAMP | DEFAULT NOW() |
 
-## 4.6 Payments Table
+#### 4.6 Payments Table
 
 | Column | Type | Constraints | Description |
 |----------|----------|----------|----------|
@@ -638,7 +643,7 @@ bookings ||--|| payments : has
 | stripe_payment_id | VARCHAR(255) | UNIQUE |
 | created_at | TIMESTAMP | DEFAULT NOW() |
 
-## 4.7 Reviews Table
+#### 4.7 Reviews Table
 
 | Column | Type | Constraints | Description |
 |----------|----------|----------|----------|
@@ -656,9 +661,8 @@ bookings ||--|| payments : has
 UNIQUE (user_id, trip_id)
 ```
 
----
 
-# 5. Frontend Component Structure
+### 5. Frontend Component Structure
 
 | Component | Route / Page | Responsibility |
 |------------|------------|------------|
@@ -678,9 +682,8 @@ UNIQUE (user_id, trip_id)
 | AdminPanel | /admin | Manage centers, trips, courses |
 | ProtectedRoute | Wrapper | Authentication guard |
 
----
 
-# 6. Technical Justifications
+### 6. Technical Justifications
 
 | Design Decision | Justification |
 |----------------|---------------|
@@ -695,19 +698,16 @@ UNIQUE (user_id, trip_id)
 | Stripe IDs | Supports secure payment processing and refunds. |
 | Separate Trip and Course tables | Improves clarity, maintainability, and future extensibility. |
 
+---
 
+## 4. Sequence Diagrams
 
-# Task 3
-
-# 3. Create High-Level Sequence Diagrams
-
-## Critical Use Cases
+### Critical Use Cases
 
 The following sequence diagrams show the main interactions between the user, front-end, back-end, and database for key MVP features in Oyster.
 
----
 
-## Use Case 1: User Login
+### Use Case 1: User Login
 
 ```mermaid
 sequenceDiagram
@@ -724,9 +724,8 @@ sequenceDiagram
     Frontend-->>User: Display login success or error message
 ```
 
----
 
-## Use Case 2: Browse Diving Centers by City
+### Use Case 2: Browse Diving Centers by City
 
 ```mermaid
 sequenceDiagram
@@ -743,9 +742,8 @@ sequenceDiagram
     Frontend-->>User: Display diving centers
 ```
 
----
 
-## Use Case 3: Submit Booking Request
+### Use Case 3: Submit Booking Request
 
 ```mermaid
 sequenceDiagram
@@ -769,26 +767,14 @@ sequenceDiagram
     Backend-->>Frontend: Booking confirmed
     Frontend-->>User: Display confirmation
 ```
-# Stage 3: Technical Documentation — Oyster 🌊
-
-> Diving platform connecting divers and tourists with diving centers across Saudi Arabia.
 
 ---
 
-## Table of Contents
-
-- [Task 1: System Architecture](#task-1-system-architecture)
-- [Task 5: SCM and QA Strategies](#task-5-scm-and-qa-strategies)
+## 5. API Specifications
 
 ---
 
-
-
-# Task 4 – Document External and Internal APIs
-
----
-
-# 1. External APIs
+### 1. External APIs
 
 The Oyster platform relies on several third-party services to provide additional functionality and reduce infrastructure complexity.
 
@@ -798,17 +784,15 @@ The Oyster platform relies on several third-party services to provide additional
 | Calendly API | Schedule diving sessions and appointments | Simplifies booking and scheduling processes by allowing users to select available time slots without building a custom scheduling system |
 | Moyasar Payment API | Process secure online payments | Supports local Saudi payment methods such as mada and Apple Pay |
 
----
 
-# 2. Internal REST APIs
+### 2. Internal REST APIs
 
 The backend exposes RESTful API endpoints that allow the frontend to communicate with the server using JSON.
 
----
 
-## Authentication APIs
+#### Authentication APIs
 
-### Register User
+##### Register User
 
 | Property | Value |
 |----------|--------|
@@ -817,7 +801,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | JSON |
 | Output Format | JSON |
 
-### Request
+###### Request
 
 ```json
 {
@@ -827,7 +811,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-### Response
+###### Response
 
 ```json
 {
@@ -835,9 +819,8 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
----
 
-### Login User
+##### Login User
 
 | Property | Value |
 |----------|--------|
@@ -846,7 +829,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | JSON |
 | Output Format | JSON |
 
-### Request
+###### Request
 
 ```json
 {
@@ -855,7 +838,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-### Response
+###### Response
 
 ```json
 {
@@ -863,15 +846,14 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
----
 
-## Diving Centers APIs
+#### Diving Centers APIs
 
 | Route | Page | Responsibility |
 |---------|------|---------------|
 | `/dashboard` | Center Dashboard | Allows diving center owners to manage bookings, trips, courses, and center information. |
 
-### Get All Diving Centers
+##### Get All Diving Centers
 
 | Property | Value |
 |----------|--------|
@@ -880,7 +862,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | None |
 | Output Format | JSON |
 
-### Response
+###### Response
 
 ```json
 [
@@ -892,9 +874,8 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 ]
 ```
 
----
 
-### Get Diving Center Details
+##### Get Diving Center Details
 
 | Property | Value |
 |----------|--------|
@@ -903,9 +884,8 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
----
 
-### Search Centers by City
+##### Search Centers by City
 
 | Property | Value |
 |----------|--------|
@@ -914,11 +894,10 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | Query Parameter |
 | Output Format | JSON |
 
----
 
-## Trips APIs
+#### Trips APIs
 
-### Get Trips for a Diving Center
+##### Get Trips for a Diving Center
 
 | Property | Value |
 |----------|--------|
@@ -927,11 +906,10 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
----
 
-## Courses APIs
+#### Courses APIs
 
-### Get Courses for a Diving Center
+##### Get Courses for a Diving Center
 
 | Property | Value |
 |----------|--------|
@@ -940,11 +918,10 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
----
 
-## Booking APIs
+#### Booking APIs
 
-### Create Booking
+##### Create Booking
 
 | Property | Value |
 |----------|--------|
@@ -953,7 +930,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | JSON |
 | Output Format | JSON |
 
-### Request
+###### Request
 
 ```json
 {
@@ -962,7 +939,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-### Response
+###### Response
 
 ```json
 {
@@ -970,9 +947,8 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
----
 
-### Get User Bookings
+##### Get User Bookings
 
 | Property | Value |
 |----------|--------|
@@ -981,9 +957,8 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
----
 
-### Cancel Booking
+##### Cancel Booking
 
 | Property | Value |
 |----------|--------|
@@ -992,11 +967,10 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
----
 
-## Payment APIs
+#### Payment APIs
 
-### Process Payment
+##### Process Payment
 
 | Property | Value |
 |----------|--------|
@@ -1005,7 +979,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | JSON |
 | Output Format | JSON |
 
-### Request
+###### Request
 
 ```json
 {
@@ -1014,7 +988,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-### Response
+###### Response
 
 ```json
 {
@@ -1022,11 +996,10 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
----
 
-## Reviews APIs
+#### Reviews APIs
 
-### Add Review
+##### Add Review
 
 | Property | Value |
 |----------|--------|
@@ -1035,7 +1008,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | JSON |
 | Output Format | JSON |
 
-### Request
+###### Request
 
 ```json
 {
@@ -1045,7 +1018,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-### Response
+###### Response
 
 ```json
 {
@@ -1053,9 +1026,8 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
----
 
-### Get Reviews for a Diving Center
+##### Get Reviews for a Diving Center
 
 | Property | Value |
 |----------|--------|
@@ -1064,15 +1036,14 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
----
 
-## Admin APIs
+#### Admin APIs
 
 | Route | Page | Responsibility |
 |---------|------|---------------|
 | `/admin` | Admin Dashboard | Allows administrators to manage users, diving centers, and overall platform content. |
 
-### Add Diving Center
+##### Add Diving Center
 
 | Property | Value |
 |----------|--------|
@@ -1081,9 +1052,8 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | JSON |
 | Output Format | JSON |
 
----
 
-### Update Diving Center
+##### Update Diving Center
 
 | Property | Value |
 |----------|--------|
@@ -1092,9 +1062,8 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | JSON |
 | Output Format | JSON |
 
----
 
-### Delete Diving Center
+##### Delete Diving Center
 
 | Property | Value |
 |----------|--------|
@@ -1105,22 +1074,9 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ---
 
-# Technical Justifications
-
-| Technology | Justification |
-|------------|---------------|
-| REST API | Simple, scalable, and widely adopted architecture |
-| JSON Format | Lightweight and easy for frontend and backend communication |
-| JWT Authentication | Secure stateless authentication mechanism |
-| Moyasar API | Supports secure online payments and local Saudi payment methods |
-| Cloudinary | Efficient cloud image hosting and optimization |
-| Calendly API | Provides an easy scheduling solution and avoids building a custom booking system |
-
 ---
 
-*Stage 3 – Technical Documentation | Oyster Platform | Solaf ALessa*
-
-## Task 5: SCM and QA Strategies
+## 6. SCM and QA Plans
 
 ### Source Control Management (SCM) Strategy
 
@@ -1152,7 +1108,6 @@ The team uses **Git** and **GitHub** to manage code changes and collaboration ac
 - New endpoints are documented
 - No conflicts with existing database schema
 
----
 
 ### Quality Assurance (QA) Strategy
 
@@ -1192,11 +1147,20 @@ The team uses **Git** and **GitHub** to manage code changes and collaboration ac
 
 ---
 
-<p align="center">
-<sub>Stage 3 — Technical Documentation · Oyster Platform · Holberton School SAU-0825 · 2026</sub><br>
-<sub>Author: Ebtihal Alomari</sub>
-</p>
+---
 
+## 7. Technical Justifications
 
+Each team member justified the technical decisions for their own task above (see Section 2 for architecture justifications, Section 3 for database design justifications, and Section 5 for API integration justifications). The combined rationale reflects the team's shared priorities: using a relational database (PostgreSQL) for data integrity, JavaScript across the stack (React.js + Node.js) to reduce context-switching for a 4-person student team, and third-party services (Moyasar, Cloudinary, Calendly) to avoid building infrastructure that is outside the project's learning scope.
 
+---
 
+## Authors
+
+| Task | Contributor | Profile |
+|---|---|---|
+| User Stories and Mockups | Lara Alzannan | [@laradreamer79](https://github.com/laradreamer79) |
+| System Architecture · SCM and QA Plans | Ebtihal Alomari | [@bakosh2](https://github.com/bakosh2) |
+| Components, Classes, and Database Design | Maryam Alessa | [@maryam13188](https://github.com/maryam13188) |
+| Sequence Diagrams | Lara Alzannan | [@laradreamer79](https://github.com/laradreamer79) |
+| API Specifications | Solaf Alessa | [@lilsouy](https://github.com/lilsouy) |
