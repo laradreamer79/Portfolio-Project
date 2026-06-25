@@ -80,43 +80,20 @@ The architecture follows a standard **3-tier web application** model — Fronten
 
 ```mermaid
 flowchart TB
-    subgraph Roles[" User Roles "]
-        direction LR
-        U1["Diver / Tourist"]
-        U2["Diving Center"]
-        U3["Admin"]
-    end
+    actor1[Diver / Tourist]
+    actor2[Diving Center]
+    actor3[Admin]
+    Frontend[Frontend: React.js]
+    Backend[Backend: Node.js / Express]
+    Database[(PostgreSQL)]
+    External[External Services: Moyasar, Cloudinary]
 
-    Roles --> FE
-
-    subgraph FE[" Frontend - React.js "]
-        direction LR
-        F1["Browse / Booking / Payment"]
-        F2["Reviews / Dashboards"]
-    end
-
-    FE -- "REST API JSON" --> BE
-
-    subgraph BE[" Backend - Node.js / Express "]
-        direction LR
-        B1["Auth JWT / Centers / Trips"]
-        B2["Bookings / Payments / Admin"]
-    end
-
-    BE -- "PostgreSQL Queries" --> DB
-    BE -- "API Calls" --> EXT
-
-    subgraph DB[" PostgreSQL "]
-        direction LR
-        D1["users / diving_centers"]
-        D2["trips / bookings / reviews"]
-    end
-
-    subgraph EXT[" External Services "]
-        direction TB
-        E1["Payment Gateway - Moyasar"]
-        E2["Cloudinary - Image Storage"]
-    end
+    actor1 --> Frontend
+    actor2 --> Frontend
+    actor3 --> Frontend
+    Frontend -->|REST API| Backend
+    Backend -->|SQL queries| Database
+    Backend -->|API calls| External
 ```
 
 ---
