@@ -83,17 +83,30 @@ flowchart TB
     actor1[Diver / Tourist]
     actor2[Diving Center]
     actor3[Admin]
-    Frontend[Frontend: React.js]
-    Backend[Backend: Node.js / Express]
-    Database[(PostgreSQL)]
-    External[External Services: Moyasar, Cloudinary]
+    F1[Frontend - React.js: Browse, Booking, Payment]
+    F2[Frontend - React.js: Reviews, Dashboards]
+    B1[Backend - Node.js/Express: Auth JWT, Centers, Trips]
+    B2[Backend - Node.js/Express: Bookings, Payments, Admin]
+    D1[(PostgreSQL: users, diving_centers)]
+    D2[(PostgreSQL: trips, bookings, reviews)]
+    E1[Payment Gateway: Moyasar]
+    E2[Cloudinary: Image Storage]
 
-    actor1 --> Frontend
-    actor2 --> Frontend
-    actor3 --> Frontend
-    Frontend -->|REST API| Backend
-    Backend -->|SQL queries| Database
-    Backend -->|API calls| External
+    actor1 --> F1
+    actor1 --> F2
+    actor2 --> F1
+    actor2 --> F2
+    actor3 --> F1
+    actor3 --> F2
+
+    F1 -->|REST API| B1
+    F2 -->|REST API| B2
+
+    B1 -->|SQL queries| D1
+    B2 -->|SQL queries| D2
+
+    B1 -->|API calls| E1
+    B2 -->|API calls| E2
 ```
 
 ---
