@@ -4,17 +4,17 @@ Diving platform connecting divers and tourists with diving centers across Saudi 
 
 ## Table of Contents
 
-1. [User Stories and Mockups](#1-user-stories-and-mockups)
-2. [System Architecture](#2-system-architecture)
-3. [Components, Classes, and Database Design](#3-components-classes-and-database-design)
-4. [Sequence Diagrams](#4-sequence-diagrams)
-5. [API Specifications](#5-api-specifications)
-6. [SCM and QA Plans](#6-scm-and-qa-plans)
-7. [Technical Justifications](#7-technical-justifications)
+0. [User Stories and Mockups](#0-user-stories-and-mockups)
+1. [System Architecture](#1-system-architecture)
+2. [Components, Classes, and Database Design](#2-components-classes-and-database-design)
+3. [Sequence Diagrams](#3-sequence-diagrams)
+4. [API Specifications](#4-api-specifications)
+5. [SCM and QA Plans](#5-scm-and-qa-plans)
+6. [Technical Justifications](#6-technical-justifications)
 
 ---
 
-## 1. User Stories and Mockups
+## 0. User Stories and Mockups
 
 ### Must Have
 
@@ -81,7 +81,7 @@ These screens were designed to visualize the MVP features and demonstrate the ov
 
 ---
 
-## 2. System Architecture
+## 1. System Architecture
 
 ### Overview
 
@@ -214,7 +214,7 @@ Every technology in this architecture was chosen based on the team's functional 
 
 ---
 
-## 3. Components, Classes, and Database Design
+## 2. Components, Classes, and Database Design
 
 ---
 
@@ -700,7 +700,7 @@ UNIQUE (user_id, trip_id)
 
 ---
 
-## 4. Sequence Diagrams
+## 3. Sequence Diagrams
 
 ### Critical Use Cases
 
@@ -770,7 +770,7 @@ sequenceDiagram
 
 ---
 
-## 5. API Specifications
+## 4. API Specifications
 
 ---
 
@@ -1076,7 +1076,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ---
 
-## 6. SCM and QA Plans
+## 5. SCM and QA Plans
 
 ### Source Control Management (SCM) Strategy
 
@@ -1095,11 +1095,11 @@ The team uses **Git** and **GitHub** to manage code changes and collaboration ac
 
 | # | Step |
 |---|---|
-| 1 | Each team member creates a `feature/*` branch from `develop` for their assigned task. |
+| 1 | Each team member works individually on their own `feature/*` branch for their assigned task. |
 | 2 | Commits use clear, descriptive messages (e.g., `feat: add booking confirmation email`). |
-| 3 | A **Pull Request (PR)** is opened against `develop` once the feature is complete. |
-| 4 | At least **one other team member reviews** the PR before merging. |
-| 5 | After QA validation, `develop` is merged into `main` for deployment. |
+| 3 | Once a task is verified complete, it is merged into `develop`, where all team members' work is collected together. |
+| 4 | The combined work on `develop` is tested and validated as a whole. |
+| 5 | After testing and confirmation, the **Project Manager** merges `develop` into `main` for deployment. |
 
 #### Code Review Checklist
 
@@ -1139,19 +1139,19 @@ The team uses **Git** and **GitHub** to manage code changes and collaboration ac
 
 | # | Step |
 |---|---|
-| 1 | Developer pushes feature branch and opens a PR. |
-| 2 | Reviewer checks code quality and runs unit tests locally (`npm test`). |
+| 1 | Developer completes their task on their individual branch. |
+| 2 | Code quality is checked and unit tests are run locally (`npm test`). |
 | 3 | API endpoints are manually verified in Postman. |
-| 4 | Once approved, the PR is merged into `develop` and deployed to staging. |
-| 5 | After staging verification, `develop` is merged into `main` for production release. |
+| 4 | Once verified, the work is merged into `develop` and deployed to staging. |
+| 5 | After staging verification, the **Project Manager** merges `develop` into `main` for production release. |
 
 ---
 
 ---
 
-## 7. Technical Justifications
+## 6. Technical Justifications
 
-Each team member justified the technical decisions for their own task above (see Section 2 for architecture justifications, Section 3 for database design justifications, and Section 5 for API integration justifications). The combined rationale reflects the team's shared priorities: using a relational database (PostgreSQL) for data integrity, JavaScript across the stack (React.js + Node.js) to reduce context-switching for a 4-person student team, and third-party services (Moyasar, Cloudinary, Calendly) to avoid building infrastructure that is outside the project's learning scope.
+Each team member justified the technical decisions for their own task above (see Section 1 for architecture justifications, Section 2 for database design justifications, and Section 4 for API integration justifications). The combined rationale reflects the team's shared priorities: using a relational database (PostgreSQL) for data integrity, JavaScript across the stack (React.js + Node.js) to reduce context-switching for a 4-person student team, and third-party services (Moyasar, Cloudinary, Calendly) to avoid building infrastructure that is outside the project's learning scope.
 
 ---
 
@@ -1159,8 +1159,9 @@ Each team member justified the technical decisions for their own task above (see
 
 | Task | Contributor | Profile |
 |---|---|---|
-| User Stories and Mockups | Lara Alzannan | [@laradreamer79](https://github.com/laradreamer79) |
-| System Architecture · SCM and QA Plans | Ebtihal Alomari | [@bakosh2](https://github.com/bakosh2) |
-| Components, Classes, and Database Design | Maryam Alessa | [@maryam13188](https://github.com/maryam13188) |
-| Sequence Diagrams | Lara Alzannan | [@laradreamer79](https://github.com/laradreamer79) |
-| API Specifications | Solaf Alessa | [@lilsouy](https://github.com/lilsouy) |
+| 0. User Stories and Mockups | Lara Alzannan | [@laradreamer79](https://github.com/laradreamer79) |
+| 1. System Architecture | Ebtihal Alomari | [@bakosh2](https://github.com/bakosh2) |
+| 2. Components, Classes, and Database Design | Maryam Alessa | [@maryam13188](https://github.com/maryam13188) |
+| 3. Sequence Diagrams | Lara Alzannan | [@laradreamer79](https://github.com/laradreamer79) |
+| 4. API Specifications | Solaf Alessa | [@lilsouy](https://github.com/lilsouy) |
+| 5. SCM and QA Plans | Ebtihal Alomari | [@bakosh2](https://github.com/bakosh2) |
