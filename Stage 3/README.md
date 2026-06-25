@@ -1091,7 +1091,16 @@ The team uses **Git** and **GitHub** to manage code changes and collaboration ac
 
 ## 6. Technical Justifications
 
-Each team member justified the technical decisions for their own task above (see Section 1 for architecture justifications, Section 2 for database design justifications, and Section 4 for API integration justifications). The combined rationale reflects the team's shared priorities: using a relational database (PostgreSQL) for data integrity, JavaScript across the stack (React.js + Node.js) to reduce context-switching for a 4-person student team, and third-party services (Moyasar, Cloudinary, Calendly) to avoid building infrastructure that is outside the project's learning scope.
+The technical decisions throughout this document share a consistent set of priorities: data integrity, reduced complexity for a 4-person student team, and reliance on third-party services to avoid building infrastructure outside the project's learning scope.
+
+| Decision | Justification |
+|---|---|
+| **PostgreSQL** over MongoDB | The platform's core entities (users, diving centers, trips, bookings, reviews) are tightly interrelated. A relational database enforces these relationships through foreign key constraints, guaranteeing that a booking can never exist without a valid user or trip — a guarantee a document-oriented database does not provide by default. |
+| **React.js + Node.js/Express** across the stack | Using JavaScript for both frontend and backend reduces context-switching and learning overhead for the team, while still supporting component-based UI development and fast, lightweight REST API design. |
+| **JWT authentication** | Stateless authentication removes the need for server-side session management and supports role-based access for the platform's three user types: Diver, Diving Center, and Admin. |
+| **Third-party services** (Moyasar, Cloudinary, Calendly) | Payment processing, image hosting, and scheduling are handled by established providers rather than custom-built, reducing development time and avoiding infrastructure that falls outside the project's scope. |
+
+Each section above details the reasoning behind its own decisions in full: Section 1 covers the architecture and database choice, Section 2 covers the database schema design, and Section 4 covers the external API integrations.
 
 ---
 
