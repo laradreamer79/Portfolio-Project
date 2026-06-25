@@ -189,11 +189,11 @@ The team uses **Git** and **GitHub** to manage code changes and collaboration ac
 
 | # | Step |
 |---|---|
-| 1 | Each team member creates a `feature/*` branch from `develop` for their assigned task. |
+| 1 | Each team member works individually on their own `feature/*` branch for their assigned task. |
 | 2 | Commits use clear, descriptive messages (e.g., `feat: add booking confirmation email`). |
-| 3 | A **Pull Request (PR)** is opened against `develop` once the feature is complete. |
-| 4 | At least **one other team member reviews** the PR before merging. |
-| 5 | After QA validation, `develop` is merged into `main` for deployment. |
+| 3 | Once a task is verified complete, it is merged into `develop`, where all team members' work is collected together. |
+| 4 | The combined work on `develop` is tested and validated as a whole. |
+| 5 | After testing and confirmation, the **Project Manager** merges `develop` into `main` for deployment. |
 
 #### Code Review Checklist
 
@@ -234,11 +234,11 @@ The team uses **Git** and **GitHub** to manage code changes and collaboration ac
 
 | # | Step |
 |---|---|
-| 1 | Developer pushes feature branch and opens a PR. |
-| 2 | Reviewer checks code quality and runs unit tests locally (`npm test`). |
+| 1 | Developer completes their task on their individual branch. |
+| 2 | Code quality is checked and unit tests are run locally (`npm test`). |
 | 3 | API endpoints are manually verified in Postman. |
-| 4 | Once approved, the PR is merged into `develop` and deployed to staging. |
-| 5 | After staging verification, `develop` is merged into `main` for production release. |
+| 4 | Once verified, the work is merged into `develop` and deployed to staging. |
+| 5 | After staging verification, the **Project Manager** merges `develop` into `main` for production release. |
 
 ---
 
