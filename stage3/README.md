@@ -1086,19 +1086,18 @@ The team uses **Git** and **GitHub** to manage code changes and collaboration ac
 
 | Branch | Purpose |
 |---|---|
-| `main` | Stable, production-ready code only. Protected branch — no direct pushes. |
-| `develop` | Integration branch where completed features are merged before release. |
-| `feature/<name>` | Individual branches for new features (e.g., `feature/booking-form`). |
-| `fix/<name>` | Branches for bug fixes (e.g., `fix/login-validation`). |
+| `main` | Stable, production-ready code only. Updated only by the **Project Manager** after `develop` is tested and confirmed. |
+| `develop` | Integration branch where each member's verified task is collected, tested, and corrected before release. |
+| `<member-name>` | Each team member's dedicated personal branch, where all of their assigned tasks are completed (e.g., `ebtihal`, `lara`). |
 
 #### Workflow
 
 | # | Step |
 |---|---|
-| 1 | Each team member works individually on their own `feature/*` branch for their assigned task. |
+| 1 | Tasks are divided among the team, and each member works individually on their own dedicated branch. |
 | 2 | Commits use clear, descriptive messages (e.g., `feat: add booking confirmation email`). |
-| 3 | Once a task is verified complete, it is merged into `develop`, where all team members' work is collected together. |
-| 4 | The combined work on `develop` is tested and validated as a whole. |
+| 3 | Once a member's task is verified, it is collected and integrated into the `develop` branch. |
+| 4 | The combined work on `develop` is tested to confirm everything works together. |
 | 5 | After testing and confirmation, the **Project Manager** merges `develop` into `main` for deployment. |
 
 #### Code Review Checklist
