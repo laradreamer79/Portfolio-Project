@@ -64,6 +64,8 @@ These screens were designed to visualize the MVP features and demonstrate the ov
 
 ![User Interface Mockups](Images/mockup1.png)
 
+![User Interface Mockups 2](Images/mokup2.png)
+
 ---
 
 ## 1. System Architecture
