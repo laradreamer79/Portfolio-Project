@@ -63,7 +63,7 @@ The following mockups illustrate the main user journey of the Diving Trip Bookin
 
 These screens were designed to visualize the MVP features and demonstrate the overall user experience and navigation flow across the platform.
 
-
+![User Interface Mockups](stage%203/Imsges/mockup1.png)
 
 ## Task 1: System Architecture
 
