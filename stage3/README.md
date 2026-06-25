@@ -40,7 +40,7 @@
 
 3. **As a user, I want to receive in-app notifications about my booking status, so that I can track updates from within the platform.**
 
-4. 1. **As a user, I want a native mobile application for iOS and Android, so that I can access the platform without using a web browser.**
+4. **As a user, I want a native mobile application for iOS and Android, so that I can access the platform without using a web browser.**
 
 ---
 
