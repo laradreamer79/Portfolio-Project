@@ -187,13 +187,7 @@ The team uses **Git** and **GitHub** to manage code changes and collaboration ac
 
 #### Workflow
 
-| # | Step |
-|---|---|
-| 1 | Each team member works individually on their own `feature/*` branch for their assigned task. |
-| 2 | Commits use clear, descriptive messages (e.g., `feat: add booking confirmation email`). |
-| 3 | Once a task is verified complete, it is merged into `develop`, where all team members' work is collected together. |
-| 4 | The combined work on `develop` is tested and validated as a whole. |
-| 5 | After testing and confirmation, the **Project Manager** merges `develop` into `main` for deployment. |
+Tasks are divided among team members, and each member works individually on their own dedicated branch. Once a task is verified, it is collected and integrated into the `develop` branch, where the combined work is tested. After testing and confirmation, the **Project Manager** merges `develop` into `main`.
 
 #### Code Review Checklist
 
