@@ -181,9 +181,8 @@ The team uses **Git** and **GitHub** to manage code changes and collaboration ac
 | Branch | Purpose |
 |---|---|
 | `main` | Stable, production-ready code only. Updated only by the **Project Manager** after `develop` is tested and confirmed. |
-| `develop` | Integration branch where each member's verified task is collected and tested together before release. |
+| `develop` | Integration branch where each member's verified task is collected, tested, and corrected before release. |
 | `<member-name>` | Each team member works individually on their own dedicated personal branch for their assigned task (e.g., `ebtihal`, `lara`). |
-| `fix/<name>` | Branches for bug fixes (e.g., `fix/login-validation`). |
 
 #### Workflow
 
