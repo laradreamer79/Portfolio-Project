@@ -272,9 +272,9 @@ class Course {
 
 class Booking {
     id int
-    userId int?
+    userId int
     tripId int?
-    courseId int
+    courseId int?
     numberOfPeople int
     totalPrice decimal
     status string
