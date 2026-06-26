@@ -202,6 +202,19 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ---
 
+## About APIs
+
+### Get About Information
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/about` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+---
+
 ## Booking APIs
 
 ### Create Booking
@@ -271,7 +284,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/dashboard` |
+| URL | `/api/dashboard/center` |
 | Method | GET |
 | Input Format | JWT Token |
 | Output Format | JSON |
