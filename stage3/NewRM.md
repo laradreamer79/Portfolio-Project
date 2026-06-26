@@ -20,6 +20,19 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ---
 
+## Home APIs
+
+### Get Home Data
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/home` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+---
+
 ## Authentication APIs
 
 ### Register User
@@ -80,6 +93,10 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 ---
 
 ## Diving Centers APIs
+
+| Route | Page | Responsibility |
+|---------|------|---------------|
+| `/dashboard` | Center Dashboard | Allows diving center owners to manage bookings, trips, courses, and center information. |
 
 ### Get All Diving Centers
 
@@ -154,7 +171,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/trips/:centerId` |
+| URL | `/api/centers/:centerId/trips` |
 | Method | GET |
 | Input Format | URL Parameter |
 | Output Format | JSON |
@@ -178,7 +195,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/courses/:centerId` |
+| URL | `/api/centers/:centerId/courses` |
 | Method | GET |
 | Input Format | URL Parameter |
 | Output Format | JSON |
@@ -219,7 +236,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/bookings/:tripId` |
+| URL | `/api/bookings/:bookingId` |
 | Method | GET |
 | Input Format | URL Parameter |
 | Output Format | JSON |
@@ -335,16 +352,9 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ## Admin APIs
 
-### Get Admin Dashboard
-
-| Property | Value |
-|----------|--------|
-| URL | `/api/admin/dashboard` |
-| Method | GET |
-| Input Format | JWT Token |
-| Output Format | JSON |
-
----
+| Route | Page | Responsibility |
+|---------|------|---------------|
+| `/admin` | Admin Dashboard | Allows administrators to manage users, diving centers, and overall platform content. |
 
 ### Add Diving Center
 
