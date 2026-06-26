@@ -81,10 +81,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ## Diving Centers APIs
 
-| Route | Page | Responsibility |
-|---------|------|---------------|
-| `/dashboard` | Center Dashboard | Allows diving center owners to manage bookings, trips, courses, and center information. |
-
 ### Get All Diving Centers
 
 | Property | Value |
@@ -132,6 +128,28 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ## Trips APIs
 
+### Get All Trips
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/trips` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+---
+
+### Get Trip Details
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/trips/:id` |
+| Method | GET |
+| Input Format | URL Parameter |
+| Output Format | JSON |
+
+---
+
 ### Get Trips for a Diving Center
 
 | Property | Value |
@@ -144,6 +162,17 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 ---
 
 ## Courses APIs
+
+### Get All Courses
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/courses` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+---
 
 ### Get Courses for a Diving Center
 
@@ -186,6 +215,17 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ---
 
+### Get Booking Details
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/bookings/:tripId` |
+| Method | GET |
+| Input Format | URL Parameter |
+| Output Format | JSON |
+
+---
+
 ### Get User Bookings
 
 | Property | Value |
@@ -204,6 +244,19 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | URL | `/api/bookings/:id` |
 | Method | DELETE |
 | Input Format | URL Parameter |
+| Output Format | JSON |
+
+---
+
+## Dashboard APIs
+
+### Get Center Dashboard Data
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/dashboard` |
+| Method | GET |
+| Input Format | JWT Token |
 | Output Format | JSON |
 
 ---
@@ -282,9 +335,16 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ## Admin APIs
 
-| Route | Page | Responsibility |
-|---------|------|---------------|
-| `/admin` | Admin Dashboard | Allows administrators to manage users, diving centers, and overall platform content. |
+### Get Admin Dashboard
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/admin/dashboard` |
+| Method | GET |
+| Input Format | JWT Token |
+| Output Format | JSON |
+
+---
 
 ### Add Diving Center
 
