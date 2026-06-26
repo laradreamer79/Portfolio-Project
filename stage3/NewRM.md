@@ -370,6 +370,17 @@ The following routes are protected and require authentication.
 
 ## Admin APIs
 
+### Get Admin Dashboard
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/admin/dashboard` |
+| Method | GET |
+| Input Format | JWT Token |
+| Output Format | JSON |
+
+---
+
 ### Add Diving Center
 
 | Property | Value |
