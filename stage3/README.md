@@ -272,8 +272,8 @@ class Course {
 
 class Booking {
     id int
-    userId int
-    tripId int
+    userId int?
+    tripId int?
     courseId int
     numberOfPeople int
     totalPrice decimal
@@ -302,9 +302,9 @@ class Payment {
 class Review {
     id int
     userId int
-    centerId int
-    tripId int
-    courseId int
+    centerId int?
+    tripId int?
+    courseId int?
     rating int
     comment string
     createdAt datetime
@@ -313,23 +313,23 @@ class Review {
     +getByCenter() List~Review~
 }
 
-User "1" --> "0..*" Booking
-User "1" --> "0..*" Review
-User "1" --> "0..*" Trip : instructor
-User "1" --> "0..*" Course : instructor
-User "1" --> "0..*" DivingCenter : owner
+User "1" --> "0..*" Booking : makes
+User "1" --> "0..*" Review : writes
+User "1" --> "0..*" Trip : leads
+User "1" --> "0..*" Course : teaches
+User "1" --> "0..*" DivingCenter : owns
 
-DivingCenter "1" --> "0..*" Trip
-DivingCenter "1" --> "0..*" Course
-DivingCenter "1" --> "0..*" Review
+DivingCenter "1" --> "0..*" Trip : offers
+DivingCenter "1" --> "0..*" Course : offers
+DivingCenter "1" --> "0..*" Review : receives
 
-Trip "1" --> "0..*" Booking
-Course "1" --> "0..*" Booking
+Trip "1" --> "0..*" Booking : has
+Course "1" --> "0..*" Booking : has
 
-Trip "1" --> "0..*" Review
-Course "1" --> "0..*" Review
+Trip "1" --> "0..*" Review : receives
+Course "1" --> "0..*" Review : receives
 
-Booking "1" --> "0..1" Payment
+Booking "1" --> "0..1" Payment : has
 ```
 
 ---
