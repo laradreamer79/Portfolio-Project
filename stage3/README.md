@@ -548,7 +548,7 @@ reviews {
 
 users ||--o{ bookings : makes
 users ||--o{ reviews : writes
-users ||--o{ trips : instructs
+users ||--o{ trips : leads
 users ||--o{ courses : teaches
 users ||--o{ diving_centers : owns
 
