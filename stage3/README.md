@@ -19,40 +19,40 @@ Diving platform connecting divers and tourists with diving centers across Saudi 
 ### Must Have
 
 1. As a diver, I want to browse diving centers by city across Saudi Arabia, so that I can find diving centers near my preferred location.
-2. **As a diver, I want to view diving center details, including descriptions, approximate pricing, and contact information, so that I can compare different centers before booking.**
-3. **As a diver, I want to browse available diving trips and training courses, so that I can choose the experience that best suits me.**
-4. **As a user, I want to register and log in to my account, so that I can securely access my profile and manage my bookings.**
-5. **As a diver, I want to submit booking requests through the platform, so that I can reserve a diving trip online.**
-6. **As a diver, I want to receive real-time booking confirmation and view live availability, so that I know immediately whether my booking is confirmed.**
-7. **As a user, I want to complete online payment securely, so that I can confirm my booking.**
-8. **As an admin, I want to manage diving centers, trips, users, and platform content, so that the platform remains accurate and up to date.**
-9. **As a diving center, I want to manage my trips and booking requests through a dashboard, so that I can efficiently manage my services.**
+2. As a diver, I want to view diving center details, including descriptions, approximate pricing, and contact information, so that I can compare different centers before booking.
+3. As a diver, I want to browse available diving trips and training courses, so that I can choose the experience that best suits me.
+4. As a user, I want to register and log in to my account, so that I can securely access my profile and manage my bookings.
+5. As a diver, I want to submit booking requests through the platform, so that I can reserve a diving trip online.
+6. As a diver, I want to receive real-time booking confirmation and view live availability, so that I know immediately whether my booking is confirmed.
+7. As a user, I want to complete online payment securely, so that I can confirm my booking.**
+8. As an admin, I want to manage diving centers, trips, users, and platform content, so that the platform remains accurate and up to date.
+9. As a diving center, I want to manage my trips and booking requests through a dashboard, so that I can efficiently manage my services.
 
 ---
 
 ### Should Have
 
-1. **As a diver, I want to rate and review diving centers and diving experiences, so that I can help other users make informed decisions.**
-2. **As a user, I want the platform to be responsive on both desktop and mobile browsers, so that I can access it from any device.**
+1. As a diver, I want to rate and review diving centers and diving experiences, so that I can help other users make informed decisions.
+2. As a user, I want the platform to be responsive on both desktop and mobile browsers, so that I can access it from any device.
 
 ---
 
 ### Could Have
 
-1. **As a user, I want to receive a booking confirmation email, so that I have a record of my reservation and payment details.**
-2. **As a user, I want to receive SMS notifications about my booking status, so that I stay informed even when I am not using the platform.**
-3. **As a user, I want to receive in-app notifications about my booking status, so that I can track updates from within the platform.**
-4. **As a user, I want a native mobile application for iOS and Android, so that I can access the platform without using a web browser.**
+1. As a user, I want to receive a booking confirmation email, so that I have a record of my reservation and payment details.
+2. As a user, I want to receive SMS notifications about my booking status, so that I stay informed even when I am not using the platform.
+3. As a user, I want to receive in-app notifications about my booking status, so that I can track updates from within the platform.
+4. As a user, I want a native mobile application for iOS and Android, so that I can access the platform without using a web browser.
 
 ---
 
 ### Won't Have
 
-1. **As a diver, I want AI-based personalized diving recommendations, so that I can discover trips tailored to my interests.**
-2. **As a diver, I want the platform to integrate with external certification providers (e.g., PADI and SSI), so that my certifications can be verified automatically.**
-3. **As a diver, I want advanced map navigation with real-time geolocation tracking, so that I can easily navigate to diving centers.**
-4. **As a user, I want live chat support with diving centers, so that I can communicate directly before making a booking.**
-5. **As a user, I want the platform to support multiple languages beyond the initial launch language, so that I can use it in my preferred language.**
+1. As a diver, I want AI-based personalized diving recommendations, so that I can discover trips tailored to my interests.
+2. As a diver, I want the platform to integrate with external certification providers (e.g., PADI and SSI), so that my certifications can be verified automatically.
+3. As a diver, I want advanced map navigation with real-time geolocation tracking, so that I can easily navigate to diving centers.
+4. As a user, I want live chat support with diving centers, so that I can communicate directly before making a booking.
+5. As a user, I want the platform to support multiple languages beyond the initial launch language, so that I can use it in my preferred language.
 
 ---
 
@@ -193,7 +193,7 @@ Every technology in this architecture was chosen based on the team's functional 
 ---
 
 
-## 2 – Components, Classes, and Database Design
+## 2. Components, Classes, and Database Design
 
 
 ### 1. Class Diagram (UML)
@@ -699,7 +699,7 @@ UNIQUE (user_id, course_id)
 Prevents duplicate reviews for the same course.
 
 ---
-## 5. Frontend Component Structure
+### 5. Frontend Component Structure
 
 | Component | Route / Page | Responsibility |
 |------------|------------|------------|
@@ -722,7 +722,7 @@ Prevents duplicate reviews for the same course.
 
 ---
 
-## 6. Technical Justifications
+### 6. Technical Justifications
 
 | Design Decision | Justification |
 |----------------|---------------|
