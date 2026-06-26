@@ -18,7 +18,7 @@ Diving platform connecting divers and tourists with diving centers across Saudi 
 
 ### Must Have
 
-1. **As a diver, I want to browse diving centers by city across Saudi Arabia, so that I can find diving centers near my preferred location.**
+1. As a diver, I want to browse diving centers by city across Saudi Arabia, so that I can find diving centers near my preferred location.
 2. **As a diver, I want to view diving center details, including descriptions, approximate pricing, and contact information, so that I can compare different centers before booking.**
 3. **As a diver, I want to browse available diving trips and training courses, so that I can choose the experience that best suits me.**
 4. **As a user, I want to register and log in to my account, so that I can securely access my profile and manage my bookings.**
