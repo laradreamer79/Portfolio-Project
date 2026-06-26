@@ -1,3 +1,4 @@
+,,, meramaid
 classDiagram
 
 class User {
@@ -126,3 +127,4 @@ Trip "1" --> "0..*" Review : receives
 Course "1" --> "0..*" Review : receives
 
 Booking "1" --> "0..1" Payment : has
+,,,
