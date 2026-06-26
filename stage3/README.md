@@ -193,13 +193,10 @@ Every technology in this architecture was chosen based on the team's functional 
 ---
 
 
-# Task 2 – Components, Classes, and Database Design
+## 2 – Components, Classes, and Database Design
 
-# Oyster: Diving Platform for Saudi Arabia
 
----
-
-# 1. Class Diagram (UML)
+### 1. Class Diagram (UML)
 
 ```mermaid
 classDiagram
@@ -334,9 +331,9 @@ Booking "1" --> "0..1" Payment : has
 
 ---
 
-# 2. Backend Class Definitions
+### 2. Backend Class Definitions
 
-## 2.1 User
+#### 2.1 User
 
 The User class represents all system actors including regular users, instructors (diving trainers), center owners, and administrators.
 
@@ -360,7 +357,7 @@ Access and permissions are controlled using the role attribute:
 | updateProfile() | Updates user info |
 | findById() | Retrieves user by ID |
 
-## 2.2 DivingCenter
+#### 2.2 DivingCenter
 
 | Attribute / Method | Description |
 |----------|----------|
@@ -383,7 +380,7 @@ Access and permissions are controlled using the role attribute:
 | addReview() | Adds review |
 | findByCity() | Search by city |
 
-## 2.3 Trip
+#### 2.3 Trip
 
 | Attribute / Method | Description |
 |----------|----------|
@@ -401,7 +398,7 @@ Access and permissions are controlled using the role attribute:
 | getBookings() | Returns bookings |
 | getUpcoming() | Upcoming trips |
 
-## 2.4 Course
+#### 2.4 Course
 
 | Attribute / Method | Description |
 |----------|----------|
@@ -415,7 +412,7 @@ Access and permissions are controlled using the role attribute:
 | startDate : date | Start date |
 | getUpcoming() | Upcoming courses |
 
-## 2.5 Booking
+#### 2.5 Booking
 
 | Attribute / Method | Description |
 |----------|----------|
@@ -432,7 +429,7 @@ Access and permissions are controlled using the role attribute:
 | cancel() | Cancel booking |
 | findByUser() | User bookings |
 
-## 2.6 Payment
+#### 2.6 Payment
 
 | Attribute / Method | Description |
 |----------|----------|
@@ -446,7 +443,7 @@ Access and permissions are controlled using the role attribute:
 | processPayment() | Process payment |
 | refund() | Refund payment |
 
-## 2.7 Review
+#### 2.7 Review
 
 | Attribute / Method | Description |
 |----------|----------|
@@ -461,7 +458,7 @@ Access and permissions are controlled using the role attribute:
 | validate() | Rating validation |
 | getByCenter() | Reviews by center |
 
-# 3. Entity Relationship Diagram (ERD)
+### 3. Entity Relationship Diagram (ERD)
 
 ```mermaid
 erDiagram
@@ -567,9 +564,9 @@ bookings ||--o| payments : has
 
 ---
 
-# 4. Database Schema
+### 4. Database Schema
 
-## 4.1 Users Table
+#### 4.1 Users Table
 
 | Column | Type | Constraints | Description |
 |----------|----------|----------|----------|
@@ -582,7 +579,7 @@ bookings ||--o| payments : has
 
 ---
 
-## 4.2 Diving Centers Table
+#### 4.2 Diving Centers Table
 
 | Column | Type | Constraints | Description |
 |----------|----------|----------|----------|
@@ -600,7 +597,7 @@ bookings ||--o| payments : has
 
 ---
 
-## 4.3 Trips Table
+#### 4.3 Trips Table
 
 | Column | Type | Constraints | Description |
 |----------|----------|----------|----------|
@@ -617,7 +614,7 @@ bookings ||--o| payments : has
 
 ---
 
-## 4.4 Courses Table
+#### 4.4 Courses Table
 
 | Column | Type | Constraints | Description |
 |----------|----------|----------|----------|
@@ -632,7 +629,7 @@ bookings ||--o| payments : has
 
 ---
 
-## 4.5 Bookings Table
+#### 4.5 Bookings Table
 
 | Column | Type | Constraints | Description |
 |----------|----------|----------|----------|
@@ -660,7 +657,7 @@ Ensures a booking belongs to either a trip or a course, but not both.
 
 ---
 
-## 4.6 Payments Table
+#### 4.6 Payments Table
 
 | Column | Type | Constraints | Description |
 |----------|----------|----------|----------|
@@ -674,7 +671,7 @@ Ensures a booking belongs to either a trip or a course, but not both.
 
 ---
 
-## 4.7 Reviews Table
+#### 4.7 Reviews Table
 
 | Column | Type | Constraints | Description |
 |----------|----------|----------|----------|
@@ -702,7 +699,7 @@ UNIQUE (user_id, course_id)
 Prevents duplicate reviews for the same course.
 
 ---
-# 5. Frontend Component Structure
+## 5. Frontend Component Structure
 
 | Component | Route / Page | Responsibility |
 |------------|------------|------------|
@@ -725,7 +722,7 @@ Prevents duplicate reviews for the same course.
 
 ---
 
-# 6. Technical Justifications
+## 6. Technical Justifications
 
 | Design Decision | Justification |
 |----------------|---------------|
