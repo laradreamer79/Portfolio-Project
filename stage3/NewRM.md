@@ -90,13 +90,18 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
+## Dashboard Routes
+
+The following routes are protected and require authentication.
+
+| Route | Page | Description |
+|--------|------|-------------|
+| `/dashboard` | Center Dashboard | Dashboard for diving center owners to manage bookings, trips, courses, and center information. |
+| `/admin` | Admin Dashboard | Dashboard for administrators to manage users, diving centers, and platform content. |
+
 ---
 
 ## Diving Centers APIs
-
-| Route | Page | Responsibility |
-|---------|------|---------------|
-| `/dashboard` | Center Dashboard | Allows diving center owners to manage bookings, trips, courses, and center information. |
 
 ### Get All Diving Centers
 
@@ -364,10 +369,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 ---
 
 ## Admin APIs
-
-| Route | Page | Responsibility |
-|---------|------|---------------|
-| `/admin` | Admin Dashboard | Allows administrators to manage users, diving centers, and overall platform content. |
 
 ### Add Diving Center
 
