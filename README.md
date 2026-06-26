@@ -95,3 +95,58 @@ By completing this stage, the team established a clear project framework and pre
 - Maryam Alessa
 - Solaf Alessa
 - Ebtihal Alomari
+
+
+
+
+
+## Stage 3 – Technical Documentation
+
+During Stage 3, the team focused on translating the project requirements into a detailed technical plan for the Oyster platform. This stage served as the blueprint for the MVP by defining the system architecture, database design, API specifications, development workflow, and testing strategy before implementation.
+
+The team documented the technical structure of the platform, including user stories, UI mockups, architecture diagrams, database models, sequence diagrams, RESTful APIs, source control strategy, and quality assurance plan. These documents ensure that all team members share a common understanding of the system and provide a clear roadmap for the development phase.
+
+### Main Deliverables
+
+- Prioritized User Stories using the MoSCoW method.
+- UI mockups illustrating the platform's main screens and user journey.
+- High-level System Architecture.
+- Components, UML Class Diagram, ER Diagram, and Database Schema.
+- Sequence Diagrams for the platform's key user interactions.
+- External and Internal API Specifications.
+- Source Control Management (SCM) strategy.
+- Quality Assurance (QA) strategy.
+- Technical Justifications for the selected technologies and architectural decisions.
+
+### Key Features Planned
+
+- Browse diving centers by city.
+- View diving center details.
+- Browse diving trips and training courses.
+- User registration and authentication.
+- Online booking requests.
+- Secure online payment.
+- Ratings and reviews.
+- Dashboard for diving centers.
+- Admin dashboard for platform management.
+
+### Technologies
+
+- React.js
+- Node.js + Express
+- PostgreSQL
+- JWT Authentication
+- Cloudinary
+- Calendly
+- Moyasar Payment API
+
+### Outcomes
+
+By completing this stage, the team established a complete technical foundation for Oyster before starting development. The documentation provides a clear implementation roadmap, reduces development risks, improves collaboration among team members, and ensures consistency throughout the MVP development process.
+
+### Team Members
+
+- Lara Mubarak Alzannan
+- Maryam Alessa
+- Solaf Alessa
+- Ebtihal Alomari
