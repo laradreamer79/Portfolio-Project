@@ -722,6 +722,26 @@ Prevents duplicate reviews for the same course.
 
 ---
 
+### 6. Technical Justifications
+
+| Design Decision | Justification |
+|----------------|---------------|
+| PostgreSQL | Provides strong relational integrity and supports complex queries, joins, and constraints |
+| ENUM role | Restricts user roles to predefined values |
+| Index on city, schedule_date, start_date | Speeds up searches and upcoming listings |
+| ON DELETE CASCADE | Automatically removes dependent records |
+| ON DELETE SET NULL | Preserves reviews when trips/courses are deleted |
+| CHECK Booking Constraint | Ensures booking belongs to either a trip or a course |
+| UNIQUE (user_id, trip_id) | Prevents duplicate trip reviews |
+| UNIQUE (user_id, course_id) | Prevents duplicate course reviews |
+| One-to-zero-or-one Booking–Payment | Booking may exist before payment |
+| Stripe IDs | Supports secure payment processing and refunds |
+| Separate Trip and Course tables | Improves scalability and maintainability |
+| Instructor Assignment | Allows instructors to manage trips and courses |
+| Owner Relationship | Links diving centers to their owners clearly |
+
+---
+
 ## 3. Sequence Diagrams
 
 ### Critical Use Cases
@@ -1145,21 +1165,16 @@ The team uses **Git** and **GitHub** to manage code changes and collaboration ac
 
 ## 6. Technical Justifications
 
-| Design Decision | Justification |
-|----------------|---------------|
-| PostgreSQL | Provides strong relational integrity and supports complex queries, joins, and constraints |
-| ENUM role | Restricts user roles to predefined values |
-| Index on city, schedule_date, start_date | Speeds up searches and upcoming listings |
-| ON DELETE CASCADE | Automatically removes dependent records |
-| ON DELETE SET NULL | Preserves reviews when trips/courses are deleted |
-| CHECK Booking Constraint | Ensures booking belongs to either a trip or a course |
-| UNIQUE (user_id, trip_id) | Prevents duplicate trip reviews |
-| UNIQUE (user_id, course_id) | Prevents duplicate course reviews |
-| One-to-zero-or-one Booking–Payment | Booking may exist before payment |
-| Stripe IDs | Supports secure payment processing and refunds |
-| Separate Trip and Course tables | Improves scalability and maintainability |
-| Instructor Assignment | Allows instructors to manage trips and courses |
-| Owner Relationship | Links diving centers to their owners clearly |
+The technical decisions throughout this document share a consistent set of priorities: data integrity, reduced complexity for a 4-person student team, and reliance on third-party services to avoid building infrastructure outside the project's learning scope.
+
+| Decision | Justification |
+|---|---|
+| **PostgreSQL** over MongoDB | The platform's core entities (users, diving centers, trips, bookings, reviews) are tightly interrelated. A relational database enforces these relationships through foreign key constraints, guaranteeing that a booking can never exist without a valid user or trip — a guarantee a document-oriented database does not provide by default. |
+| **React.js + Node.js/Express** across the stack | Using JavaScript for both frontend and backend reduces context-switching and learning overhead for the team, while still supporting component-based UI development and fast, lightweight REST API design. |
+| **JWT authentication** | Stateless authentication removes the need for server-side session management and supports role-based access for the platform's three user types: Diver, Diving Center, and Admin. |
+| **Third-party services** (Moyasar, Cloudinary, Calendly) | Payment processing, image hosting, and scheduling are handled by established providers rather than custom-built, reducing development time and avoiding infrastructure that falls outside the project's scope. |
+
+Each section above details the reasoning behind its own decisions in full: Section 1 covers the architecture and database choice, Section 2 covers the database schema design, and Section 4 covers the external API integrations.
 
 ---
 
