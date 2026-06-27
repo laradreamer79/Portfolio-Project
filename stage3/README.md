@@ -80,9 +80,11 @@ The architecture follows a standard **3-tier web application** model — Fronten
 
 ```mermaid
 flowchart TB
-    actor1[Diver / Tourist]
-    actor2[Diving Center]
-    actor3[Admin]
+    %% External users — not part of the system itself
+    actor1([Diver / Tourist])
+    actor2([Diving Center])
+    actor3([Admin])
+
     F1[Frontend - React.js: Browse, Booking, Payment]
     F2[Frontend - React.js: Reviews, Dashboards]
     B1[Backend - Node.js/Express: Auth JWT, Centers, Trips]
@@ -92,12 +94,12 @@ flowchart TB
     E1[Payment Gateway: Moyasar]
     E2[Cloudinary: Image Storage]
 
-    actor1 --> F1
-    actor1 --> F2
-    actor2 --> F1
-    actor2 --> F2
-    actor3 --> F1
-    actor3 --> F2
+    actor1 -.->|uses| F1
+    actor1 -.->|uses| F2
+    actor2 -.->|uses| F1
+    actor2 -.->|uses| F2
+    actor3 -.->|uses| F1
+    actor3 -.->|uses| F2
 
     F1 -->|REST API| B1
     F2 -->|REST API| B2
@@ -108,6 +110,8 @@ flowchart TB
     B1 -->|API calls| E1
     B2 -->|API calls| E2
 ```
+
+> **Note:** The rounded shapes (Diver/Tourist, Diving Center, Admin) represent external user roles who interact with the platform — they are not technical components of the system itself. Dotted arrows indicate "uses," while solid arrows represent internal system communication between components.
 
 ### Component Descriptions
 
