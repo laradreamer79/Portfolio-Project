@@ -95,12 +95,12 @@ flowchart TB
     E1[Payment Gateway: Moyasar]
     E2[Cloudinary: Image Storage]
 
-    actor1 -.->|uses| F1
-    actor1 -.->|uses| F2
-    actor2 -.->|uses| F1
-    actor2 -.->|uses| F2
-    actor3 -.->|uses| F1
-    actor3 -.->|uses| F2
+    actor1 -.-> F1
+    actor1 -.-> F2
+    actor2 -.-> F1
+    actor2 -.-> F2
+    actor3 -.-> F1
+    actor3 -.-> F2
 
     F1 -->|REST API| B1
     F2 -->|REST API| B2
