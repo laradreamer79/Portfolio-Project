@@ -80,10 +80,11 @@ The architecture follows a standard **3-tier web application** model — Fronten
 
 ```mermaid
 flowchart TB
-    %% External users — not part of the system itself
-    actor1([Diver / Tourist])
-    actor2([Diving Center])
-    actor3([Admin])
+    Roles[User Roles]
+
+    Roles --> actor1([Diver / Tourist])
+    Roles --> actor2([Diving Center])
+    Roles --> actor3([Admin])
 
     F1[Frontend - React.js: Browse, Booking, Payment]
     F2[Frontend - React.js: Reviews, Dashboards]
