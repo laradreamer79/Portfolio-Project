@@ -18,41 +18,41 @@ Diving platform connecting divers and tourists with diving centers across Saudi 
 
 ### Must Have
 
-1. **As a diver, I want to browse diving centers by city across Saudi Arabia, so that I can find diving centers near my preferred location.**
-2. **As a diver, I want to view diving center details, including descriptions, approximate pricing, and contact information, so that I can compare different centers before booking.**
-3. **As a diver, I want to browse available diving trips and training courses, so that I can choose the experience that best suits me.**
-4. **As a user, I want to register and log in to my account, so that I can securely access my profile and manage my bookings.**
-5. **As a diver, I want to submit booking requests through the platform, so that I can reserve a diving trip online.**
-6. **As a diver, I want to receive real-time booking confirmation and view live availability, so that I know immediately whether my booking is confirmed.**
-7. **As a user, I want to complete online payment securely, so that I can confirm my booking.**
-8. **As an admin, I want to manage diving centers, trips, users, and platform content, so that the platform remains accurate and up to date.**
-9. **As a diving center, I want to manage my trips and booking requests through a dashboard, so that I can efficiently manage my services.**
+1. As a diver, I want to browse diving centers by city across Saudi Arabia, so that I can find diving centers near my preferred location.
+2. As a diver, I want to view diving center details, including descriptions, approximate pricing, and contact information, so that I can compare different centers before booking.
+3. As a diver, I want to browse available diving trips and training courses, so that I can choose the experience that best suits me.
+4. As a user, I want to register and log in to my account, so that I can securely access my profile and manage my bookings.
+5. As a diver, I want to submit booking requests through the platform, so that I can reserve a diving trip online.
+6. As a diver, I want to receive real-time booking confirmation and view live availability, so that I know immediately whether my booking is confirmed.
+7. As a user, I want to complete online payment securely, so that I can confirm my booking.**
+8. As an admin, I want to manage diving centers, trips, users, and platform content, so that the platform remains accurate and up to date.
+9. As a diving center, I want to manage my trips and booking requests through a dashboard, so that I can efficiently manage my services.
 
 ---
 
 ### Should Have
 
-1. **As a diver, I want to rate and review diving centers and diving experiences, so that I can help other users make informed decisions.**
-2. **As a user, I want the platform to be responsive on both desktop and mobile browsers, so that I can access it from any device.**
+1. As a diver, I want to rate and review diving centers and diving experiences, so that I can help other users make informed decisions.
+2. As a user, I want the platform to be responsive on both desktop and mobile browsers, so that I can access it from any device.
 
 ---
 
 ### Could Have
 
-1. **As a user, I want to receive a booking confirmation email, so that I have a record of my reservation and payment details.**
-2. **As a user, I want to receive SMS notifications about my booking status, so that I stay informed even when I am not using the platform.**
-3. **As a user, I want to receive in-app notifications about my booking status, so that I can track updates from within the platform.**
-4. **As a user, I want a native mobile application for iOS and Android, so that I can access the platform without using a web browser.**
+1. As a user, I want to receive a booking confirmation email, so that I have a record of my reservation and payment details.
+2. As a user, I want to receive SMS notifications about my booking status, so that I stay informed even when I am not using the platform.
+3. As a user, I want to receive in-app notifications about my booking status, so that I can track updates from within the platform.
+4. As a user, I want a native mobile application for iOS and Android, so that I can access the platform without using a web browser.
 
 ---
 
 ### Won't Have
 
-1. **As a diver, I want AI-based personalized diving recommendations, so that I can discover trips tailored to my interests.**
-2. **As a diver, I want the platform to integrate with external certification providers (e.g., PADI and SSI), so that my certifications can be verified automatically.**
-3. **As a diver, I want advanced map navigation with real-time geolocation tracking, so that I can easily navigate to diving centers.**
-4. **As a user, I want live chat support with diving centers, so that I can communicate directly before making a booking.**
-5. **As a user, I want the platform to support multiple languages beyond the initial launch language, so that I can use it in my preferred language.**
+1. As a diver, I want AI-based personalized diving recommendations, so that I can discover trips tailored to my interests.
+2. As a diver, I want the platform to integrate with external certification providers (e.g., PADI and SSI), so that my certifications can be verified automatically.
+3. As a diver, I want advanced map navigation with real-time geolocation tracking, so that I can easily navigate to diving centers.
+4. As a user, I want live chat support with diving centers, so that I can communicate directly before making a booking.
+5. As a user, I want the platform to support multiple languages beyond the initial launch language, so that I can use it in my preferred language.
 
 ---
 
@@ -63,6 +63,8 @@ The following mockups illustrate the main user journey of the Diving Trip Bookin
 These screens were designed to visualize the MVP features and demonstrate the overall user experience and navigation flow across the platform.
 
 ![User Interface Mockups](Images/mockup1.png)
+
+![User Interface Mockups 2](Images/mokup2.png)
 
 ---
 
@@ -78,9 +80,12 @@ The architecture follows a standard **3-tier web application** model — Fronten
 
 ```mermaid
 flowchart TB
-    actor1[Diver / Tourist]
-    actor2[Diving Center]
-    actor3[Admin]
+    Roles[User Roles]
+
+    Roles --> actor1([Diver / Tourist])
+    Roles --> actor2([Diving Center])
+    Roles --> actor3([Admin])
+
     F1[Frontend - React.js: Browse, Booking, Payment]
     F2[Frontend - React.js: Reviews, Dashboards]
     B1[Backend - Node.js/Express: Auth JWT, Centers, Trips]
@@ -90,12 +95,12 @@ flowchart TB
     E1[Payment Gateway: Moyasar]
     E2[Cloudinary: Image Storage]
 
-    actor1 --> F1
-    actor1 --> F2
-    actor2 --> F1
-    actor2 --> F2
-    actor3 --> F1
-    actor3 --> F2
+    actor1 -.-> F1
+    actor1 -.-> F2
+    actor2 -.-> F1
+    actor2 -.-> F2
+    actor3 -.-> F1
+    actor3 -.-> F2
 
     F1 -->|REST API| B1
     F2 -->|REST API| B2
@@ -190,7 +195,9 @@ Every technology in this architecture was chosen based on the team's functional 
 
 ---
 
+
 ## 2. Components, Classes, and Database Design
+
 
 ### 1. Class Diagram (UML)
 
@@ -266,7 +273,8 @@ class Course {
 class Booking {
     id int
     userId int
-    tripId int
+    tripId int?
+    courseId int?
     numberOfPeople int
     totalPrice decimal
     status string
@@ -294,8 +302,9 @@ class Payment {
 class Review {
     id int
     userId int
-    centerId int
-    tripId int
+    centerId int?
+    tripId int?
+    courseId int?
     rating int
     comment string
     createdAt datetime
@@ -304,24 +313,39 @@ class Review {
     +getByCenter() List~Review~
 }
 
-User "1" --> "0..*" Booking
-User "1" --> "0..*" Review
-User "1" --> "0..*" Trip : instructor
-User "1" --> "0..*" Course : instructor
+User "1" --> "0..*" Booking : makes
+User "1" --> "0..*" Review : writes
+User "1" --> "0..*" Trip : leads
+User "1" --> "0..*" Course : teaches
+User "1" --> "0..*" DivingCenter : owns
 
-DivingCenter "1" --> "0..*" Trip
-DivingCenter "1" --> "0..*" Course
-DivingCenter "1" --> "0..*" Review
+DivingCenter "1" --> "0..*" Trip : offers
+DivingCenter "1" --> "0..*" Course : offers
+DivingCenter "1" --> "0..*" Review : receives
 
-Trip "1" --> "0..*" Booking
-Booking "1" --> "1" Payment
+Trip "1" --> "0..*" Booking : has
+Course "1" --> "0..*" Booking : has
+
+Trip "1" --> "0..*" Review : receives
+Course "1" --> "0..*" Review : receives
+
+Booking "1" --> "0..1" Payment : has
 ```
+
+---
 
 ### 2. Backend Class Definitions
 
 #### 2.1 User
-The User class represents all system actors including regular users, instructors (diving trainers), and administrators.
-Access and permissions are controlled using the role attribute (user | instructor | admin).
+
+The User class represents all system actors including regular users, instructors (diving trainers), center owners, and administrators.
+
+Access and permissions are controlled using the role attribute:
+
+- user
+- instructor
+- center_owner
+- admin
 
 | Attribute / Method | Description |
 |----------|----------|
@@ -329,7 +353,7 @@ Access and permissions are controlled using the role attribute (user | instructo
 | name : string | Full name |
 | email : string | Unique, indexed |
 | passwordHash : string | bcrypt hash |
-| role : string | user, instructor, or admin |
+| role : string | user, instructor, center_owner, admin |
 | createdAt : datetime | Timestamp |
 | register() | Creates new user account |
 | login() | Returns JWT token |
@@ -342,22 +366,22 @@ Access and permissions are controlled using the role attribute (user | instructo
 |----------|----------|
 | id : int | Primary key |
 | name : string | Center name |
-| city : string | Saudi city (indexed) |
-| address : string | Full address (optional) |
-| licenseNumber : string | Unique official license |
-| description : string | Overview (optional) |
-| priceRange : string | Approximate range (optional) |
-| contactEmail : string | Business email (optional) |
-| contactPhone : string | Phone number (optional) |
+| city : string | Saudi city |
+| address : string | Full address |
+| licenseNumber : string | Official license |
+| description : string | Overview |
+| priceRange : string | Approximate pricing |
+| contactEmail : string | Business email |
+| contactPhone : string | Phone number |
 | ownerId : int | FK → users.id |
 | createdAt : datetime | Timestamp |
-| addTrip() | Creates a new trip |
-| addCourse() | Creates a new course |
-| getTrips() | Returns all trips for this center |
-| getCourses() | Returns all courses for this center |
-| getAverageRating() | Computes average rating |
-| addReview() | Adds a review |
-| findByCity() | Filters centers by city |
+| addTrip() | Creates trip |
+| addCourse() | Creates course |
+| getTrips() | Returns center trips |
+| getCourses() | Returns center courses |
+| getAverageRating() | Average rating |
+| addReview() | Adds review |
+| findByCity() | Search by city |
 
 #### 2.3 Trip
 
@@ -367,15 +391,15 @@ Access and permissions are controlled using the role attribute (user | instructo
 | centerId : int | FK → diving_centers.id |
 | instructorId : int | FK → users.id |
 | title : string | Trip name |
-| description : string | Details (optional) |
-| durationHours : int | In hours (>0) |
-| difficultyLevel : string | beginner, intermediate, advanced |
-| pricePerPerson : decimal | Price in SAR |
-| maxCapacity : int | Maximum divers |
-| scheduleDate : date | Trip date |
-| checkAvailability() | Returns true if spots left |
-| getBookings() | Returns all bookings for this trip |
-| getUpcoming() | Returns upcoming trips |
+| description : string | Details |
+| durationHours : int | Duration |
+| difficultyLevel : string | Level |
+| pricePerPerson : decimal | Price |
+| maxCapacity : int | Capacity |
+| scheduleDate : date | Date |
+| checkAvailability() | Checks availability |
+| getBookings() | Returns bookings |
+| getUpcoming() | Upcoming trips |
 
 #### 2.4 Course
 
@@ -384,12 +408,12 @@ Access and permissions are controlled using the role attribute (user | instructo
 | id : int | Primary key |
 | centerId : int | FK → diving_centers.id |
 | instructorId : int | FK → users.id |
-| title : string | Course name |
+| title : string | Course title |
 | description : string | Course details |
-| level : string | beginner, intermediate, advanced |
-| price : decimal | Price in SAR |
-| startDate : date | Course start date |
-| getUpcoming() | Returns upcoming courses |
+| level : string | Course level |
+| price : decimal | Price |
+| startDate : date | Start date |
+| getUpcoming() | Upcoming courses |
 
 #### 2.5 Booking
 
@@ -397,15 +421,16 @@ Access and permissions are controlled using the role attribute (user | instructo
 |----------|----------|
 | id : int | Primary key |
 | userId : int | FK → users.id |
-| tripId : int | FK → trips.id |
-| numberOfPeople : int | Participants (>0) |
-| totalPrice : decimal | Calculated total |
-| status : string | pending, confirmed, cancelled, paid |
-| paymentIntentId : string | Stripe ID |
-| createdAt : datetime | Booking timestamp |
-| confirmPayment() | Updates status to confirmed |
-| cancel() | Updates status to cancelled |
-| findByUser() | Returns user's bookings |
+| tripId : int | FK → trips.id (nullable) |
+| courseId : int | FK → courses.id (nullable) |
+| numberOfPeople : int | Participants |
+| totalPrice : decimal | Total price |
+| status : string | pending, confirmed, cancelled |
+| paymentIntentId : string | Stripe payment ID |
+| createdAt : datetime | Timestamp |
+| confirmPayment() | Confirm booking |
+| cancel() | Cancel booking |
+| findByUser() | User bookings |
 
 #### 2.6 Payment
 
@@ -413,13 +438,13 @@ Access and permissions are controlled using the role attribute (user | instructo
 |----------|----------|
 | id : int | Primary key |
 | bookingId : int | FK → bookings.id |
-| amount : decimal | Amount paid |
-| status : string | pending, succeeded, failed, refunded |
-| paymentMethod : string | card, stripe etc. |
-| stripePaymentId : string | Stripe payment intent ID |
-| createdAt : datetime | Payment timestamp |
-| processPayment() | Calls Stripe to charge |
-| refund() | Initiates refund via Stripe |
+| amount : decimal | Amount |
+| status : string | Payment status |
+| paymentMethod : string | Payment method |
+| stripePaymentId : string | Stripe transaction |
+| createdAt : datetime | Timestamp |
+| processPayment() | Process payment |
+| refund() | Refund payment |
 
 #### 2.7 Review
 
@@ -429,11 +454,12 @@ Access and permissions are controlled using the role attribute (user | instructo
 | userId : int | FK → users.id |
 | centerId : int | FK → diving_centers.id |
 | tripId : int | FK → trips.id (nullable) |
+| courseId : int | FK → courses.id (nullable) |
 | rating : int | 1–5 |
-| comment : string | Review text |
+| comment : string | Review |
 | createdAt : datetime | Timestamp |
-| validate() | Ensures rating is between 1–5 |
-| getByCenter() | Returns reviews for a center |
+| validate() | Rating validation |
+| getByCenter() | Reviews by center |
 
 ### 3. Entity Relationship Diagram (ERD)
 
@@ -445,7 +471,7 @@ users {
     VARCHAR name
     VARCHAR email UK
     TEXT password_hash
-    VARCHAR role
+    ENUM role
     TIMESTAMP created_at
 }
 
@@ -491,6 +517,7 @@ bookings {
     SERIAL id PK
     INT user_id FK
     INT trip_id FK
+    INT course_id FK
     INT number_of_people
     DECIMAL total_price
     ENUM status
@@ -513,6 +540,7 @@ reviews {
     INT user_id FK
     INT center_id FK
     INT trip_id FK
+    INT course_id FK
     INT rating
     TEXT comment
     TIMESTAMP created_at
@@ -520,16 +548,24 @@ reviews {
 
 users ||--o{ bookings : makes
 users ||--o{ reviews : writes
-users ||--o{ trips : instructs
+users ||--o{ trips : leads
 users ||--o{ courses : teaches
+users ||--o{ diving_centers : owns
 
 diving_centers ||--o{ trips : offers
 diving_centers ||--o{ courses : offers
 diving_centers ||--o{ reviews : receives
 
 trips ||--o{ bookings : has
-bookings ||--|| payments : has
+courses ||--o{ bookings : has
+
+trips ||--o{ reviews : receives
+courses ||--o{ reviews : receives
+
+bookings ||--o| payments : has
 ```
+
+---
 
 ### 4. Database Schema
 
@@ -541,8 +577,10 @@ bookings ||--|| payments : has
 | name | VARCHAR(100) | NOT NULL | Full name |
 | email | VARCHAR(255) | UNIQUE, NOT NULL | Login email |
 | password_hash | TEXT | NOT NULL | bcrypt hash |
-| role | VARCHAR(20) | DEFAULT 'user' | user, instructor, admin |
+| role | ENUM | DEFAULT 'user' | user, instructor, center_owner, admin |
 | created_at | TIMESTAMP | DEFAULT NOW() | Creation timestamp |
+
+---
 
 #### 4.2 Diving Centers Table
 
@@ -557,114 +595,153 @@ bookings ||--|| payments : has
 | price_range | VARCHAR(50) | NULLABLE | Example: 300–600 SAR |
 | contact_email | VARCHAR(255) | NULLABLE | Business email |
 | contact_phone | VARCHAR(20) | NULLABLE | Contact phone |
-| owner_id | INT | FK → users.id | Center owner |
+| owner_id | INT | FK → users.id ON DELETE CASCADE | Center owner |
 | created_at | TIMESTAMP | DEFAULT NOW() | Creation timestamp |
+
+---
 
 #### 4.3 Trips Table
 
 | Column | Type | Constraints | Description |
 |----------|----------|----------|----------|
-| id | SERIAL | PRIMARY KEY |
-| center_id | INT | FK → diving_centers.id ON DELETE CASCADE |
-| instructor_id | INT | FK → users.id ON DELETE SET NULL |
-| title | VARCHAR(200) | NOT NULL |
-| description | TEXT | NULLABLE |
-| duration_hours | INT | CHECK > 0 |
-| difficulty_level | ENUM | NOT NULL |
-| price_per_person | DECIMAL(10,2) | CHECK > 0 |
-| max_capacity | INT | CHECK > 0 |
-| schedule_date | DATE | INDEX, NOT NULL |
+| id | SERIAL | PRIMARY KEY | Unique identifier |
+| center_id | INT | FK → diving_centers.id ON DELETE CASCADE | Parent center |
+| instructor_id | INT | FK → users.id ON DELETE SET NULL | Assigned instructor |
+| title | VARCHAR(200) | NOT NULL | Trip name |
+| description | TEXT | NULLABLE | Trip details |
+| duration_hours | INT | CHECK > 0 | Duration |
+| difficulty_level | ENUM | NOT NULL | Skill level |
+| price_per_person | DECIMAL(10,2) | CHECK > 0 | Price |
+| max_capacity | INT | CHECK > 0 | Capacity |
+| schedule_date | DATE | INDEX, NOT NULL | Trip date |
+
+---
 
 #### 4.4 Courses Table
 
 | Column | Type | Constraints | Description |
 |----------|----------|----------|----------|
-| id | SERIAL | PRIMARY KEY |
-| center_id | INT | FK → diving_centers.id ON DELETE CASCADE |
-| instructor_id | INT | FK → users.id ON DELETE SET NULL |
-| title | VARCHAR(200) | NOT NULL |
-| description | TEXT | NULLABLE |
-| level | VARCHAR(20) | NOT NULL |
-| price | DECIMAL(10,2) | CHECK > 0 |
-| start_date | DATE | INDEX, NOT NULL |
+| id | SERIAL | PRIMARY KEY | Unique identifier |
+| center_id | INT | FK → diving_centers.id ON DELETE CASCADE | Parent center |
+| instructor_id | INT | FK → users.id ON DELETE SET NULL | Assigned instructor |
+| title | VARCHAR(200) | NOT NULL | Course title |
+| description | TEXT | NULLABLE | Course details |
+| level | VARCHAR(20) | NOT NULL | Course level |
+| price | DECIMAL(10,2) | CHECK > 0 | Course fee |
+| start_date | DATE | INDEX, NOT NULL | Course start date |
+
+---
 
 #### 4.5 Bookings Table
 
 | Column | Type | Constraints | Description |
 |----------|----------|----------|----------|
-| id | SERIAL | PRIMARY KEY |
-| user_id | INT | FK → users.id ON DELETE CASCADE |
-| trip_id | INT | FK → trips.id ON DELETE CASCADE |
-| number_of_people | INT | CHECK > 0 |
-| total_price | DECIMAL(10,2) | CHECK >= 0 |
-| status | ENUM | DEFAULT 'pending' |
-| payment_intent_id | VARCHAR(255) | NULLABLE |
-| created_at | TIMESTAMP | DEFAULT NOW() |
+| id | SERIAL | PRIMARY KEY | Unique identifier |
+| user_id | INT | FK → users.id ON DELETE CASCADE | Customer |
+| trip_id | INT | FK → trips.id ON DELETE CASCADE, NULLABLE | Booked trip |
+| course_id | INT | FK → courses.id ON DELETE CASCADE, NULLABLE | Booked course |
+| number_of_people | INT | CHECK > 0 | Participants |
+| total_price | DECIMAL(10,2) | CHECK >= 0 | Total cost |
+| status | ENUM | DEFAULT 'pending' | Booking status |
+| payment_intent_id | VARCHAR(255) | NULLABLE | Stripe ID |
+| created_at | TIMESTAMP | DEFAULT NOW() | Booking timestamp |
+
+### Additional Constraint
+
+```sql
+CHECK (
+    (trip_id IS NOT NULL AND course_id IS NULL)
+    OR
+    (trip_id IS NULL AND course_id IS NOT NULL)
+)
+```
+
+Ensures a booking belongs to either a trip or a course, but not both.
+
+---
 
 #### 4.6 Payments Table
 
 | Column | Type | Constraints | Description |
 |----------|----------|----------|----------|
-| id | SERIAL | PRIMARY KEY |
-| booking_id | INT | UNIQUE, FK → bookings.id ON DELETE CASCADE |
-| amount | DECIMAL(10,2) | CHECK >= 0 |
-| status | VARCHAR(20) | NOT NULL |
-| payment_method | VARCHAR(50) | NOT NULL |
-| stripe_payment_id | VARCHAR(255) | UNIQUE |
-| created_at | TIMESTAMP | DEFAULT NOW() |
+| id | SERIAL | PRIMARY KEY | Unique identifier |
+| booking_id | INT | UNIQUE, FK → bookings.id ON DELETE CASCADE | Related booking |
+| amount | DECIMAL(10,2) | CHECK >= 0 | Amount paid |
+| status | VARCHAR(20) | NOT NULL | pending, succeeded, failed, refunded |
+| payment_method | VARCHAR(50) | NOT NULL | Payment method |
+| stripe_payment_id | VARCHAR(255) | UNIQUE | Stripe transaction ID |
+| created_at | TIMESTAMP | DEFAULT NOW() | Payment timestamp |
+
+---
 
 #### 4.7 Reviews Table
 
 | Column | Type | Constraints | Description |
 |----------|----------|----------|----------|
-| id | SERIAL | PRIMARY KEY |
-| user_id | INT | FK → users.id ON DELETE CASCADE |
-| center_id | INT | FK → diving_centers.id ON DELETE CASCADE |
-| trip_id | INT | FK → trips.id ON DELETE SET NULL |
-| rating | INT | CHECK (1–5) |
-| comment | TEXT | NULLABLE |
-| created_at | TIMESTAMP | DEFAULT NOW() |
+| id | SERIAL | PRIMARY KEY | Unique identifier |
+| user_id | INT | FK → users.id ON DELETE CASCADE | Reviewer |
+| center_id | INT | FK → diving_centers.id ON DELETE CASCADE | Reviewed center |
+| trip_id | INT | FK → trips.id ON DELETE SET NULL, NULLABLE | Related trip |
+| course_id | INT | FK → courses.id ON DELETE SET NULL, NULLABLE | Related course |
+| rating | INT | CHECK (rating BETWEEN 1 AND 5) | Rating |
+| comment | TEXT | NULLABLE | Review text |
+| created_at | TIMESTAMP | DEFAULT NOW() | Timestamp |
 
-### Additional Constraint
+### Additional Constraints
 
 ```sql
 UNIQUE (user_id, trip_id)
 ```
 
+Prevents duplicate reviews for the same trip.
+
+```sql
+UNIQUE (user_id, course_id)
+```
+
+Prevents duplicate reviews for the same course.
+
+---
 ### 5. Frontend Component Structure
 
 | Component | Route / Page | Responsibility |
 |------------|------------|------------|
 | Navbar | Global | Navigation and user menu |
-| LoginForm | /login | User authentication |
-| RegisterForm | /register | User registration |
-| HomePage | / | Search and featured centers |
-| CenterCard | /centers | Center summary card |
-| CenterList | /centers | Filtered center listing |
-| CenterDetails | /centers/:id | Center details, trips, courses, reviews |
-| TripList | Inside CenterDetails | Displays available trips |
-| CourseList | Inside CenterDetails | Displays available courses |
-| BookingForm | /bookings/new | Creates booking for a trip |
-| PaymentModal | Global | Stripe payment popup |
-| UserDashboard | /dashboard | User bookings and history |
-| ReviewForm | /centers/:id/review | Submit reviews |
-| AdminPanel | /admin | Manage centers, trips, courses |
-| ProtectedRoute | Wrapper | Authentication guard |
+| HomePage | / | Hero section, featured trips, statistics, and platform overview |
+| CenterList | /centers | Browse diving centers with city and rating filters |
+| CenterDetails | /centers/:id | Center details, gallery, trips, courses, and reviews |
+| TripsList | /trips | Browse all diving trips with filters and search |
+| TripDetail | /trips/:id | Trip details, reviews, availability, and similar trips |
+| CoursesList | /courses | Browse all diving courses with filters |
+| AboutPage | /about | Platform information, mission, and team |
+| BookingForm | /booking/:tripId | Create a booking for a selected trip |
+| AuthPage | /auth | User login and registration |
+| PaymentModal | Global | Stripe payment processing popup |
+| ReviewForm | /centers/:id/review | Submit reviews for centers, trips, or courses |
+| UserDashboard | /dashboard | User bookings, payments, and history |
+| CenterDashboard | /dashboard | Diving center management dashboard |
+| AdminPanel | /admin | Manage users, centers, trips, courses, and reviews |
+| ProtectedRoute | Wrapper | Authentication and authorization guard |
+
+---
 
 ### 6. Technical Justifications
 
 | Design Decision | Justification |
 |----------------|---------------|
-| PostgreSQL | Provides strong relational integrity and supports complex queries, joins, and constraints. |
-| Index on city, schedule_date, start_date | Speeds up city-based searches and upcoming trip/course listings. |
-| ON DELETE CASCADE | Automatically removes dependent records and maintains consistency. |
-| ON DELETE SET NULL | Preserves records when referenced entities are deleted. |
-| UNIQUE (user_id, trip_id) | Prevents duplicate reviews for the same trip. |
-| CHECK constraints | Enforces valid prices, capacities, durations, and ratings. |
-| One-to-one Booking–Payment | Ensures each booking has exactly one payment record. |
-| ENUM types | Restricts values to predefined options and reduces inconsistency. |
-| Stripe IDs | Supports secure payment processing and refunds. |
-| Separate Trip and Course tables | Improves clarity, maintainability, and future extensibility. |
+| PostgreSQL | Provides strong relational integrity and supports complex queries, joins, and constraints |
+| ENUM role | Restricts user roles to predefined values |
+| Index on city, schedule_date, start_date | Speeds up searches and upcoming listings |
+| ON DELETE CASCADE | Automatically removes dependent records |
+| ON DELETE SET NULL | Preserves reviews when trips/courses are deleted |
+| CHECK Booking Constraint | Ensures booking belongs to either a trip or a course |
+| UNIQUE (user_id, trip_id) | Prevents duplicate trip reviews |
+| UNIQUE (user_id, course_id) | Prevents duplicate course reviews |
+| One-to-zero-or-one Booking–Payment | Booking may exist before payment |
+| Stripe IDs | Supports secure payment processing and refunds |
+| Separate Trip and Course tables | Improves scalability and maintainability |
+| Instructor Assignment | Allows instructors to manage trips and courses |
+| Owner Relationship | Links diving centers to their owners clearly |
 
 ---
 
