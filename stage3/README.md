@@ -98,16 +98,14 @@ Browse · Booking · Payment · Reviews · Dashboards"]
     BE["Backend — Node.js / Express
 Auth JWT · Centers · Trips · Bookings · Payments · Admin"]
 
-    BE --> DB
-    BE --> EXT
+    BE -->|SQL queries| DB
+    BE -->|API calls| EXT
 
     DB["PostgreSQL
 users · centers · trips · bookings · reviews"]
 
     EXT["External services
 Moyasar · Cloudinary"]
-
-    DB ~~~ EXT
 ```
 
 ### Component Descriptions
