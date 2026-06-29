@@ -26,7 +26,10 @@ Diving platform connecting divers and tourists with diving centers across Saudi 
 6. As a diver, I want to receive real-time booking confirmation and view live availability, so that I know immediately whether my booking is confirmed.
 7. As a user, I want to complete online payment securely, so that I can confirm my booking.**
 8. As an admin, I want to manage diving centers, trips, users, and platform content, so that the platform remains accurate and up to date.
-9. As a diving center, I want to manage my trips and booking requests through a dashboard, so that I can efficiently manage my services.
+9. As an admin, I want to review and approve instructor registrations, diving center registrations, and newly submitted trips and courses, so that only verified providers and approved content are visible on the platform.
+10. As a diving center, I want to manage my trips and booking requests through a dashboard, so that I can efficiently manage my services.
+11. As an instructor, I want to register my profile and create diving trips and training courses, so that divers can book my certified services after admin approval.
+
 
 ---
 
@@ -61,7 +64,9 @@ Diving platform connecting divers and tourists with diving centers across Saudi 
 The following mockups illustrate the main user journey of the Diving Trip Booking Platform, covering trip discovery, booking, payment, confirmation, user authentication, booking management, and reviews.
 
 These screens were designed to visualize the MVP features and demonstrate the overall user experience and navigation flow across the platform.
+### Figma Design
 
+[View the Figma Design](https://www.figma.com/design/N1VPLcm86gxY3q3nVR7JBF/Untitled?node-id=0-1&t=ynCvO4NR2qTejCEd-1)
 ![User Interface Mockups](Images/mockup1.png)
 
 ![User Interface Mockups 2](Images/mokup2.png)
