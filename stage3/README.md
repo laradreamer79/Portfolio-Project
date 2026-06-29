@@ -818,6 +818,7 @@ The Oyster platform relies on several third-party services to provide additional
 |--------------|---------|---------------|
 | Cloudinary API | Store and deliver images | Eliminates the need for local file storage and provides CDN optimization |
 | Moyasar Payment API | Process secure online payments | Supports local Saudi payment methods such as mada and Apple Pay |
+| Calendly API | Schedule diving sessions and appointments | Simplifies booking and scheduling processes by allowing users to select available time slots without building a custom scheduling system |
 
 ### 2. Internal REST APIs
 
@@ -1170,7 +1171,7 @@ The technical decisions throughout this document share a consistent set of prior
 | **PostgreSQL** over MongoDB | The platform's core entities (users, diving centers, trips, bookings, reviews) are tightly interrelated. A relational database enforces these relationships through foreign key constraints, guaranteeing that a booking can never exist without a valid user or trip — a guarantee a document-oriented database does not provide by default. |
 | **React.js + Node.js/Express** across the stack | Using JavaScript for both frontend and backend reduces context-switching and learning overhead for the team, while still supporting component-based UI development and fast, lightweight REST API design. |
 | **JWT authentication** | Stateless authentication removes the need for server-side session management and supports role-based access for the platform's three user types: Diver, Diving Center, and Admin. |
-| **Third-party services** (Moyasar,  Cloudinary) | Payment processing and image hosting are handled by established providers rather than custom-built, reducing development time and avoiding infrastructure that falls outside the project's scope. |
+| **Third-party services** (Moyasar, Cloudinary, Calendly) | Payment processing, image hosting, and scheduling are handled by established providers rather than custom-built, reducing development time and avoiding infrastructure that falls outside the project's scope. |
 
 Each section above details the reasoning behind its own decisions in full: Section 1 covers the architecture and database choice, Section 2 covers the database schema design, and Section 4 covers the external API integrations.
 
