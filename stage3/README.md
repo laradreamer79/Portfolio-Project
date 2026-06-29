@@ -91,21 +91,21 @@ flowchart TB
     actor3 --> FE
 
     FE["Frontend — React.js
-Browse · Booking · Payment · Reviews · Dashboards"]
+    Browse · Booking · Payment · Reviews · Dashboards"]
 
     FE -->|REST API| BE
 
     BE["Backend — Node.js / Express
-Auth JWT · Centers · Trips · Bookings · Payments · Admin"]
+    Auth JWT · Centers · Trips · Bookings · Payments · Admin"]
 
     BE -->|SQL queries| DB
     BE -->|API calls| EXT
 
     DB["PostgreSQL
-users · centers · trips · bookings · reviews"]
+    users · centers · trips · bookings · reviews"]
 
     EXT["External services
-Moyasar · Cloudinary"]
+    Moyasar · Cloudinary"]
 ```
 
 ### Component Descriptions
