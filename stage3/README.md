@@ -90,18 +90,22 @@ flowchart TB
     actor2 --> FE
     actor3 --> FE
 
-    FE["<b>Frontend — React.js</b><br/>Browse · Booking · Payment · Reviews · Dashboards"]
+    FE["Frontend — React.js
+Browse · Booking · Payment · Reviews · Dashboards"]
 
     FE -->|REST API| BE
 
-    BE["<b>Backend — Node.js / Express</b><br/>Auth JWT · Centers · Trips · Bookings · Payments · Admin"]
+    BE["Backend — Node.js / Express
+Auth JWT · Centers · Trips · Bookings · Payments · Admin"]
 
     BE -->|SQL queries| DB
     BE -->|API calls| EXT
 
-    DB["<b>PostgreSQL</b><br/>users · centers · trips · bookings · reviews"]
+    DB["PostgreSQL
+users · centers · trips · bookings · reviews"]
 
-    EXT["<b>External services</b><br/>Moyasar · Cloudinary"]
+    EXT["External services
+Moyasar · Cloudinary"]
 ```
 
 ### Component Descriptions
