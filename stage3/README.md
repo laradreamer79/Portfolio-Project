@@ -105,7 +105,7 @@ Auth JWT · Centers · Trips · Bookings · Payments · Admin"]
 users · centers · trips · bookings · reviews"]
 
     EXT["External services
-Moyasar · Cloudinary"]
+Moyasar · Cloudinary · Calendly"]
 ```
 
 ### Component Descriptions
@@ -817,8 +817,8 @@ The Oyster platform relies on several third-party services to provide additional
 | External API | Purpose | Justification |
 |--------------|---------|---------------|
 | Cloudinary API | Store and deliver images | Eliminates the need for local file storage and provides CDN optimization |
-| Calendly API | Schedule diving sessions and appointments | Simplifies booking and scheduling processes by allowing users to select available time slots without building a custom scheduling system |
 | Moyasar Payment API | Process secure online payments | Supports local Saudi payment methods such as mada and Apple Pay |
+| Calendly API | Schedule diving sessions and appointments | Simplifies booking and scheduling processes by allowing users to select available time slots without building a custom scheduling system |
 
 ### 2. Internal REST APIs
 
