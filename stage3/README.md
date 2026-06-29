@@ -82,34 +82,30 @@ The architecture follows a standard **3-tier web application** model — Fronten
 flowchart TB
     Roles[User Roles]
 
-    Roles --> actor1([Diver / Tourist])
-    Roles --> actor2([Diving Center])
-    Roles --> actor3([Admin])
+    Roles --> actor1[Diver / Tourist]
+    Roles --> actor2[Diving Center]
+    Roles --> actor3[Admin]
 
-    F1[Frontend - React.js: Browse, Booking, Payment]
-    F2[Frontend - React.js: Reviews, Dashboards]
-    B1[Backend - Node.js/Express: Auth JWT, Centers, Trips]
-    B2[Backend - Node.js/Express: Bookings, Payments, Admin]
-    D1[(PostgreSQL: users, diving_centers)]
-    D2[(PostgreSQL: trips, bookings, reviews)]
-    E1[Payment Gateway: Moyasar]
-    E2[Cloudinary: Image Storage]
+    actor1 --> FE
+    actor2 --> FE
+    actor3 --> FE
 
-    actor1 -.-> F1
-    actor1 -.-> F2
-    actor2 -.-> F1
-    actor2 -.-> F2
-    actor3 -.-> F1
-    actor3 -.-> F2
+    FE["Frontend — React.js
+Browse · Booking · Payment · Reviews · Dashboards"]
 
-    F1 -->|REST API| B1
-    F2 -->|REST API| B2
+    FE -->|REST API| BE
 
-    B1 -->|SQL queries| D1
-    B2 -->|SQL queries| D2
+    BE["Backend — Node.js / Express
+Auth JWT · Centers · Trips · Bookings · Payments · Admin"]
 
-    B1 -->|API calls| E1
-    B2 -->|API calls| E2
+    BE -->|SQL queries| DB
+    BE -->|API calls| EXT
+
+    DB["PostgreSQL
+users · centers · trips · bookings · reviews"]
+
+    EXT["External services
+Moyasar · Cloudinary"]
 ```
 
 ### Component Descriptions
