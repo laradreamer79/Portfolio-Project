@@ -105,7 +105,7 @@ Auth JWT · Centers · Trips · Bookings · Payments · Admin"]
 users · centers · trips · bookings · reviews"]
 
     EXT["External services
-Moyasar · Cloudinary"]
+Moyasar · Cloudinary · Calendly"]
 ```
 
 ### Component Descriptions
