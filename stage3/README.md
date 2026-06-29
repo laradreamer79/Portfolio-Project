@@ -90,29 +90,26 @@ flowchart TB
     Roles --> actor1[Diver / Tourist]
     Roles --> actor2[Diving Center]
     Roles --> actor3[Admin]
+    Roles --> actor4[Instructor]
 
     actor1 --> FE
     actor2 --> FE
     actor3 --> FE
+    actor4 --> FE
 
-    FE["Frontend — React.js
-Browse · Booking · Payment · Reviews · Dashboards"]
+    FE["Frontend<br/>React.js<br/>Browse · Booking · Payment · Reviews · Dashboards"]
 
     FE -->|REST API| BE
 
-    BE["Backend — Node.js / Express
-Auth JWT · Centers · Trips · Bookings · Payments · Admin"]
+    BE["Backend<br/>Node.js / Express<br/>Auth JWT · Centers · Trips · Bookings · Payments · Admin"]
 
-    BE -->|SQL queries| DB
-    BE -->|API calls| EXT
+    BE -->|SQL Queries| DB
+    BE -->|API Calls| EXT
 
-    DB["PostgreSQL
-users · centers · trips · bookings · reviews"]
+    DB["PostgreSQL<br/>Users · Centers · Trips · Bookings · Reviews"]
 
-    EXT["External services
-Moyasar · Cloudinary · Calendly"]
+    EXT["External Services<br/>Moyasar · Cloudinary · Calendly"]
 ```
-
 ### Component Descriptions
 
 | Component | Technology | Role |
