@@ -82,9 +82,9 @@ The architecture follows a standard **3-tier web application** model — Fronten
 flowchart TB
     Roles[User Roles]
 
-    Roles --> actor1([Diver / Tourist])
-    Roles --> actor2([Diving Center])
-    Roles --> actor3([Admin])
+    Roles --> actor1[Diver / Tourist]
+    Roles --> actor2[Diving Center]
+    Roles --> actor3[Admin]
 
     actor1 --> FE
     actor2 --> FE
@@ -101,8 +101,8 @@ Auth JWT · Centers · Trips · Bookings · Payments · Admin"]
     BE -->|SQL queries| DB
     BE -->|API calls| EXT
 
-    DB[("PostgreSQL
-users · centers · trips · bookings · reviews")]
+    DB["PostgreSQL
+users · centers · trips · bookings · reviews"]
 
     EXT["External services
 Moyasar · Cloudinary"]
