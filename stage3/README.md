@@ -1093,6 +1093,294 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
+##### Approve Instructor Registration
+
+| Property      | Value                                 |
+| ------------- | ------------------------------------- |
+| URL           | `/api/admin/instructors/{id}/approve` |
+| Method        | PATCH                                 |
+| Input Format  | JSON                                  |
+| Output Format | JSON                                  |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "message": "Instructor approved successfully.",
+  "status": "approved"
+}
+```
+
+##### Approve Diving Center Application
+
+| Property      | Value                                    |
+| ------------- | ---------------------------------------- |
+| URL           | `/api/admin/diving-centers/{id}/approve` |
+| Method        | PATCH                                    |
+| Input Format  | JSON                                     |
+| Output Format | JSON                                     |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "message": "Diving center application approved successfully.",
+  "status": "approved"
+}
+```
+
+##### Reject Diving Center Application
+
+| Property      | Value                                   |
+| ------------- | --------------------------------------- |
+| URL           | `/api/admin/diving-centers/{id}/reject` |
+| Method        | PATCH                                   |
+| Input Format  | JSON                                    |
+| Output Format | JSON                                    |
+
+###### Request
+
+```json
+{
+  "reason": "Business license is invalid."
+}
+```
+
+###### Response
+
+```json
+{
+  "message": "Diving center application rejected successfully.",
+  "status": "rejected"
+}
+```
+
+##### Reject Instructor Registration
+
+| Property      | Value                                |
+| ------------- | ------------------------------------ |
+| URL           | `/api/admin/instructors/{id}/reject` |
+| Method        | PATCH                                |
+| Input Format  | JSON                                 |
+| Output Format | JSON                                 |
+
+###### Request
+
+```json
+{
+  "reason": "Certification documents could not be verified."
+}
+```
+
+###### Response
+
+```json
+{
+  "message": "Instructor registration rejected successfully.",
+  "status": "rejected"
+}
+```
+
+### Instructor APIs
+
+##### Register Instructor
+
+| Property      | Value                       |
+| ------------- | --------------------------- |
+| URL           | `/api/instructors/register` |
+| Method        | POST                        |
+| Input Format  | JSON                        |
+| Output Format | JSON                        |
+
+###### Request
+
+```json
+{
+  "fullName": "Ahmed Alqahtani",
+  "email": "ahmed@example.com",
+  "password": "123456",
+  "phone": "+966500000000",
+  "certification": "PADI Open Water Scuba Instructor",
+  "certificationNumber": "PADI-123456"
+}
+```
+
+###### Response
+
+```json
+{
+  "id": 8,
+  "message": "Instructor registration submitted successfully. Your account is pending admin approval.",
+  "status": "pending"
+}
+```
+##### Create Trip
+
+| Property      | Value                    |
+| ------------- | ------------------------ |
+| URL           | `/api/instructors/trips` |
+| Method        | POST                     |
+| Input Format  | JSON                     |
+| Output Format | JSON                     |
+
+###### Request
+
+```json
+{
+  "title": "Coral Reef Dive",
+  "location": "Jeddah",
+  "date": "2026-08-15",
+  "maxParticipants": 8,
+  "price": 350
+}
+```
+
+###### Response
+
+```json
+{
+  "id": 12,
+  "message": "Trip created successfully and submitted for admin approval.",
+  "status": "pending"
+}
+```
+
+##### Create Course
+
+| Property      | Value                      |
+| ------------- | -------------------------- |
+| URL           | `/api/instructors/courses` |
+| Method        | POST                       |
+| Input Format  | JSON                       |
+| Output Format | JSON                       |
+
+###### Request
+
+```json
+{
+  "title": "Open Water Diver",
+  "level": "Beginner",
+  "durationDays": 4,
+  "price": 1200,
+  "maxParticipants": 6
+}
+```
+
+###### Response
+
+```json
+{
+  "id": 7,
+  "message": "Course created successfully and submitted for admin approval.",
+  "status": "pending"
+}
+```
+##### Delete Trip
+
+| Property      | Value                         |
+| ------------- | ----------------------------- |
+| URL           | `/api/instructors/trips/{id}` |
+| Method        | DELETE                        |
+| Input Format  | None                          |
+| Output Format | JSON                          |
+
+###### Response
+
+```json
+{
+  "message": "Trip deleted successfully."
+}
+```
+
+##### Delete Course
+
+| Property      | Value                           |
+| ------------- | ------------------------------- |
+| URL           | `/api/instructors/courses/{id}` |
+| Method        | DELETE                          |
+| Input Format  | None                            |
+| Output Format | JSON                            |
+
+###### Response
+
+```json
+{
+  "message": "Course deleted successfully."
+}
+```
+
+##### Update Trip
+
+| Property      | Value                         |
+| ------------- | ----------------------------- |
+| URL           | `/api/instructors/trips/{id}` |
+| Method        | PUT                           |
+| Input Format  | JSON                          |
+| Output Format | JSON                          |
+
+###### Request
+
+```json
+{
+  "title": "Coral Reef Dive",
+  "location": "Jeddah",
+  "date": "2026-08-20",
+  "maxParticipants": 10,
+  "price": 400
+}
+```
+
+###### Response
+
+```json
+{
+  "message": "Trip updated successfully and submitted for admin approval.",
+  "status": "pending"
+}
+```
+
+##### Update Course
+
+| Property      | Value                           |
+| ------------- | ------------------------------- |
+| URL           | `/api/instructors/courses/{id}` |
+| Method        | PUT                             |
+| Input Format  | JSON                            |
+| Output Format | JSON                            |
+
+###### Request
+
+```json
+{
+  "title": "Open Water Diver",
+  "level": "Beginner",
+  "durationDays": 5,
+  "price": 1300,
+  "maxParticipants": 8
+}
+```
+
+###### Response
+
+```json
+{
+  "message": "Course updated successfully and submitted for admin approval.",
+  "status": "pending"
+}
+```
+
 ---
 
 ## 5. SCM and QA Plans
