@@ -16,6 +16,39 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ---
 
+### Home APIs
+
+##### Get Home Data
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/home` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "featuredTrips": [],
+  "featuredCenters": [],
+  "statistics": {
+    "centers": 25,
+    "trips": 80,
+    "courses": 18
+  }
+}
+```
+
+---
+
 ### Authentication APIs
 
 ##### Register User
@@ -225,7 +258,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/trips/:centerId` |
+| URL | `/api/centers/:centerId/trips` |
 | Method | GET |
 | Input Format | URL Parameter |
 | Output Format | JSON |
@@ -283,7 +316,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/courses/:centerId` |
+| URL | `/api/centers/:centerId/courses` |
 | Method | GET |
 | Input Format | URL Parameter |
 | Output Format | JSON |
@@ -303,6 +336,34 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
     "title": "Open Water Diver"
   }
 ]
+```
+
+---
+
+### About APIs
+
+##### Get About Information
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/about` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "mission": "Promote marine tourism in Saudi Arabia",
+  "vision": "Support Vision 2030"
+}
 ```
 
 ---
@@ -799,6 +860,12 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format  | None                          |
 | Output Format | JSON                          |
 
+###### Request
+
+```json
+{}
+```
+
 ###### Response
 
 ```json
@@ -815,6 +882,12 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Method        | DELETE                          |
 | Input Format  | None                            |
 | Output Format | JSON                            |
+
+###### Request
+
+```json
+{}
+```
 
 ###### Response
 
