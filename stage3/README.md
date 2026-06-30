@@ -826,7 +826,42 @@ The Oyster platform relies on several third-party services to provide additional
 
 The backend exposes RESTful API endpoints that allow the frontend to communicate with the server using JSON.
 
-#### Authentication APIs
+---
+
+### Home APIs
+
+##### Get Home Data
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/home` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "featuredTrips": [],
+  "featuredCenters": [],
+  "statistics": {
+    "centers": 25,
+    "trips": 80,
+    "courses": 18
+  }
+}
+```
+
+---
+
+### Authentication APIs
 
 ##### Register User
 
@@ -881,11 +916,38 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-#### Diving Centers APIs
+---
+
+### Diving Centers APIs
 
 | Route | Page | Responsibility |
 |---------|------|---------------|
 | `/dashboard` | Center Dashboard | Allows diving center owners to manage bookings, trips, courses, and center information. |
+
+##### Get Center Dashboard Data
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/dashboard/center` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "totalBookings": 35,
+  "activeTrips": 12,
+  "activeCourses": 6
+}
+```
 
 ##### Get All Diving Centers
 
@@ -895,6 +957,12 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Method | GET |
 | Input Format | None |
 | Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
 
 ###### Response
 
@@ -917,6 +985,25 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "id": 1,
+  "name": "Red Sea Diving Center",
+  "city": "Jeddah",
+  "description": "Professional diving center",
+  "priceRange": "300-600 SAR",
+  "contactPhone": "+966500000000"
+}
+```
+
 ##### Search Centers by City
 
 | Property | Value |
@@ -926,29 +1013,199 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | Query Parameter |
 | Output Format | JSON |
 
-#### Trips APIs
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Red Sea Diving Center",
+    "city": "Jeddah"
+  }
+]
+```
+
+---
+
+### Trips APIs
+
+##### Get All Trips
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/trips` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+[
+  {
+    "id": 5,
+    "title": "Coral Reef Dive",
+    "city": "Jeddah",
+    "price": 350
+  }
+]
+```
+
+##### Get Trip Details
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/trips/:id` |
+| Method | GET |
+| Input Format | URL Parameter |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "id": 5,
+  "title": "Coral Reef Dive",
+  "description": "Explore coral reefs",
+  "city": "Jeddah",
+  "price": 350,
+  "difficulty": "Beginner"
+}
+```
 
 ##### Get Trips for a Diving Center
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/trips/:centerId` |
+| URL | `/api/centers/:centerId/trips` |
 | Method | GET |
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
-#### Courses APIs
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+[
+  {
+    "id": 5,
+    "title": "Coral Reef Dive"
+  }
+]
+```
+
+---
+
+### Courses APIs
+
+##### Get All Courses
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/courses` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+[
+  {
+    "id": 2,
+    "title": "Open Water Diver",
+    "level": "Beginner",
+    "price": 1200
+  }
+]
+```
 
 ##### Get Courses for a Diving Center
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/courses/:centerId` |
+| URL | `/api/centers/:centerId/courses` |
 | Method | GET |
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
-#### Booking APIs
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+[
+  {
+    "id": 2,
+    "title": "Open Water Diver"
+  }
+]
+```
+
+---
+
+### About APIs
+
+##### Get About Information
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/about` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "mission": "Promote marine tourism in Saudi Arabia",
+  "vision": "Support Vision 2030"
+}
+```
+
+---
+
+### Booking APIs
 
 ##### Create Booking
 
@@ -976,6 +1233,58 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
+##### Create Course Booking
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/bookings` |
+| Method | POST |
+| Input Format | JSON |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{
+  "courseId": 2,
+  "numberOfPeople": 2
+}
+```
+
+###### Response
+
+```json
+{
+  "message": "Course booking created successfully"
+}
+```
+
+##### Get Booking Details
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/bookings/:bookingId` |
+| Method | GET |
+| Input Format | URL Parameter |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "bookingId": 15,
+  "tripId": 5,
+  "numberOfPeople": 2,
+  "status": "Confirmed"
+}
+```
+
 ##### Get User Bookings
 
 | Property | Value |
@@ -984,6 +1293,24 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Method | GET |
 | Input Format | URL Parameter |
 | Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+[
+  {
+    "bookingId": 15,
+    "tripId": 5,
+    "status": "Confirmed"
+  }
+]
+```
 
 ##### Cancel Booking
 
@@ -994,7 +1321,23 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
-#### Payment APIs
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "message": "Booking cancelled successfully"
+}
+```
+
+---
+
+### Payment APIs
 
 ##### Process Payment
 
@@ -1022,7 +1365,17 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-#### Reviews APIs
+###### Failed Response
+
+```json
+{
+  "message": "Payment failed"
+}
+```
+
+---
+
+### Reviews APIs
 
 ##### Add Review
 
@@ -1060,11 +1413,56 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
-#### Admin APIs
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+[
+  {
+    "user": "Ahmed",
+    "rating": 5,
+    "comment": "Excellent experience"
+  }
+]
+```
+
+---
+
+### Admin APIs
 
 | Route | Page | Responsibility |
 |---------|------|---------------|
-| `/admin` | Admin Dashboard | Allows administrators to manage users, diving centers, and overall platform content. |
+| `/admin` | Admin Dashboard | Allows administrators to manage users, diving centers, and overall platform content |
+
+##### Get Admin Dashboard Data
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/admin/dashboard` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "totalUsers": 150,
+  "pendingCenters": 5,
+  "pendingInstructors": 3
+}
+```
 
 ##### Add Diving Center
 
@@ -1075,6 +1473,26 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | JSON |
 | Output Format | JSON |
 
+###### Request
+
+```json
+{
+  "name": "Red Sea Diving Center",
+  "city": "Jeddah",
+  "description": "Professional diving center offering diving trips and training courses.",
+  "contactPhone": "+966500000000",
+  "priceRange": "300-600 SAR"
+}
+```
+
+###### Response
+
+```json
+{
+  "message": "Diving center added successfully"
+}
+```
+
 ##### Update Diving Center
 
 | Property | Value |
@@ -1083,6 +1501,26 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Method | PUT |
 | Input Format | JSON |
 | Output Format | JSON |
+
+###### Request
+
+```json
+{
+  "name": "Red Sea Diving Center",
+  "city": "Jeddah",
+  "description": "Updated diving center information.",
+  "contactPhone": "+966500000000",
+  "priceRange": "350-650 SAR"
+}
+```
+
+###### Response
+
+```json
+{
+  "message": "Diving center updated successfully"
+}
+```
 
 ##### Delete Diving Center
 
@@ -1093,13 +1531,29 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
-##### Approve Instructor Registration
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "message": "Diving center deleted successfully"
+}
+```
+
+---
+
+### Approve Instructor Registration
 
 | Property      | Value                                 |
 | ------------- | ------------------------------------- |
 | URL           | `/api/admin/instructors/{id}/approve` |
 | Method        | PATCH                                 |
-| Input Format  | JSON                                  |
+| Input Format  | None                                  |
 | Output Format | JSON                                  |
 
 ###### Request
@@ -1117,13 +1571,13 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-##### Approve Diving Center Application
+### Approve Diving Center Application
 
 | Property      | Value                                    |
 | ------------- | ---------------------------------------- |
 | URL           | `/api/admin/diving-centers/{id}/approve` |
 | Method        | PATCH                                    |
-| Input Format  | JSON                                     |
+| Input Format  | None                                     |
 | Output Format | JSON                                     |
 
 ###### Request
@@ -1141,7 +1595,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-##### Reject Diving Center Application
+### Reject Diving Center Application
 
 | Property      | Value                                   |
 | ------------- | --------------------------------------- |
@@ -1167,7 +1621,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-##### Reject Instructor Registration
+### Reject Instructor Registration
 
 | Property      | Value                                |
 | ------------- | ------------------------------------ |
@@ -1192,6 +1646,8 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
   "status": "rejected"
 }
 ```
+
+---
 
 ### Instructor APIs
 
@@ -1296,6 +1752,12 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format  | None                          |
 | Output Format | JSON                          |
 
+###### Request
+
+```json
+{}
+```
+
 ###### Response
 
 ```json
@@ -1312,6 +1774,12 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Method        | DELETE                          |
 | Input Format  | None                            |
 | Output Format | JSON                            |
+
+###### Request
+
+```json
+{}
+```
 
 ###### Response
 
