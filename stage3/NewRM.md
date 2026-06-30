@@ -1,41 +1,22 @@
-# Task 4 – Document External and Internal APIs
+## 4. API Specifications
 
----
-
-# 1. External APIs
+### 1. External APIs
 
 The Oyster platform relies on several third-party services to provide additional functionality and reduce infrastructure complexity.
 
 | External API | Purpose | Justification |
 |--------------|---------|---------------|
 | Cloudinary API | Store and deliver images | Eliminates the need for local file storage and provides CDN optimization |
-| Calendly API | Schedule diving sessions and appointments | Simplifies booking and scheduling processes by allowing users to select available time slots without building a custom scheduling system |
 | Moyasar Payment API | Process secure online payments | Supports local Saudi payment methods such as mada and Apple Pay |
+| Calendly API | Schedule diving sessions and appointments | Simplifies booking and scheduling processes by allowing users to select available time slots without building a custom scheduling system |
 
----
-
-# 2. Internal REST APIs
+### 2. Internal REST APIs
 
 The backend exposes RESTful API endpoints that allow the frontend to communicate with the server using JSON.
 
----
+#### Authentication APIs
 
-## Home APIs
-
-### Get Home Data
-
-| Property | Value |
-|----------|--------|
-| URL | `/api/home` |
-| Method | GET |
-| Input Format | None |
-| Output Format | JSON |
-
----
-
-## Authentication APIs
-
-### Register User
+##### Register User
 
 | Property | Value |
 |----------|--------|
@@ -44,7 +25,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | JSON |
 | Output Format | JSON |
 
-### Request
+###### Request
 
 ```json
 {
@@ -54,7 +35,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-### Response
+###### Response
 
 ```json
 {
@@ -62,9 +43,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
----
-
-### Login User
+##### Login User
 
 | Property | Value |
 |----------|--------|
@@ -73,7 +52,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | JSON |
 | Output Format | JSON |
 
-### Request
+###### Request
 
 ```json
 {
@@ -82,7 +61,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-### Response
+###### Response
 
 ```json
 {
@@ -90,20 +69,13 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-## Dashboard Routes
+#### Diving Centers APIs
 
-The following routes are protected and require authentication.
+| Route | Page | Responsibility |
+|---------|------|---------------|
+| `/dashboard` | Center Dashboard | Allows diving center owners to manage bookings, trips, courses, and center information. |
 
-| Route | Page | Description |
-|--------|------|-------------|
-| `/dashboard` | Center Dashboard | Dashboard for diving center owners to manage bookings, trips, courses, and center information. |
-| `/admin` | Admin Dashboard | Dashboard for administrators to manage users, diving centers, and platform content. |
-
----
-
-## Diving Centers APIs
-
-### Get All Diving Centers
+##### Get All Diving Centers
 
 | Property | Value |
 |----------|--------|
@@ -112,7 +84,7 @@ The following routes are protected and require authentication.
 | Input Format | None |
 | Output Format | JSON |
 
-### Response
+###### Response
 
 ```json
 [
@@ -124,9 +96,7 @@ The following routes are protected and require authentication.
 ]
 ```
 
----
-
-### Get Diving Center Details
+##### Get Diving Center Details
 
 | Property | Value |
 |----------|--------|
@@ -135,9 +105,20 @@ The following routes are protected and require authentication.
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
----
+###### Response
 
-### Search Centers by City
+```json
+{
+  "id": 1,
+  "name": "Red Sea Diving Center",
+  "city": "Jeddah",
+  "description": "Professional diving center",
+  "priceRange": "300-600 SAR",
+  "contactPhone": "+966500000000"
+}
+```
+
+##### Search Centers by City
 
 | Property | Value |
 |----------|--------|
@@ -146,83 +127,65 @@ The following routes are protected and require authentication.
 | Input Format | Query Parameter |
 | Output Format | JSON |
 
----
+###### Response
 
-## Trips APIs
+```json
+[
+  {
+    "id": 1,
+    "name": "Red Sea Diving Center",
+    "city": "Jeddah"
+  }
+]
+```
 
-### Get All Trips
+#### Trips APIs
 
-| Property | Value |
-|----------|--------|
-| URL | `/api/trips` |
-| Method | GET |
-| Input Format | None |
-| Output Format | JSON |
-
----
-
-### Get Trip Details
-
-| Property | Value |
-|----------|--------|
-| URL | `/api/trips/:id` |
-| Method | GET |
-| Input Format | URL Parameter |
-| Output Format | JSON |
-
----
-
-### Get Trips for a Diving Center
+##### Get Trips for a Diving Center
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/centers/:centerId/trips` |
+| URL | `/api/trips/:centerId` |
 | Method | GET |
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
----
+###### Response
 
-## Courses APIs
+```json
+[
+  {
+    "id": 5,
+    "title": "Coral Reef Dive"
+  }
+]
+```
 
-### Get All Courses
+#### Courses APIs
 
-| Property | Value |
-|----------|--------|
-| URL | `/api/courses` |
-| Method | GET |
-| Input Format | None |
-| Output Format | JSON |
-
----
-
-### Get Courses for a Diving Center
+##### Get Courses for a Diving Center
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/centers/:centerId/courses` |
+| URL | `/api/courses/:centerId` |
 | Method | GET |
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
----
+###### Response
 
-## About APIs
+```json
+[
+  {
+    "id": 2,
+    "title": "Open Water Diver"
+  }
+]
+```
 
-### Get About Information
+#### Booking APIs
 
-| Property | Value |
-|----------|--------|
-| URL | `/api/about` |
-| Method | GET |
-| Input Format | None |
-| Output Format | JSON |
-
----
-
-## Booking APIs
-
-### Create Booking
+##### Create Booking
 
 | Property | Value |
 |----------|--------|
@@ -231,7 +194,7 @@ The following routes are protected and require authentication.
 | Input Format | JSON |
 | Output Format | JSON |
 
-### Request
+###### Request
 
 ```json
 {
@@ -240,7 +203,7 @@ The following routes are protected and require authentication.
 }
 ```
 
-### Response
+###### Response
 
 ```json
 {
@@ -248,20 +211,26 @@ The following routes are protected and require authentication.
 }
 ```
 
----
+### Create Course Booking
 
-### Get Booking Details
+###### Request
 
-| Property | Value |
-|----------|--------|
-| URL | `/api/bookings/:bookingId` |
-| Method | GET |
-| Input Format | URL Parameter |
-| Output Format | JSON |
+```json
+{
+  "courseId": 2,
+  "numberOfPeople": 1
+}
+```
 
----
+###### Response
 
-### Get User Bookings
+```json
+{
+  "message": "Course booking created successfully"
+}
+```
+
+##### Get User Bookings
 
 | Property | Value |
 |----------|--------|
@@ -270,9 +239,19 @@ The following routes are protected and require authentication.
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
----
+###### Response
 
-### Cancel Booking
+```json
+[
+  {
+    "bookingId": 15,
+    "tripId": 5,
+    "status": "Confirmed"
+  }
+]
+```
+
+##### Cancel Booking
 
 | Property | Value |
 |----------|--------|
@@ -281,24 +260,19 @@ The following routes are protected and require authentication.
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
----
+###### Response
 
-## Dashboard APIs
-
-### Get Center Dashboard Data
-
-| Property | Value |
-|----------|--------|
-| URL | `/api/dashboard/center` |
-| Method | GET |
-| Input Format | JWT Token |
-| Output Format | JSON |
+```json
+{
+  "message": "Booking cancelled successfully"
+}
+```
 
 ---
 
-## Payment APIs
+#### Payment APIs
 
-### Process Payment
+##### Process Payment
 
 | Property | Value |
 |----------|--------|
@@ -307,7 +281,7 @@ The following routes are protected and require authentication.
 | Input Format | JSON |
 | Output Format | JSON |
 
-### Request
+###### Request
 
 ```json
 {
@@ -316,7 +290,7 @@ The following routes are protected and require authentication.
 }
 ```
 
-### Response
+###### Response
 
 ```json
 {
@@ -324,11 +298,17 @@ The following routes are protected and require authentication.
 }
 ```
 
----
+###### Failed Response
 
-## Reviews APIs
+```json
+{
+  "message": "Payment failed"
+}
+```
 
-### Add Review
+#### Reviews APIs
+
+##### Add Review
 
 | Property | Value |
 |----------|--------|
@@ -337,7 +317,7 @@ The following routes are protected and require authentication.
 | Input Format | JSON |
 | Output Format | JSON |
 
-### Request
+###### Request
 
 ```json
 {
@@ -347,7 +327,7 @@ The following routes are protected and require authentication.
 }
 ```
 
-### Response
+###### Response
 
 ```json
 {
@@ -355,9 +335,7 @@ The following routes are protected and require authentication.
 }
 ```
 
----
-
-### Get Reviews for a Diving Center
+##### Get Reviews for a Diving Center
 
 | Property | Value |
 |----------|--------|
@@ -366,22 +344,25 @@ The following routes are protected and require authentication.
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
----
+###### Response
 
-## Admin APIs
+```json
+[
+  {
+    "user": "Ahmed",
+    "rating": 5,
+    "comment": "Excellent experience"
+  }
+]
+```
 
-### Get Admin Dashboard
+#### Admin APIs
 
-| Property | Value |
-|----------|--------|
-| URL | `/api/admin/dashboard` |
-| Method | GET |
-| Input Format | JWT Token |
-| Output Format | JSON |
+| Route | Page | Responsibility |
+|---------|------|---------------|
+| `/admin` | Admin Dashboard | Allows administrators to manage users, diving centers, and overall platform content. |
 
----
-
-### Add Diving Center
+##### Add Diving Center
 
 | Property | Value |
 |----------|--------|
@@ -390,9 +371,15 @@ The following routes are protected and require authentication.
 | Input Format | JSON |
 | Output Format | JSON |
 
----
+###### Response
 
-### Update Diving Center
+```json
+{
+  "message": "Diving center added successfully"
+}
+```
+
+##### Update Diving Center
 
 | Property | Value |
 |----------|--------|
@@ -401,9 +388,15 @@ The following routes are protected and require authentication.
 | Input Format | JSON |
 | Output Format | JSON |
 
----
+###### Response
 
-### Delete Diving Center
+```json
+{
+  "message": "Diving center updated successfully"
+}
+```
+
+##### Delete Diving Center
 
 | Property | Value |
 |----------|--------|
@@ -412,19 +405,298 @@ The following routes are protected and require authentication.
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
----
+###### Response
 
-# Technical Justifications
+```json
+{
+  "message": "Diving center deleted successfully"
+}
+```
 
-| Technology | Justification |
-|------------|---------------|
-| REST API | Simple, scalable, and widely adopted architecture |
-| JSON Format | Lightweight and easy for frontend and backend communication |
-| JWT Authentication | Secure stateless authentication mechanism |
-| Moyasar API | Supports secure online payments and local Saudi payment methods |
-| Cloudinary | Efficient cloud image hosting and optimization |
-| Calendly API | Provides an easy scheduling solution and avoids building a custom booking system |
+##### Approve Instructor Registration
 
----
+| Property      | Value                                 |
+| ------------- | ------------------------------------- |
+| URL           | `/api/admin/instructors/{id}/approve` |
+| Method        | PATCH                                 |
+| Input Format  | JSON                                  |
+| Output Format | JSON                                  |
 
-*Stage 3 – Technical Documentation | Oyster Platform | Solaf ALessa*
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "message": "Instructor approved successfully.",
+  "status": "approved"
+}
+```
+
+##### Approve Diving Center Application
+
+| Property      | Value                                    |
+| ------------- | ---------------------------------------- |
+| URL           | `/api/admin/diving-centers/{id}/approve` |
+| Method        | PATCH                                    |
+| Input Format  | JSON                                     |
+| Output Format | JSON                                     |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "message": "Diving center application approved successfully.",
+  "status": "approved"
+}
+```
+
+##### Reject Diving Center Application
+
+| Property      | Value                                   |
+| ------------- | --------------------------------------- |
+| URL           | `/api/admin/diving-centers/{id}/reject` |
+| Method        | PATCH                                   |
+| Input Format  | JSON                                    |
+| Output Format | JSON                                    |
+
+###### Request
+
+```json
+{
+  "reason": "Business license is invalid."
+}
+```
+
+###### Response
+
+```json
+{
+  "message": "Diving center application rejected successfully.",
+  "status": "rejected"
+}
+```
+
+##### Reject Instructor Registration
+
+| Property      | Value                                |
+| ------------- | ------------------------------------ |
+| URL           | `/api/admin/instructors/{id}/reject` |
+| Method        | PATCH                                |
+| Input Format  | JSON                                 |
+| Output Format | JSON                                 |
+
+###### Request
+
+```json
+{
+  "reason": "Certification documents could not be verified."
+}
+```
+
+###### Response
+
+```json
+{
+  "message": "Instructor registration rejected successfully.",
+  "status": "rejected"
+}
+```
+
+### Instructor APIs
+
+##### Register Instructor
+
+| Property      | Value                       |
+| ------------- | --------------------------- |
+| URL           | `/api/instructors/register` |
+| Method        | POST                        |
+| Input Format  | JSON                        |
+| Output Format | JSON                        |
+
+###### Request
+
+```json
+{
+  "fullName": "Ahmed Alqahtani",
+  "email": "ahmed@example.com",
+  "password": "123456",
+  "phone": "+966500000000",
+  "certification": "PADI Open Water Scuba Instructor",
+  "certificationNumber": "PADI-123456"
+}
+```
+
+###### Response
+
+```json
+{
+  "id": 8,
+  "message": "Instructor registration submitted successfully. Your account is pending admin approval.",
+  "status": "pending"
+}
+```
+##### Create Trip
+
+| Property      | Value                    |
+| ------------- | ------------------------ |
+| URL           | `/api/instructors/trips` |
+| Method        | POST                     |
+| Input Format  | JSON                     |
+| Output Format | JSON                     |
+
+###### Request
+
+```json
+{
+  "title": "Coral Reef Dive",
+  "location": "Jeddah",
+  "date": "2026-08-15",
+  "maxParticipants": 8,
+  "price": 350
+}
+```
+
+###### Response
+
+```json
+{
+  "id": 12,
+  "message": "Trip created successfully and submitted for admin approval.",
+  "status": "pending"
+}
+```
+
+##### Create Course
+
+| Property      | Value                      |
+| ------------- | -------------------------- |
+| URL           | `/api/instructors/courses` |
+| Method        | POST                       |
+| Input Format  | JSON                       |
+| Output Format | JSON                       |
+
+###### Request
+
+```json
+{
+  "title": "Open Water Diver",
+  "level": "Beginner",
+  "durationDays": 4,
+  "price": 1200,
+  "maxParticipants": 6
+}
+```
+
+###### Response
+
+```json
+{
+  "id": 7,
+  "message": "Course created successfully and submitted for admin approval.",
+  "status": "pending"
+}
+```
+##### Delete Trip
+
+| Property      | Value                         |
+| ------------- | ----------------------------- |
+| URL           | `/api/instructors/trips/{id}` |
+| Method        | DELETE                        |
+| Input Format  | None                          |
+| Output Format | JSON                          |
+
+###### Response
+
+```json
+{
+  "message": "Trip deleted successfully."
+}
+```
+
+##### Delete Course
+
+| Property      | Value                           |
+| ------------- | ------------------------------- |
+| URL           | `/api/instructors/courses/{id}` |
+| Method        | DELETE                          |
+| Input Format  | None                            |
+| Output Format | JSON                            |
+
+###### Response
+
+```json
+{
+  "message": "Course deleted successfully."
+}
+```
+
+##### Update Trip
+
+| Property      | Value                         |
+| ------------- | ----------------------------- |
+| URL           | `/api/instructors/trips/{id}` |
+| Method        | PUT                           |
+| Input Format  | JSON                          |
+| Output Format | JSON                          |
+
+###### Request
+
+```json
+{
+  "title": "Coral Reef Dive",
+  "location": "Jeddah",
+  "date": "2026-08-20",
+  "maxParticipants": 10,
+  "price": 400
+}
+```
+
+###### Response
+
+```json
+{
+  "message": "Trip updated successfully and submitted for admin approval.",
+  "status": "pending"
+}
+```
+
+##### Update Course
+
+| Property      | Value                           |
+| ------------- | ------------------------------- |
+| URL           | `/api/instructors/courses/{id}` |
+| Method        | PUT                             |
+| Input Format  | JSON                            |
+| Output Format | JSON                            |
+
+###### Request
+
+```json
+{
+  "title": "Open Water Diver",
+  "level": "Beginner",
+  "durationDays": 5,
+  "price": 1300,
+  "maxParticipants": 8
+}
+```
+
+###### Response
+
+```json
+{
+  "message": "Course updated successfully and submitted for admin approval.",
+  "status": "pending"
+}
+```
