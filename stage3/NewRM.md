@@ -88,6 +88,12 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | None |
 | Output Format | JSON |
 
+###### Request
+
+```json
+{}
+```
+
 ###### Response
 
 ```json
@@ -108,6 +114,12 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Method | GET |
 | Input Format | URL Parameter |
 | Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
 
 ###### Response
 
@@ -131,6 +143,12 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | Query Parameter |
 | Output Format | JSON |
 
+###### Request
+
+```json
+{}
+```
+
 ###### Response
 
 ```json
@@ -149,9 +167,59 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ##### Get All Trips
 
+| Property | Value |
+|----------|--------|
+| URL | `/api/trips` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+[
+  {
+    "id": 5,
+    "title": "Coral Reef Dive",
+    "city": "Jeddah",
+    "price": 350
+  }
+]
+```
+
 ##### Get Trip Details
 
+| Property | Value |
+|----------|--------|
+| URL | `/api/trips/:id` |
+| Method | GET |
+| Input Format | URL Parameter |
+| Output Format | JSON |
 
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "id": 5,
+  "title": "Coral Reef Dive",
+  "description": "Explore coral reefs",
+  "city": "Jeddah",
+  "price": 350,
+  "difficulty": "Beginner"
+}
+```
 
 ##### Get Trips for a Diving Center
 
@@ -161,6 +229,12 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Method | GET |
 | Input Format | URL Parameter |
 | Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
 
 ###### Response
 
@@ -179,6 +253,31 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ##### Get All Courses
 
+| Property | Value |
+|----------|--------|
+| URL | `/api/courses` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+[
+  {
+    "id": 2,
+    "title": "Open Water Diver",
+    "level": "Beginner",
+    "price": 1200
+  }
+]
+```
 
 ##### Get Courses for a Diving Center
 
@@ -188,6 +287,12 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Method | GET |
 | Input Format | URL Parameter |
 | Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
 
 ###### Response
 
@@ -256,6 +361,32 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
+##### Get Booking Details
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/bookings/:bookingId` |
+| Method | GET |
+| Input Format | URL Parameter |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "bookingId": 15,
+  "tripId": 5,
+  "numberOfPeople": 2,
+  "status": "Confirmed"
+}
+```
+
 ##### Get User Bookings
 
 | Property | Value |
@@ -264,6 +395,12 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Method | GET |
 | Input Format | URL Parameter |
 | Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
 
 ###### Response
 
@@ -285,6 +422,12 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Method | DELETE |
 | Input Format | URL Parameter |
 | Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
 
 ###### Response
 
@@ -371,6 +514,12 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Method | GET |
 | Input Format | URL Parameter |
 | Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
 
 ###### Response
 
