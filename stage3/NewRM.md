@@ -669,6 +669,12 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
+###### Request
+
+```json
+{}
+```
+
 ###### Response
 
 ```json
