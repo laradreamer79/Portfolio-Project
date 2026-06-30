@@ -691,7 +691,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | ------------- | ------------------------------------- |
 | URL           | `/api/admin/instructors/{id}/approve` |
 | Method        | PATCH                                 |
-| Input Format  | JSON                                  |
+| Input Format  | None                                  |
 | Output Format | JSON                                  |
 
 ###### Request
@@ -715,7 +715,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | ------------- | ---------------------------------------- |
 | URL           | `/api/admin/diving-centers/{id}/approve` |
 | Method        | PATCH                                    |
-| Input Format  | JSON                                     |
+| Input Format  | None                                     |
 | Output Format | JSON                                     |
 
 ###### Request
