@@ -396,7 +396,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-###### Create Course Booking
+##### Create Course Booking
 
 | Property | Value |
 |----------|--------|
@@ -611,6 +611,18 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | JSON |
 | Output Format | JSON |
 
+###### Request
+
+```json
+{
+  "name": "Red Sea Diving Center",
+  "city": "Jeddah",
+  "description": "Professional diving center offering diving trips and training courses.",
+  "contactPhone": "+966500000000",
+  "priceRange": "300-600 SAR"
+}
+```
+
 ###### Response
 
 ```json
@@ -627,6 +639,18 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Method | PUT |
 | Input Format | JSON |
 | Output Format | JSON |
+
+###### Request
+
+```json
+{
+  "name": "Red Sea Diving Center",
+  "city": "Jeddah",
+  "description": "Updated diving center information.",
+  "contactPhone": "+966500000000",
+  "priceRange": "350-650 SAR"
+}
+```
 
 ###### Response
 
