@@ -112,6 +112,31 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 |---------|------|---------------|
 | `/dashboard` | Center Dashboard | Allows diving center owners to manage bookings, trips, courses, and center information. |
 
+##### Get Center Dashboard Data
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/dashboard/center` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "totalBookings": 35,
+  "activeTrips": 12,
+  "activeCourses": 6
+}
+```
+
 ##### Get All Diving Centers
 
 | Property | Value |
@@ -600,7 +625,32 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 | Route | Page | Responsibility |
 |---------|------|---------------|
-| `/admin` | Admin Dashboard | Allows administrators to manage users, diving centers, and overall platform content. |
+| `/admin` | Admin Dashboard | Allows administrators to manage users, diving centers, and overall platform content |
+
+##### Get Admin Dashboard Data
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/admin/dashboard` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "totalUsers": 150,
+  "pendingCenters": 5,
+  "pendingInstructors": 3
+}
+```
 
 ##### Add Diving Center
 
