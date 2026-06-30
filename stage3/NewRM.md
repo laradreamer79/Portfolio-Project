@@ -14,7 +14,9 @@ The Oyster platform relies on several third-party services to provide additional
 
 The backend exposes RESTful API endpoints that allow the frontend to communicate with the server using JSON.
 
-#### Authentication APIs
+---
+
+### Authentication APIs
 
 ##### Register User
 
@@ -69,7 +71,9 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-#### Diving Centers APIs
+---
+
+### Diving Centers APIs
 
 | Route | Page | Responsibility |
 |---------|------|---------------|
@@ -139,7 +143,15 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 ]
 ```
 
-#### Trips APIs
+---
+
+### Trips APIs
+
+##### Get All Trips
+
+##### Get Trip Details
+
+
 
 ##### Get Trips for a Diving Center
 
@@ -161,7 +173,12 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 ]
 ```
 
-#### Courses APIs
+---
+
+### Courses APIs
+
+##### Get All Courses
+
 
 ##### Get Courses for a Diving Center
 
@@ -183,7 +200,9 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 ]
 ```
 
-#### Booking APIs
+---
+
+### Booking APIs
 
 ##### Create Booking
 
@@ -211,14 +230,21 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-### Create Course Booking
+###### Create Course Booking
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/bookings` |
+| Method | POST |
+| Input Format | JSON |
+| Output Format | JSON |
 
 ###### Request
 
 ```json
 {
   "courseId": 2,
-  "numberOfPeople": 1
+  "numberOfPeople": 2
 }
 ```
 
@@ -270,7 +296,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ---
 
-#### Payment APIs
+### Payment APIs
 
 ##### Process Payment
 
@@ -306,7 +332,9 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-#### Reviews APIs
+---
+
+### Reviews APIs
 
 ##### Add Review
 
@@ -356,7 +384,9 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 ]
 ```
 
-#### Admin APIs
+---
+
+### Admin APIs
 
 | Route | Page | Responsibility |
 |---------|------|---------------|
@@ -413,7 +443,9 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-##### Approve Instructor Registration
+---
+
+### Approve Instructor Registration
 
 | Property      | Value                                 |
 | ------------- | ------------------------------------- |
@@ -437,7 +469,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-##### Approve Diving Center Application
+### Approve Diving Center Application
 
 | Property      | Value                                    |
 | ------------- | ---------------------------------------- |
@@ -461,7 +493,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-##### Reject Diving Center Application
+### Reject Diving Center Application
 
 | Property      | Value                                   |
 | ------------- | --------------------------------------- |
@@ -487,7 +519,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-##### Reject Instructor Registration
+### Reject Instructor Registration
 
 | Property      | Value                                |
 | ------------- | ------------------------------------ |
@@ -512,6 +544,8 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
   "status": "rejected"
 }
 ```
+
+---
 
 ### Instructor APIs
 
