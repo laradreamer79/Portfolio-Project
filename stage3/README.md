@@ -1207,59 +1207,55 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ### Booking APIs
 
-##### Create Booking
+#### Create Trip Booking
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/bookings` |
+| URL | `/api/trips/:tripId/bookings` |
 | Method | POST |
 | Input Format | JSON |
 | Output Format | JSON |
 
-###### Request
+#### Request
 
 ```json
 {
-  "tripId": 5,
   "numberOfPeople": 2
 }
 ```
 
-###### Response
+#### Response
 
 ```json
 {
-  "message": "Booking created successfully"
+  "message": "Trip booking created successfully"
 }
 ```
 
-##### Create Course Booking
+#### Create Course Booking
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/bookings` |
+| URL | `/api/courses/:courseId/bookings` |
 | Method | POST |
 | Input Format | JSON |
 | Output Format | JSON |
 
-###### Request
+#### Request
 
 ```json
 {
-  "courseId": 2,
   "numberOfPeople": 2
 }
 ```
-
-###### Response
+#### Response
 
 ```json
 {
   "message": "Course booking created successfully"
 }
 ```
-
-##### Get Booking Details
+#### Get Booking Details
 
 | Property | Value |
 |----------|--------|
@@ -1268,13 +1264,13 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
-###### Request
+#### Request
 
 ```json
 {}
 ```
 
-###### Response
+#### Response
 
 ```json
 {
@@ -1285,7 +1281,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-##### Get User Bookings
+#### Get User Bookings
 
 | Property | Value |
 |----------|--------|
@@ -1294,13 +1290,13 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
-###### Request
+#### Request
 
 ```json
 {}
 ```
 
-###### Response
+#### Response
 
 ```json
 [
@@ -1312,22 +1308,22 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 ]
 ```
 
-##### Cancel Booking
+#### Cancel Booking
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/bookings/:id` |
+| URL | `/api/bookings/:bookingId` |
 | Method | DELETE |
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
-###### Request
+#### Request
 
 ```json
 {}
 ```
 
-###### Response
+#### Response
 
 ```json
 {
@@ -1339,7 +1335,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ### Payment APIs
 
-##### Process Payment
+#### Process Payment
 
 | Property | Value |
 |----------|--------|
@@ -1348,7 +1344,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | JSON |
 | Output Format | JSON |
 
-###### Request
+#### Request
 
 ```json
 {
@@ -1357,7 +1353,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-###### Response
+#### Response
 
 ```json
 {
@@ -1365,7 +1361,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-###### Failed Response
+#### Failed Response
 
 ```json
 {
