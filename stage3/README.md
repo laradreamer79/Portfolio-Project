@@ -1547,7 +1547,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 | Property      | Value                                 |
 | ------------- | ------------------------------------- |
-| URL           | `/api/admin/instructors/{id}/approve` |
+| URL           | `/api/admin/instructors/:id/approve` |
 | Method        | PATCH                                 |
 | Input Format  | None                                  |
 | Output Format | JSON                                  |
@@ -1571,7 +1571,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 | Property      | Value                                    |
 | ------------- | ---------------------------------------- |
-| URL           | `/api/admin/diving-centers/{id}/approve` |
+| URL           | `/api/admin/centers/:id/approve` |
 | Method        | PATCH                                    |
 | Input Format  | None                                     |
 | Output Format | JSON                                     |
@@ -1595,7 +1595,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 | Property      | Value                                   |
 | ------------- | --------------------------------------- |
-| URL           | `/api/admin/diving-centers/{id}/reject` |
+| URL           | `/api/admin/centers/:id/reject` |
 | Method        | PATCH                                   |
 | Input Format  | JSON                                    |
 | Output Format | JSON                                    |
@@ -1621,7 +1621,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 | Property      | Value                                |
 | ------------- | ------------------------------------ |
-| URL           | `/api/admin/instructors/{id}/reject` |
+| URL           | `/api/admin/instructors/:id/reject` |
 | Method        | PATCH                                |
 | Input Format  | JSON                                 |
 | Output Format | JSON                                 |
@@ -1743,7 +1743,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 | Property      | Value                         |
 | ------------- | ----------------------------- |
-| URL           | `/api/instructors/trips/{id}` |
+| URL           | `/api/instructors/trips/:id` |
 | Method        | DELETE                        |
 | Input Format  | None                          |
 | Output Format | JSON                          |
@@ -1766,7 +1766,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 | Property      | Value                           |
 | ------------- | ------------------------------- |
-| URL           | `/api/instructors/courses/{id}` |
+| URL           | `/api/instructors/courses/:id` |
 | Method        | DELETE                          |
 | Input Format  | None                            |
 | Output Format | JSON                            |
@@ -1789,7 +1789,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 | Property      | Value                         |
 | ------------- | ----------------------------- |
-| URL           | `/api/instructors/trips/{id}` |
+| URL           | `/api/instructors/trips/:id` |
 | Method        | PUT                           |
 | Input Format  | JSON                          |
 | Output Format | JSON                          |
@@ -1819,7 +1819,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 | Property      | Value                           |
 | ------------- | ------------------------------- |
-| URL           | `/api/instructors/courses/{id}` |
+| URL           | `/api/instructors/courses/:id` |
 | Method        | PUT                             |
 | Input Format  | JSON                            |
 | Output Format | JSON                            |
