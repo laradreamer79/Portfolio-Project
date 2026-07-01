@@ -1354,7 +1354,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ```json
 {
-  "bookingId": 10,
   "paymentMethod": "mada"
 }
 ```
