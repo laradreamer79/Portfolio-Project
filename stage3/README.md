@@ -886,6 +886,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ```json
 {
+  "id": 15,
   "message": "User registered successfully"
 }
 ```
@@ -911,8 +912,13 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 ###### Response
 
 ```json
+
 {
-  "token": "JWT_TOKEN"
+  "token": "JWT_TOKEN",
+  "user": {
+    "id": 1,
+    "role": "customer"
+  }
 }
 ```
 
@@ -1339,7 +1345,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/payments` |
+| URL | `/api/bookings/:bookingId/payment` |
 | Method | POST |
 | Input Format | JSON |
 | Output Format | JSON |
@@ -1373,11 +1379,11 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ### Reviews APIs
 
-##### Add Review
+##### Diving Center Review
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/reviews` |
+| URL | `/api/centers/:centerId/reviews` |
 | Method | POST |
 | Input Format | JSON |
 | Output Format | JSON |
@@ -1386,7 +1392,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ```json
 {
-  "centerId": 1,
   "rating": 5,
   "comment": "Excellent experience"
 }
@@ -1404,7 +1409,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/reviews/:centerId` |
+| URL | `/api/centers/:centerId/reviews` |
 | Method | GET |
 | Input Format | URL Parameter |
 | Output Format | JSON |
@@ -1427,6 +1432,60 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 ]
 ```
 
+### Instructor Reviews APIs
+
+##### Add Instructor Review
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/instructors/:instructorId/reviews` |
+| Method | POST |
+| Input Format | JSON |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{
+  "rating": 5,
+  "comment": "Excellent instructor"
+}
+```
+
+###### Response
+
+```json
+{
+  "message": "Review submitted successfully"
+}
+```
+
+##### Get Reviews for an Instructor
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/instructors/:instructorId/reviews` |
+| Method | GET |
+| Input Format | URL Parameter |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+[
+  {
+    "user": "Ahmed",
+    "rating": 5,
+    "comment": "Excellent instructor"
+  }
+]
+```
 ---
 
 ### Admin APIs
