@@ -1497,7 +1497,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/admin/dashboard` |
+| URL | `/api/dashboard/admin` |
 | Method | GET |
 | Input Format | None |
 | Output Format | JSON |
