@@ -1,13 +1,19 @@
-import { PrismaClient } from "@prisma/client";
+import "dotenv/config";
+import { prisma } from "../src/prisma/client.js";
 
-const prisma = new PrismaClient();
+const passwordHash =
+  "$2b$10$7EqJtq98hPqEX7fNZaFWoOHi6M6G5GeUXrXe3G5UpiRaY1oCbcn1K";
 
 async function main() {
-  await prisma.user.create({
-    data: {
+  await prisma.user.upsert({
+    where: {
+      email: "test@example.com",
+    },
+    update: {},
+    create: {
       name: "Test User",
       email: "test@example.com",
-      passwordHash: "hashed_password",
+      passwordHash,
       role: "user",
     },
   });
