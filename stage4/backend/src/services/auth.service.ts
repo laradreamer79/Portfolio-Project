@@ -1,18 +1,34 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { prisma } from "../prisma/client";
+import { prisma } from "../prisma/client.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
 
-export async function registerUser(data: {
+type RegisterInput = {
   name: string;
   email: string;
   password: string;
   role?: "user" | "instructor" | "diving_center" | "admin";
-}) {
+};
+
+type LoginInput = {
+  email: string;
+  password: string;
+};
+
+export async function registerUser(data: RegisterInput) {
+  const { name, email, password, role = "user" } = data;
+
+  if (!name || !email || !password) {
+    throw {
+      status: 400,
+      message: "Name, email and password are required",
+    };
+  }
+
   const existingUser = await prisma.user.findUnique({
     where: {
-      email: data.email,
+      email,
     },
   });
 
@@ -23,14 +39,14 @@ export async function registerUser(data: {
     };
   }
 
-  const passwordHash = await bcrypt.hash(data.password, 10);
+  const passwordHash = await bcrypt.hash(password, 10);
 
   const user = await prisma.user.create({
     data: {
-      name: data.name,
-      email: data.email,
+      name,
+      email,
       passwordHash,
-      role: data.role || "user",
+      role,
     },
   });
 
@@ -52,17 +68,25 @@ export async function registerUser(data: {
       name: user.name,
       email: user.email,
       role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     },
   };
 }
 
-export async function loginUser(data: {
-  email: string;
-  password: string;
-}) {
+export async function loginUser(data: LoginInput) {
+  const { email, password } = data;
+
+  if (!email || !password) {
+    throw {
+      status: 400,
+      message: "Email and password are required",
+    };
+  }
+
   const user = await prisma.user.findUnique({
     where: {
-      email: data.email,
+      email,
     },
   });
 
@@ -74,7 +98,7 @@ export async function loginUser(data: {
   }
 
   const validPassword = await bcrypt.compare(
-    data.password,
+    password,
     user.passwordHash
   );
 
@@ -103,6 +127,8 @@ export async function loginUser(data: {
       name: user.name,
       email: user.email,
       role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     },
   };
 }
