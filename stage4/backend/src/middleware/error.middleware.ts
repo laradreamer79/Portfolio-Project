@@ -1,4 +1,9 @@
-import type { ErrorRequestHandler } from 'express';
+import type { ErrorRequestHandler } from "express";
+
+type AppError = {
+  status?: number;
+  message?: string;
+};
 
 export const errorHandler: ErrorRequestHandler = (
   error: unknown,
@@ -8,7 +13,9 @@ export const errorHandler: ErrorRequestHandler = (
 ) => {
   console.error(error);
 
-  response.status(500).json({
-    message: 'Internal server error',
+  const appError = error as AppError;
+
+  response.status(appError.status || 500).json({
+    message: appError.message || "Internal server error",
   });
 };
