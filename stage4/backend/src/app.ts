@@ -4,6 +4,7 @@ import morgan from 'morgan';
 import { errorHandler } from './middleware/error.middleware.js';
 import { notFound } from './middleware/not-found.middleware.js';
 import { healthRouter } from './routes/health.routes.js';
+import { authRouter } from "./auth/auth.routes.js";
 
 export const app = express();
 
