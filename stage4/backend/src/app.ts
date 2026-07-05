@@ -5,6 +5,7 @@ import { errorHandler } from './middleware/error.middleware.js';
 import { notFound } from './middleware/not-found.middleware.js';
 import { healthRouter } from './routes/health.routes.js';
 import { authRouter } from "./auth/auth.routes.js";
+import { adminRouter } from "./routes/admin.routes.js";
 
 export const app = express();
 
@@ -15,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/health', healthRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/admin", adminRouter);
 
 app.use(notFound);
 app.use(errorHandler);
