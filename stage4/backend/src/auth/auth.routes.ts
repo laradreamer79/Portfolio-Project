@@ -11,3 +11,14 @@ authRouter.post("/register", register);
 authRouter.post("/login", login);
 
 authRouter.get("/me", authenticate, me);
+
+authRouter.get(
+  "/admin",
+  authenticate,
+  authorize("admin"),
+  (_req, res) => {
+    res.json({
+      message: "Welcome admin",
+    });
+  },
+);
