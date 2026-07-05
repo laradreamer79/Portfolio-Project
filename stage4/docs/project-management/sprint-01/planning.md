@@ -11,7 +11,6 @@
 
 | Owner | Task | Branch | Acceptance Criteria |
 |---|---|---|---|
-| Team | Create the GitHub repository and upload the initial project | Initial setup | All members can access and clone the repository |
 | Team | Configure the Git workflow | Initial setup | `main`, `develop`, feature branches, Issues, and Pull Requests are used consistently |
 | Team | Organize the Stage 4 project structure | Initial setup | Frontend, backend, database, documentation, and asset folders are clearly separated |
 | Frontend Owner | Configure React with Vite | Frontend setup | React development server starts successfully |
