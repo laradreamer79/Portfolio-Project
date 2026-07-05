@@ -18,6 +18,14 @@ type RequestOptions = {
   token?: string | null;
 };
 
+function extractErrorMessage(payload: any): string {
+  const issues = payload?.errors;
+  if (Array.isArray(issues) && issues.length > 0 && typeof issues[0]?.message === "string") {
+    return issues[0].message;
+  }
+  return payload?.message ?? "Something went wrong. Please try again.";
+}
+
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { method = "GET", body, token } = options;
 
@@ -45,8 +53,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   const payload = isJson ? await response.json().catch(() => null) : null;
 
   if (!response.ok) {
-    const message = payload?.message ?? "Something went wrong. Please try again.";
-    throw new ApiError(message, response.status, payload?.errors);
+    throw new ApiError(extractErrorMessage(payload), response.status, payload?.errors);
   }
 
   return payload as T;
