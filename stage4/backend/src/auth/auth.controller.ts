@@ -1,4 +1,10 @@
-import type { Request, Response, NextFunction } from "express";
+import {
+  getCurrentUser,
+  loginUser,
+  registerUser,
+} from "./auth.service.js";
+
+import type { AuthRequest } from "../middleware/auth.middleware.js";
 import { loginUser, registerUser } from "./auth.service.js";
 import { loginSchema, registerSchema } from "./auth.validation.js";
 
