@@ -2,7 +2,11 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { prisma } from "../prisma/client.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key";
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET is not defined");
+}
 
 export async function registerUser(data: {
   name: string;
