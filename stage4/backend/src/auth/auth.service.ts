@@ -14,7 +14,6 @@ export async function registerUser(data: {
   name: string;
   email: string;
   password: string;
-  role?: "user" | "instructor" | "diving_center" | "admin";
 }) {
   const existingUser = await prisma.user.findUnique({
     where: {
