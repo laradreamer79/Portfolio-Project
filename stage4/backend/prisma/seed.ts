@@ -85,42 +85,50 @@ async function main() {
   // =====================
   // 3. Seed Trip
   // =====================
-  await prisma.trip.upsert({
-    where: { id: 1 },
-    update: {},
-    create: {
-      title: "Coral Reef Discovery Dive",
-      description: "A guided dive exploring the vibrant coral reefs of the Red Sea.",
-      durationHours: 3,
-      difficultyLevel: "beginner",
-      pricePerPerson: 350.0,
-      maxCapacity: 10,
-      scheduleDate: new Date("2026-08-15"),
-      status: "approved",
-      centerId: center.id,
-      instructorId: instructor.id,
-    },
+  const existingTrip = await prisma.trip.findFirst({
+    where: { title: "Coral Reef Discovery Dive", centerId: center.id },
   });
+
+  if (!existingTrip) {
+    await prisma.trip.create({
+      data: {
+        title: "Coral Reef Discovery Dive",
+        description: "A guided dive exploring the vibrant coral reefs of the Red Sea.",
+        durationHours: 3,
+        difficultyLevel: "beginner",
+        pricePerPerson: 350.0,
+        maxCapacity: 10,
+        scheduleDate: new Date("2026-08-15"),
+        status: "approved",
+        centerId: center.id,
+        instructorId: instructor.id,
+      },
+    });
+  }
 
   console.log("Trip created successfully.");
 
   // =====================
   // 4. Seed Course
   // =====================
-  await prisma.course.upsert({
-    where: { id: 1 },
-    update: {},
-    create: {
-      title: "PADI Open Water Diver",
-      description: "Beginner certification course covering diving fundamentals and safety.",
-      level: "beginner",
-      price: 1800.0,
-      startDate: new Date("2026-08-20"),
-      status: "approved",
-      centerId: center.id,
-      instructorId: instructor.id,
-    },
+  const existingCourse = await prisma.course.findFirst({
+    where: { title: "PADI Open Water Diver", centerId: center.id },
   });
+
+  if (!existingCourse) {
+    await prisma.course.create({
+      data: {
+        title: "PADI Open Water Diver",
+        description: "Beginner certification course covering diving fundamentals and safety.",
+        level: "beginner",
+        price: 1800.0,
+        startDate: new Date("2026-08-20"),
+        status: "approved",
+        centerId: center.id,
+        instructorId: instructor.id,
+      },
+    });
+  }
 
   console.log("Course created successfully.");
   console.log("All seed data created successfully.");
