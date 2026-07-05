@@ -14,16 +14,6 @@ export const registerSchema = z.object({
     .string()
     .min(6, "Password must be at least 6 characters"),
 
-  role: z
-    .enum([
-      "user",
-      "instructor",
-      "diving_center",
-      "admin",
-    ])
-    .optional(),
-});
-
 export const loginSchema = z.object({
   email: z
     .string()
