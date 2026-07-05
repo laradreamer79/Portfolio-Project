@@ -65,3 +65,17 @@ export async function login(
     next(error);
   }
 }
+
+export async function me(
+  request: AuthRequest,
+  response: Response,
+  next: NextFunction,
+) {
+  try {
+    const user = await getCurrentUser(request.user!.id);
+
+    response.json(user);
+  } catch (error) {
+    next(error);
+  }
+}
