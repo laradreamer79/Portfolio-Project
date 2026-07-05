@@ -35,7 +35,7 @@ export async function registerUser(data: {
       name: data.name,
       email: data.email,
       passwordHash,
-      role: data.role ?? "user",
+      role: "user",
     },
   });
 
