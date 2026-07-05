@@ -45,7 +45,7 @@ export async function registerUser(data: {
       id: user.id,
       role: user.role,
     },
-    JWT_SECRET,
+    jwtSecret,
     {
       expiresIn: "7d",
     },
@@ -97,7 +97,7 @@ export async function loginUser(data: {
       id: user.id,
       role: user.role,
     },
-    JWT_SECRET,
+    jwtSecret,
     {
       expiresIn: "7d",
     },
