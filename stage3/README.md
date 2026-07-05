@@ -26,7 +26,10 @@ Diving platform connecting divers and tourists with diving centers across Saudi 
 6. As a diver, I want to receive real-time booking confirmation and view live availability, so that I know immediately whether my booking is confirmed.
 7. As a user, I want to complete online payment securely, so that I can confirm my booking.**
 8. As an admin, I want to manage diving centers, trips, users, and platform content, so that the platform remains accurate and up to date.
-9. As a diving center, I want to manage my trips and booking requests through a dashboard, so that I can efficiently manage my services.
+9. As an admin, I want to review and approve instructor registrations, diving center registrations, and newly submitted trips and courses, so that only verified providers and approved content are visible on the platform.
+10. As a diving center, I want to manage my trips and booking requests through a dashboard, so that I can efficiently manage my services.
+11. As an instructor, I want to register my profile and create diving trips and training courses, so that divers can book my certified services after admin approval.
+
 
 ---
 
@@ -61,7 +64,9 @@ Diving platform connecting divers and tourists with diving centers across Saudi 
 The following mockups illustrate the main user journey of the Diving Trip Booking Platform, covering trip discovery, booking, payment, confirmation, user authentication, booking management, and reviews.
 
 These screens were designed to visualize the MVP features and demonstrate the overall user experience and navigation flow across the platform.
+### Figma Design
 
+[View the Figma Design](https://www.figma.com/design/N1VPLcm86gxY3q3nVR7JBF/Untitled?node-id=0-1&t=ynCvO4NR2qTejCEd-1)
 ![User Interface Mockups](Images/mockup1.png)
 
 ![User Interface Mockups 2](Images/mokup2.png)
@@ -85,29 +90,26 @@ flowchart TB
     Roles --> actor1[Diver / Tourist]
     Roles --> actor2[Diving Center]
     Roles --> actor3[Admin]
+    Roles --> actor4[Instructor]
 
     actor1 --> FE
     actor2 --> FE
     actor3 --> FE
+    actor4 --> FE
 
-    FE["Frontend — React.js
-Browse · Booking · Payment · Reviews · Dashboards"]
+    FE["Frontend<br/>React.js<br/>Browse · Booking · Payment · Reviews · Dashboards"]
 
     FE -->|REST API| BE
 
-    BE["Backend — Node.js / Express
-Auth JWT · Centers · Trips · Bookings · Payments · Admin"]
+    BE["Backend<br/>Node.js / Express<br/>Auth JWT · Centers · Trips · Bookings · Payments · Admin"]
 
-    BE -->|SQL queries| DB
-    BE -->|API calls| EXT
+    BE -->|SQL Queries| DB
+    BE -->|API Calls| EXT
 
-    DB["PostgreSQL
-users · centers · trips · bookings · reviews"]
+    DB["PostgreSQL<br/>Users · Centers · Trips · Bookings · Reviews"]
 
-    EXT["External services
-Moyasar · Cloudinary · Calendly"]
+    EXT["External Services<br/>Moyasar · Cloudinary · Calendly"]
 ```
-
 ### Component Descriptions
 
 | Component | Technology | Role |
@@ -117,7 +119,7 @@ Moyasar · Cloudinary · Calendly"]
 | **Database** | PostgreSQL | Stores all application data: users, diving centers, trips, bookings, and reviews. Uses relational tables with foreign key constraints to enforce data integrity. |
 | **Auth Layer** | JWT (JSON Web Tokens) | Manages stateless authentication. Issues tokens on login, verifies identity on protected routes. Supports 3 roles: Diver, Diving Center, Admin. |
 | **Image Storage** | Cloudinary | Stores and serves images for diving centers and trips. Provides CDN delivery and automatic optimization. |
-| **Payment Gateway** | Moyasar | Processes online payments for bookings securely. Handles payment confirmation and links it to the corresponding booking record. |
+| **Payment Gateway** | Moyasar / Stripe | Processes online payments for bookings securely. Handles payment confirmation and links it to the corresponding booking record. |
 
 ### Data Flow
 
@@ -274,7 +276,7 @@ class Booking {
     numberOfPeople int
     totalPrice decimal
     status string
-    paymentId string
+    paymentIntentId string
     createdAt datetime
 
     +confirmPayment() void
@@ -288,7 +290,7 @@ class Payment {
     amount decimal
     status string
     paymentMethod string
-    moyasarPaymentId string
+    stripePaymentId string
     createdAt datetime
 
     +processPayment() void
@@ -422,7 +424,7 @@ Access and permissions are controlled using the role attribute:
 | numberOfPeople : int | Participants |
 | totalPrice : decimal | Total price |
 | status : string | pending, confirmed, cancelled |
-| paymentId : string | Moyasar payment ID |
+| paymentIntentId : string | Stripe payment ID |
 | createdAt : datetime | Timestamp |
 | confirmPayment() | Confirm booking |
 | cancel() | Cancel booking |
@@ -437,7 +439,7 @@ Access and permissions are controlled using the role attribute:
 | amount : decimal | Amount |
 | status : string | Payment status |
 | paymentMethod : string | Payment method |
-| moyasarPaymentId : string | Moyasar transaction |
+| stripePaymentId : string | Stripe transaction |
 | createdAt : datetime | Timestamp |
 | processPayment() | Process payment |
 | refund() | Refund payment |
@@ -517,7 +519,7 @@ bookings {
     INT number_of_people
     DECIMAL total_price
     ENUM status
-    VARCHAR payment_id
+    VARCHAR payment_intent_id
     TIMESTAMP created_at
 }
 
@@ -527,7 +529,7 @@ payments {
     DECIMAL amount
     VARCHAR status
     VARCHAR payment_method
-    VARCHAR moyasar_payment_id
+    VARCHAR stripe_payment_id
     TIMESTAMP created_at
 }
 
@@ -639,7 +641,7 @@ bookings ||--o| payments : has
 | number_of_people | INT | CHECK > 0 | Participants |
 | total_price | DECIMAL(10,2) | CHECK >= 0 | Total cost |
 | status | ENUM | DEFAULT 'pending' | Booking status |
-| payment_id | VARCHAR(255) | NULLABLE | Moyasar payment ID |
+| payment_intent_id | VARCHAR(255) | NULLABLE | Stripe ID |
 | created_at | TIMESTAMP | DEFAULT NOW() | Booking timestamp |
 
 ### Additional Constraint
@@ -665,7 +667,7 @@ Ensures a booking belongs to either a trip or a course, but not both.
 | amount | DECIMAL(10,2) | CHECK >= 0 | Amount paid |
 | status | VARCHAR(20) | NOT NULL | pending, succeeded, failed, refunded |
 | payment_method | VARCHAR(50) | NOT NULL | Payment method |
-| moyasar_payment_id | VARCHAR(255) | UNIQUE | Moyasar transaction ID |
+| stripe_payment_id | VARCHAR(255) | UNIQUE | Stripe transaction ID |
 | created_at | TIMESTAMP | DEFAULT NOW() | Payment timestamp |
 
 ---
@@ -703,25 +705,20 @@ Prevents duplicate reviews for the same course.
 | Component | Route / Page | Responsibility |
 |------------|------------|------------|
 | Navbar | Global | Navigation and user menu |
-| Footer | Global | Shared platform, exploration, and operator links |
-| CenterCard | Reusable | Displays a diving center in featured and catalog layouts |
-| ExperienceCard | Reusable | Displays trips and courses in featured and catalog layouts |
 | HomePage | / | Hero section, featured trips, statistics, and platform overview |
 | CenterList | /centers | Browse diving centers with city and rating filters |
 | CenterDetails | /centers/:id | Center details, gallery, trips, courses, and reviews |
 | TripsList | /trips | Browse all diving trips with filters and search |
 | TripDetail | /trips/:id | Trip details, reviews, availability, and similar trips |
 | CoursesList | /courses | Browse all diving courses with filters |
-| CourseDetail | /courses/:id | Course details, requirements, availability, and enrollment |
 | AboutPage | /about | Platform information, mission, and team |
 | BookingForm | /booking/:tripId | Create a booking for a selected trip |
 | AuthPage | /auth | User login and registration |
-| PaymentStep | /booking/:tripId | Embedded Moyasar payment step within the booking flow |
-| ReviewForm | /centers/:id | Embedded review form within the center details page |
+| PaymentModal | Global | Stripe payment processing popup |
+| ReviewForm | /centers/:id/review | Submit reviews for centers, trips, or courses |
 | UserDashboard | /dashboard | User bookings, payments, and history |
-| CenterDashboard | /center/dashboard | Diving center management dashboard |
+| CenterDashboard | /dashboard | Diving center management dashboard |
 | AdminPanel | /admin | Manage users, centers, trips, courses, and reviews |
-| NotFoundPage | * | Handles unknown frontend routes |
 | ProtectedRoute | Wrapper | Authentication and authorization guard |
 
 ---
@@ -739,7 +736,7 @@ Prevents duplicate reviews for the same course.
 | UNIQUE (user_id, trip_id) | Prevents duplicate trip reviews |
 | UNIQUE (user_id, course_id) | Prevents duplicate course reviews |
 | One-to-zero-or-one Booking–Payment | Booking may exist before payment |
-| Moyasar payment IDs | Supports secure payment processing and refunds |
+| Stripe IDs | Supports secure payment processing and refunds |
 | Separate Trip and Course tables | Improves scalability and maintainability |
 | Instructor Assignment | Allows instructors to manage trips and courses |
 | Owner Relationship | Links diving centers to their owners clearly |
@@ -829,7 +826,42 @@ The Oyster platform relies on several third-party services to provide additional
 
 The backend exposes RESTful API endpoints that allow the frontend to communicate with the server using JSON.
 
-#### Authentication APIs
+---
+
+### Home APIs
+
+##### Get Home Data
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/home` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "featuredTrips": [],
+  "featuredCenters": [],
+  "statistics": {
+    "centers": 25,
+    "trips": 80,
+    "courses": 18
+  }
+}
+```
+
+---
+
+### Authentication APIs
 
 ##### Register User
 
@@ -854,6 +886,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ```json
 {
+  "id": 15,
   "message": "User registered successfully"
 }
 ```
@@ -879,16 +912,48 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 ###### Response
 
 ```json
+
 {
-  "token": "JWT_TOKEN"
+  "token": "JWT_TOKEN",
+  "user": {
+    "id": 1,
+    "role": "customer"
+  }
 }
 ```
 
-#### Diving Centers APIs
+---
+
+### Diving Centers APIs
 
 | Route | Page | Responsibility |
 |---------|------|---------------|
-| `/center/dashboard` | Center Dashboard | Allows diving center owners to manage bookings, trips, courses, and center information. |
+| `/dashboard` | Center Dashboard | Allows diving center owners to manage bookings, trips, courses, and center information. |
+
+##### Get Center Dashboard Data
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/dashboard/center` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "totalBookings": 35,
+  "activeTrips": 12,
+  "activeCourses": 6
+}
+```
 
 ##### Get All Diving Centers
 
@@ -898,6 +963,12 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Method | GET |
 | Input Format | None |
 | Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
 
 ###### Response
 
@@ -920,6 +991,25 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "id": 1,
+  "name": "Red Sea Diving Center",
+  "city": "Jeddah",
+  "description": "Professional diving center",
+  "priceRange": "300-600 SAR",
+  "contactPhone": "+966500000000"
+}
+```
+
 ##### Search Centers by City
 
 | Property | Value |
@@ -929,57 +1019,275 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | Query Parameter |
 | Output Format | JSON |
 
-#### Trips APIs
+###### Request
 
-##### Get Trips for a Diving Center
+```json
+{}
+```
+
+###### Response
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Red Sea Diving Center",
+    "city": "Jeddah"
+  }
+]
+```
+
+---
+
+### Trips APIs
+
+##### Get All Trips
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/trips/:centerId` |
+| URL | `/api/trips` |
 | Method | GET |
-| Input Format | URL Parameter |
-| Output Format | JSON |
-
-#### Courses APIs
-
-##### Get Courses for a Diving Center
-
-| Property | Value |
-|----------|--------|
-| URL | `/api/courses/:centerId` |
-| Method | GET |
-| Input Format | URL Parameter |
-| Output Format | JSON |
-
-#### Booking APIs
-
-##### Create Booking
-
-| Property | Value |
-|----------|--------|
-| URL | `/api/bookings` |
-| Method | POST |
-| Input Format | JSON |
+| Input Format | None |
 | Output Format | JSON |
 
 ###### Request
 
 ```json
-{
-  "tripId": 5,
-  "numberOfPeople": 2
-}
+{}
+```
+
+###### Response
+
+```json
+[
+  {
+    "id": 5,
+    "title": "Coral Reef Dive",
+    "city": "Jeddah",
+    "price": 350
+  }
+]
+```
+
+##### Get Trip Details
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/trips/:id` |
+| Method | GET |
+| Input Format | URL Parameter |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
 ```
 
 ###### Response
 
 ```json
 {
-  "message": "Booking created successfully"
+  "id": 5,
+  "title": "Coral Reef Dive",
+  "description": "Explore coral reefs",
+  "city": "Jeddah",
+  "price": 350,
+  "difficulty": "Beginner"
 }
 ```
 
-##### Get User Bookings
+##### Get Trips for a Diving Center
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/centers/:centerId/trips` |
+| Method | GET |
+| Input Format | URL Parameter |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+[
+  {
+    "id": 5,
+    "title": "Coral Reef Dive"
+  }
+]
+```
+
+---
+
+### Courses APIs
+
+##### Get All Courses
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/courses` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+[
+  {
+    "id": 2,
+    "title": "Open Water Diver",
+    "level": "Beginner",
+    "price": 1200
+  }
+]
+```
+
+##### Get Courses for a Diving Center
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/centers/:centerId/courses` |
+| Method | GET |
+| Input Format | URL Parameter |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+[
+  {
+    "id": 2,
+    "title": "Open Water Diver"
+  }
+]
+```
+
+---
+
+### About APIs
+
+##### Get About Information
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/about` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "mission": "Promote marine tourism in Saudi Arabia",
+  "vision": "Support Vision 2030"
+}
+```
+
+---
+
+### Booking APIs
+
+#### Create Trip Booking
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/trips/:tripId/bookings` |
+| Method | POST |
+| Input Format | JSON |
+| Output Format | JSON |
+
+#### Request
+
+```json
+{
+  "numberOfPeople": 2
+}
+```
+
+#### Response
+
+```json
+{
+  "message": "Trip booking created successfully"
+}
+```
+
+#### Create Course Booking
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/courses/:courseId/bookings` |
+| Method | POST |
+| Input Format | JSON |
+| Output Format | JSON |
+
+#### Request
+
+```json
+{
+  "numberOfPeople": 2
+}
+```
+#### Response
+
+```json
+{
+  "message": "Course booking created successfully"
+}
+```
+#### Get Booking Details
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/bookings/:bookingId` |
+| Method | GET |
+| Input Format | URL Parameter |
+| Output Format | JSON |
+
+#### Request
+
+```json
+{}
+```
+
+#### Response
+
+```json
+{
+  "bookingId": 15,
+  "tripId": 5,
+  "numberOfPeople": 2,
+  "status": "Confirmed"
+}
+```
+
+#### Get User Bookings
 
 | Property | Value |
 |----------|--------|
@@ -988,36 +1296,69 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
-##### Cancel Booking
+#### Request
+
+```json
+{}
+```
+
+#### Response
+
+```json
+[
+  {
+    "bookingId": 15,
+    "tripId": 5,
+    "status": "Confirmed"
+  }
+]
+```
+
+#### Cancel Booking
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/bookings/:id` |
+| URL | `/api/bookings/:bookingId` |
 | Method | DELETE |
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
-#### Payment APIs
+#### Request
 
-##### Process Payment
+```json
+{}
+```
+
+#### Response
+
+```json
+{
+  "message": "Booking cancelled successfully"
+}
+```
+
+---
+
+### Payment APIs
+
+#### Process Payment
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/payments` |
+| URL | `/api/bookings/:bookingId/payment` |
 | Method | POST |
 | Input Format | JSON |
 | Output Format | JSON |
 
-###### Request
+#### Request
 
 ```json
 {
-  "bookingId": 10,
   "paymentMethod": "mada"
 }
 ```
 
-###### Response
+#### Response
 
 ```json
 {
@@ -1025,13 +1366,23 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 }
 ```
 
-#### Reviews APIs
+#### Failed Response
 
-##### Add Review
+```json
+{
+  "message": "Payment failed"
+}
+```
+
+---
+
+### Reviews APIs
+
+##### Diving Center Review
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/reviews` |
+| URL | `/api/centers/:centerId/reviews` |
 | Method | POST |
 | Input Format | JSON |
 | Output Format | JSON |
@@ -1040,7 +1391,6 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 ```json
 {
-  "centerId": 1,
   "rating": 5,
   "comment": "Excellent experience"
 }
@@ -1058,16 +1408,115 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 | Property | Value |
 |----------|--------|
-| URL | `/api/reviews/:centerId` |
+| URL | `/api/centers/:centerId/reviews` |
 | Method | GET |
 | Input Format | URL Parameter |
 | Output Format | JSON |
 
-#### Admin APIs
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+[
+  {
+    "user": "Ahmed",
+    "rating": 5,
+    "comment": "Excellent experience"
+  }
+]
+```
+
+### Instructor Reviews APIs
+
+##### Add Instructor Review
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/instructors/:instructorId/reviews` |
+| Method | POST |
+| Input Format | JSON |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{
+  "rating": 5,
+  "comment": "Excellent instructor"
+}
+```
+
+###### Response
+
+```json
+{
+  "message": "Review submitted successfully"
+}
+```
+
+##### Get Reviews for an Instructor
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/instructors/:instructorId/reviews` |
+| Method | GET |
+| Input Format | URL Parameter |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+[
+  {
+    "user": "Ahmed",
+    "rating": 5,
+    "comment": "Excellent instructor"
+  }
+]
+```
+---
+
+### Admin APIs
 
 | Route | Page | Responsibility |
 |---------|------|---------------|
-| `/admin` | Admin Dashboard | Allows administrators to manage users, diving centers, and overall platform content. |
+| `/admin` | Admin Dashboard | Allows administrators to manage users, diving centers, and overall platform content |
+
+##### Get Admin Dashboard Data
+
+| Property | Value |
+|----------|--------|
+| URL | `/api/dashboard/admin` |
+| Method | GET |
+| Input Format | None |
+| Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "totalUsers": 150,
+  "pendingCenters": 5,
+  "pendingInstructors": 3
+}
+```
 
 ##### Add Diving Center
 
@@ -1078,6 +1527,26 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | JSON |
 | Output Format | JSON |
 
+###### Request
+
+```json
+{
+  "name": "Red Sea Diving Center",
+  "city": "Jeddah",
+  "description": "Professional diving center offering diving trips and training courses.",
+  "contactPhone": "+966500000000",
+  "priceRange": "300-600 SAR"
+}
+```
+
+###### Response
+
+```json
+{
+  "message": "Diving center added successfully"
+}
+```
+
 ##### Update Diving Center
 
 | Property | Value |
@@ -1087,6 +1556,26 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Input Format | JSON |
 | Output Format | JSON |
 
+###### Request
+
+```json
+{
+  "name": "Red Sea Diving Center",
+  "city": "Jeddah",
+  "description": "Updated diving center information.",
+  "contactPhone": "+966500000000",
+  "priceRange": "350-650 SAR"
+}
+```
+
+###### Response
+
+```json
+{
+  "message": "Diving center updated successfully"
+}
+```
+
 ##### Delete Diving Center
 
 | Property | Value |
@@ -1095,6 +1584,324 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 | Method | DELETE |
 | Input Format | URL Parameter |
 | Output Format | JSON |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "message": "Diving center deleted successfully"
+}
+```
+
+---
+
+### Approve Instructor Registration
+
+| Property      | Value                                 |
+| ------------- | ------------------------------------- |
+| URL           | `/api/admin/instructors/:id/approve` |
+| Method        | PATCH                                 |
+| Input Format  | None                                  |
+| Output Format | JSON                                  |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "message": "Instructor approved successfully.",
+  "status": "approved"
+}
+```
+
+### Approve Diving Center Application
+
+| Property      | Value                                    |
+| ------------- | ---------------------------------------- |
+| URL           | `/api/admin/centers/:id/approve` |
+| Method        | PATCH                                    |
+| Input Format  | None                                     |
+| Output Format | JSON                                     |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "message": "Diving center application approved successfully.",
+  "status": "approved"
+}
+```
+
+### Reject Diving Center Application
+
+| Property      | Value                                   |
+| ------------- | --------------------------------------- |
+| URL           | `/api/admin/centers/:id/reject` |
+| Method        | PATCH                                   |
+| Input Format  | JSON                                    |
+| Output Format | JSON                                    |
+
+###### Request
+
+```json
+{
+  "reason": "Business license is invalid."
+}
+```
+
+###### Response
+
+```json
+{
+  "message": "Diving center application rejected successfully.",
+  "status": "rejected"
+}
+```
+
+### Reject Instructor Registration
+
+| Property      | Value                                |
+| ------------- | ------------------------------------ |
+| URL           | `/api/admin/instructors/:id/reject` |
+| Method        | PATCH                                |
+| Input Format  | JSON                                 |
+| Output Format | JSON                                 |
+
+###### Request
+
+```json
+{
+  "reason": "Certification documents could not be verified."
+}
+```
+
+###### Response
+
+```json
+{
+  "message": "Instructor registration rejected successfully.",
+  "status": "rejected"
+}
+```
+
+---
+
+### Instructor APIs
+
+##### Register Instructor
+
+| Property      | Value                       |
+| ------------- | --------------------------- |
+| URL           | `/api/instructors/register` |
+| Method        | POST                        |
+| Input Format  | JSON                        |
+| Output Format | JSON                        |
+
+###### Request
+
+```json
+{
+  "fullName": "Ahmed Alqahtani",
+  "email": "ahmed@example.com",
+  "password": "123456",
+  "phone": "+966500000000",
+  "certification": "PADI Open Water Scuba Instructor",
+  "certificationNumber": "PADI-123456"
+}
+```
+
+###### Response
+
+```json
+{
+  "id": 8,
+  "message": "Instructor registration submitted successfully. Your account is pending admin approval.",
+  "status": "pending"
+}
+```
+##### Create Trip
+
+| Property      | Value                    |
+| ------------- | ------------------------ |
+| URL           | `/api/instructors/trips` |
+| Method        | POST                     |
+| Input Format  | JSON                     |
+| Output Format | JSON                     |
+
+###### Request
+
+```json
+{
+  "title": "Coral Reef Dive",
+  "location": "Jeddah",
+  "date": "2026-08-15",
+  "maxParticipants": 8,
+  "price": 350
+}
+```
+
+###### Response
+
+```json
+{
+  "id": 12,
+  "message": "Trip created successfully and submitted for admin approval.",
+  "status": "pending"
+}
+```
+
+##### Create Course
+
+| Property      | Value                      |
+| ------------- | -------------------------- |
+| URL           | `/api/instructors/courses` |
+| Method        | POST                       |
+| Input Format  | JSON                       |
+| Output Format | JSON                       |
+
+###### Request
+
+```json
+{
+  "title": "Open Water Diver",
+  "level": "Beginner",
+  "durationDays": 4,
+  "price": 1200,
+  "maxParticipants": 6
+}
+```
+
+###### Response
+
+```json
+{
+  "id": 7,
+  "message": "Course created successfully and submitted for admin approval.",
+  "status": "pending"
+}
+```
+##### Delete Trip
+
+| Property      | Value                         |
+| ------------- | ----------------------------- |
+| URL           | `/api/instructors/trips/:id` |
+| Method        | DELETE                        |
+| Input Format  | None                          |
+| Output Format | JSON                          |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "message": "Trip deleted successfully."
+}
+```
+
+##### Delete Course
+
+| Property      | Value                           |
+| ------------- | ------------------------------- |
+| URL           | `/api/instructors/courses/:id` |
+| Method        | DELETE                          |
+| Input Format  | None                            |
+| Output Format | JSON                            |
+
+###### Request
+
+```json
+{}
+```
+
+###### Response
+
+```json
+{
+  "message": "Course deleted successfully."
+}
+```
+
+##### Update Trip
+
+| Property      | Value                         |
+| ------------- | ----------------------------- |
+| URL           | `/api/instructors/trips/:id` |
+| Method        | PUT                           |
+| Input Format  | JSON                          |
+| Output Format | JSON                          |
+
+###### Request
+
+```json
+{
+  "title": "Coral Reef Dive",
+  "location": "Jeddah",
+  "date": "2026-08-20",
+  "maxParticipants": 10,
+  "price": 400
+}
+```
+
+###### Response
+
+```json
+{
+  "message": "Trip updated successfully and submitted for admin approval.",
+  "status": "pending"
+}
+```
+
+##### Update Course
+
+| Property      | Value                           |
+| ------------- | ------------------------------- |
+| URL           | `/api/instructors/courses/:id` |
+| Method        | PUT                             |
+| Input Format  | JSON                            |
+| Output Format | JSON                            |
+
+###### Request
+
+```json
+{
+  "title": "Open Water Diver",
+  "level": "Beginner",
+  "durationDays": 5,
+  "price": 1300,
+  "maxParticipants": 8
+}
+```
+
+###### Response
+
+```json
+{
+  "message": "Course updated successfully and submitted for admin approval.",
+  "status": "pending"
+}
+```
 
 ---
 
@@ -1164,21 +1971,6 @@ The team uses **Git** and **GitHub** to manage code changes and collaboration ac
 | 3 | API endpoints are manually verified in Postman. |
 | 4 | Once verified, the work is merged into `develop` and deployed to staging. |
 | 5 | After staging verification, the **Project Manager** merges `develop` into `main` for production release. |
-
----
-
-## 6. Technical Justifications
-
-The technical decisions throughout this document share a consistent set of priorities: data integrity, reduced complexity for a 4-person student team, and reliance on third-party services to avoid building infrastructure outside the project's learning scope.
-
-| Decision | Justification |
-|---|---|
-| **PostgreSQL** over MongoDB | The platform's core entities (users, diving centers, trips, bookings, reviews) are tightly interrelated. A relational database enforces these relationships through foreign key constraints, guaranteeing that a booking can never exist without a valid user or trip — a guarantee a document-oriented database does not provide by default. |
-| **React.js + Node.js/Express** across the stack | Using JavaScript for both frontend and backend reduces context-switching and learning overhead for the team, while still supporting component-based UI development and fast, lightweight REST API design. |
-| **JWT authentication** | Stateless authentication removes the need for server-side session management and supports role-based access for the platform's three user types: Diver, Diving Center, and Admin. |
-| **Third-party services** (Moyasar, Cloudinary, Calendly) | Payment processing, image hosting, and scheduling are handled by established providers rather than custom-built, reducing development time and avoiding infrastructure that falls outside the project's scope. |
-
-Each section above details the reasoning behind its own decisions in full: Section 1 covers the architecture and database choice, Section 2 covers the database schema design, and Section 4 covers the external API integrations.
 
 ---
 
