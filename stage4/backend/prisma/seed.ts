@@ -1,10 +1,16 @@
+/**
+ * Development password for all seeded users:
+ * Password123!
+ */
+
 import "dotenv/config";
 import { prisma } from "../src/prisma/client.js";
-
-const passwordHash =
-  "$2b$10$7EqJtq98hPqEX7fNZaFWoOHi6M6G5GeUXrXe3G5UpiRaY1oCbcn1K";
+import bcrypt from "bcryptjs";
 
 async function main() {
+  const password = "Password123!";
+  const passwordHash = await bcrypt.hash(password, 10);
+
   const users = [
     {
       name: "Test User",
