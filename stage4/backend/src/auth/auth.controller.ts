@@ -1,9 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
-import { loginUser, registerUser } from "../services/auth.service.js";
+import { loginUser, registerUser } from "./auth.service.js";
 import {
   loginSchema,
   registerSchema,
-} from "../validation/auth.validation.js";
+} from "./auth.validation.js";
 
 export async function register(
   request: Request,
