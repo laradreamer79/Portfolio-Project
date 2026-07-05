@@ -1,20 +1,70 @@
 import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Anchor, Eye, EyeOff, CheckCircle } from "lucide-react";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { Anchor, Eye, EyeOff, CheckCircle, Loader2 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { dashboardPathForRole, type UserRole } from "../lib/roles";
+
+type RegisterRole = "user" | "center_owner" | "instructor";
+
+const ROLE_TO_API: Record<RegisterRole, UserRole> = {
+  user: "user",
+  center_owner: "diving_center",
+  instructor: "instructor",
+};
 
 export function Auth() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login, register, isSubmitting, error, clearError } = useAuth();
   const [params] = useSearchParams();
   const [tab, setTab] = useState<"login" | "register">(params.get("tab") === "register" ? "register" : "login");
-  const [role, setRole] = useState<"user" | "center_owner" | "instructor">("user");
+  const [role, setRole] = useState<RegisterRole>("user");
   const [showPw, setShowPw] = useState(false);
   const [done, setDone] = useState(false);
+  const [doneRole, setDoneRole] = useState<UserRole>("user");
 
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
   const [regForm, setRegForm] = useState({ name: "", email: "", phone: "", password: "", centerName: "", city: "", certifications: "" });
 
   const setL = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) => setLoginForm((f) => ({ ...f, [k]: e.target.value }));
   const setR = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setRegForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const switchTab = (t: "login" | "register") => {
+    clearError();
+    setTab(t);
+  };
+
+  const redirectTarget = (userRole: UserRole) => {
+    const from = (location.state as { from?: string } | null)?.from;
+    return from && from !== "/auth" ? from : dashboardPathForRole(userRole);
+  };
+
+  const handleLogin = async () => {
+    if (!loginForm.email || !loginForm.password) return;
+    try {
+      const user = await login({ email: loginForm.email, password: loginForm.password });
+      setDoneRole(user.role);
+      setDone(true);
+    } catch {
+      // error is already surfaced through the auth context
+    }
+  };
+
+  const handleRegister = async () => {
+    if (!regForm.name || !regForm.email || !regForm.password) return;
+    try {
+      const user = await register({
+        name: regForm.name,
+        email: regForm.email,
+        password: regForm.password,
+        role: ROLE_TO_API[role],
+      });
+      setDoneRole(user.role);
+      setDone(true);
+    } catch {
+      // error is already surfaced through the auth context
+    }
+  };
 
   if (done) return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
@@ -32,7 +82,7 @@ export function Auth() {
         </div>
         <div className="flex gap-3">
           <button onClick={() => navigate("/")} className="flex-1 border border-slate-200 text-slate-600 font-medium py-2.5 rounded-xl hover:border-slate-300 transition-colors text-sm">Go Home</button>
-          <button onClick={() => navigate(role === "center_owner" ? "/center/dashboard" : "/dashboard")} className="flex-1 bg-teal-500 text-white font-semibold py-2.5 rounded-xl hover:bg-teal-600 transition-colors text-sm">
+          <button onClick={() => navigate(redirectTarget(doneRole))} className="flex-1 bg-teal-500 text-white font-semibold py-2.5 rounded-xl hover:bg-teal-600 transition-colors text-sm">
             Open Dashboard
           </button>
         </div>
@@ -57,7 +107,7 @@ export function Auth() {
           {/* Tabs */}
           <div className="flex border-b border-slate-100">
             {(["login", "register"] as const).map((t) => (
-              <button key={t} onClick={() => setTab(t)}
+              <button key={t} onClick={() => switchTab(t)}
                 className={`flex-1 py-4 text-sm font-semibold capitalize transition-colors ${tab === t ? "text-teal-600 border-b-2 border-teal-500 -mb-px" : "text-slate-400 hover:text-slate-600"}`}>
                 {t === "login" ? "Sign In" : "Create Account"}
               </button>
@@ -65,6 +115,12 @@ export function Auth() {
           </div>
 
           <div className="p-6 space-y-4">
+            {error && (
+              <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-2.5 text-sm text-red-600">
+                {error}
+              </div>
+            )}
+
             {/* Role selector (register only) */}
             {tab === "register" && (
               <div>
@@ -97,7 +153,8 @@ export function Auth() {
                   </div>
                   <button className="text-xs text-teal-600 hover:text-teal-800 mt-1.5 block">Forgot password?</button>
                 </div>
-                <button onClick={() => loginForm.email && loginForm.password && setDone(true)} disabled={!loginForm.email || !loginForm.password} className="w-full bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                <button onClick={handleLogin} disabled={!loginForm.email || !loginForm.password || isSubmitting} className="w-full flex items-center justify-center gap-2 bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                  {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                   Sign In
                 </button>
               </>
@@ -148,7 +205,8 @@ export function Auth() {
                   )}
                 </div>
                 <p className="text-xs text-slate-400">By registering you agree to our Terms of Service and Privacy Policy.</p>
-                <button onClick={() => regForm.name && regForm.email && regForm.password && setDone(true)} disabled={!regForm.name || !regForm.email || !regForm.password} className="w-full bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                <button onClick={handleRegister} disabled={!regForm.name || !regForm.email || !regForm.password || isSubmitting} className="w-full flex items-center justify-center gap-2 bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                  {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                   Create Account
                 </button>
               </>
@@ -156,9 +214,9 @@ export function Auth() {
 
             <div className="text-center text-xs text-slate-400 pt-1">
               {tab === "login" ? (
-                <>Don't have an account? <button onClick={() => setTab("register")} className="text-teal-600 font-medium hover:text-teal-800">Register</button></>
+                <>Don't have an account? <button onClick={() => switchTab("register")} className="text-teal-600 font-medium hover:text-teal-800">Register</button></>
               ) : (
-                <>Already have an account? <button onClick={() => setTab("login")} className="text-teal-600 font-medium hover:text-teal-800">Sign in</button></>
+                <>Already have an account? <button onClick={() => switchTab("login")} className="text-teal-600 font-medium hover:text-teal-800">Sign in</button></>
               )}
             </div>
           </div>
