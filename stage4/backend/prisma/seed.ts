@@ -5,20 +5,45 @@ const passwordHash =
   "$2b$10$7EqJtq98hPqEX7fNZaFWoOHi6M6G5GeUXrXe3G5UpiRaY1oCbcn1K";
 
 async function main() {
-  await prisma.user.upsert({
-    where: {
-      email: "test@example.com",
-    },
-    update: {},
-    create: {
+  const users = [
+    {
       name: "Test User",
-      email: "test@example.com",
-      passwordHash,
+      email: "user@example.com",
       role: "user",
     },
-  });
+    {
+      name: "Test Instructor",
+      email: "instructor@example.com",
+      role: "instructor",
+    },
+    {
+      name: "Test Diving Center",
+      email: "divingcenter@example.com",
+      role: "diving_center",
+    },
+    {
+      name: "Test Admin",
+      email: "admin@example.com",
+      role: "admin",
+    },
+  ];
 
-  console.log("Test user created successfully.");
+  for (const user of users) {
+    await prisma.user.upsert({
+      where: {
+        email: user.email,
+      },
+      update: {},
+      create: {
+        name: user.name,
+        email: user.email,
+        passwordHash,
+        role: user.role,
+      },
+    });
+  }
+
+  console.log("Development users created successfully.");
 }
 
 main()
