@@ -22,12 +22,14 @@ The project began with an initial team meeting to introduce members and align ex
 
 ### 1.2 Team Members and Roles
 
-| Role | Assigned To | Responsibilities |
-|------|-------------|-----------------|
-| Project Manager | Lara Alzannan | Coordinate the initial project phase, organize team activities, facilitate communication, and support task planning and distribution. |
-| Full Stack Developer | Maryam Alessa | Backend and frontend development, database design, and API integration. |
-| UI/UX Designer | Solaf Alessa | Interface design, wireframing, prototyping using Figma, and ensuring a consistent user experience. |
-| Full Stack Developer / Research Lead | Ebtihal Alomari | Idea generation, technical research, frontend and backend development, and documentation. |
+All team members contribute to full stack development throughout the project. Each member has a specialized focus area while actively collaborating across all project phases.
+
+| Team Member | Specialization | Responsibilities |
+|-------------|---------------|-----------------|
+| Lara Alzannan | Project Manager & Frontend Developer | Lead project coordination and task planning. Develop frontend interfaces, implement UI components, and ensure responsive design across the platform. |
+| Ebtihal Alomari | Frontend Developer & Research Lead | Lead technical research and documentation. Develop frontend features, implement UI/UX designs, and support integration and testing phases. |
+| Maryam Alessa | Backend Developer | Lead backend development, design and implement RESTful APIs, manage server-side logic, and handle database integration. |
+| Solaf Alessa | Backend Developer | Develop backend features and database architecture. Design wireframes and prototypes to guide frontend implementation and ensure a consistent user experience. |
 
 ---
 
@@ -214,7 +216,7 @@ The team applied structured brainstorming frameworks to generate and refine idea
 | **Innovation** | No existing unified platform for diving tourism in Saudi Arabia — a clear and uncontested gap in the market. |
 | **Alignment with Goals** | The team has direct skills in web development, UX/UI design, and business analysis matching all project requirements. |
 | **Market Need** | Growing interest in marine tourism driven by Saudi Vision 2030 and coastal development in Jeddah, Yanbu, Dammam, NEOM, and Al Wajh. |
-| **Scalability** | Future enhancements (online payments, interactive maps, instant booking, mobile app) can be added incrementally after MVP launch. |
+| **Scalability** | Future enhancements (interactive maps, instant booking, mobile app) can be added incrementally after MVP launch. |
 
 ---
 
@@ -237,6 +239,7 @@ The team applied structured brainstorming frameworks to generate and refine idea
 | 2 | View Trips and Courses | Each center page shows available trips, duration, diving level, prices, and offered courses. |
 | 3 | Simple Booking Request | Users send booking requests via a form; centers respond by email or WhatsApp. |
 | 4 | User Ratings & Reviews | Users can rate centers and trips using a 5-star system and leave written reviews. |
+| 5 | Online Payment Processing | Users can pay for bookings securely through the platform using integrated payment gateways. |
 
 ---
 
