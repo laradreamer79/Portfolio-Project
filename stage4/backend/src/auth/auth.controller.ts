@@ -1,11 +1,10 @@
+import type { NextFunction, Request, Response } from "express";
+import type { AuthRequest } from "../middleware/auth.middleware.js";
 import {
   getCurrentUser,
   loginUser,
   registerUser,
 } from "./auth.service.js";
-
-import type { AuthRequest } from "../middleware/auth.middleware.js";
-import { loginUser, registerUser } from "./auth.service.js";
 import { loginSchema, registerSchema } from "./auth.validation.js";
 
 export async function register(
@@ -75,7 +74,13 @@ export async function me(
     const user = await getCurrentUser(request.user!.id);
 
     response.json(user);
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.status) {
+      return response.status(error.status).json({
+        message: error.message,
+      });
+    }
+
     next(error);
   }
 }
