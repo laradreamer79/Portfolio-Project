@@ -14,6 +14,7 @@ import { AdminDashboard } from "./pages/AdminDashboard";
 import { CenterDashboard } from "./pages/CenterDashboard";
 import { UserDashboard } from "./pages/UserDashboard";
 import { NotFound } from "./pages/NotFound";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 export const router = createBrowserRouter([
   {
@@ -28,11 +29,39 @@ export const router = createBrowserRouter([
       { path: "courses", Component: Courses },
       { path: "courses/:id", Component: CourseDetail },
       { path: "about", Component: About },
-      { path: "booking/:tripId", Component: Booking },
+      {
+        path: "booking/:tripId",
+        element: (
+          <ProtectedRoute>
+            <Booking />
+          </ProtectedRoute>
+        ),
+      },
       { path: "auth", Component: Auth },
-      { path: "admin", Component: AdminDashboard },
-      { path: "dashboard", Component: UserDashboard },
-      { path: "center/dashboard", Component: CenterDashboard },
+      {
+        path: "admin",
+        element: (
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <AdminDashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "dashboard",
+        element: (
+          <ProtectedRoute allowedRoles={["user", "instructor"]}>
+            <UserDashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "center/dashboard",
+        element: (
+          <ProtectedRoute allowedRoles={["diving_center"]}>
+            <CenterDashboard />
+          </ProtectedRoute>
+        ),
+      },
       { path: "*", Component: NotFound },
     ],
   },
