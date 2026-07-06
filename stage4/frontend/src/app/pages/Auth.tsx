@@ -7,7 +7,10 @@ import {
 } from "react-router-dom";
 import { Anchor, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
-import { dashboardPathForRole } from "../lib/roles";
+import {
+  dashboardPathForRole,
+  type RegistrationRole,
+} from "../lib/roles";
 
 type AuthTab = "login" | "register";
 
@@ -35,6 +38,7 @@ export function Auth() {
     name: "",
     email: "",
     password: "",
+    role: "user" as RegistrationRole,
   });
 
   useEffect(() => {
@@ -169,6 +173,34 @@ export function Auth() {
               </form>
             ) : (
               <form className="space-y-4" onSubmit={handleRegister}>
+                <fieldset>
+                  <legend className="mb-2 text-sm font-medium text-slate-600">
+                    Account Type
+                  </legend>
+                  <div className="grid grid-cols-3 gap-2">
+                    {([
+                      ["user", "Diver"],
+                      ["instructor", "Instructor"],
+                      ["diving_center", "Diving Center"],
+                    ] as const).map(([role, label]) => (
+                      <button
+                        key={role}
+                        type="button"
+                        aria-pressed={registerForm.role === role}
+                        onClick={() =>
+                          setRegisterForm((form) => ({ ...form, role }))
+                        }
+                        className={`rounded-xl border px-2 py-3 text-xs font-semibold transition-colors ${
+                          registerForm.role === role
+                            ? "border-teal-400 bg-teal-50 text-teal-700"
+                            : "border-slate-200 text-slate-500 hover:border-slate-300"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
                 <Field
                   label="Full Name"
                   value={registerForm.name}
@@ -198,8 +230,8 @@ export function Auth() {
                   minLength={6}
                 />
                 <p className="text-xs text-slate-400">
-                  New accounts start as diver accounts. Staff roles are assigned
-                  separately.
+                  Choose the account type that matches how you will use Oyster.
+                  Admin accounts cannot be created through public registration.
                 </p>
                 <SubmitButton loading={isSubmitting}>
                   Create Account

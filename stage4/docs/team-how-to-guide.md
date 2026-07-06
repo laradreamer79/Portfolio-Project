@@ -175,6 +175,7 @@ Expected status: `200` for an admin token.
 Also verify these failure cases:
 
 - Invalid registration data returns `400`.
+- Registration with the `admin` role returns `400`.
 - Wrong login details return `401`.
 - A duplicate registration email returns `409`.
 - A protected endpoint without a token returns `401`.
@@ -185,18 +186,21 @@ Also verify these failure cases:
 
 Test these flows in the browser:
 
-1. Register a new user and confirm it opens `/dashboard`.
-2. Log out and confirm the authenticated menu disappears.
-3. Log in with each seeded account.
-4. Confirm each role opens the dashboard listed in the seeded-account table.
-5. Refresh the page and confirm the session remains active.
-6. Remove or corrupt `oyster_auth` in browser local storage and refresh.
-7. Confirm an invalid session returns to the login page.
-8. Open `/admin` as a regular user and confirm access is blocked.
-9. Open `/center/dashboard` as a regular user and confirm access is blocked.
-10. Open `/booking/1` while logged out and confirm redirection to `/auth`.
-11. After login, confirm the user returns to the requested protected page.
-12. Stop the backend and confirm login displays a connection error.
+1. Register a Diver and confirm it opens `/dashboard`.
+2. Register an Instructor and confirm it opens `/dashboard`.
+3. Register a Diving Center and confirm it opens `/center/dashboard`.
+4. Confirm each registration stores the selected role in PostgreSQL.
+5. Log out and confirm the authenticated menu disappears.
+6. Log in with each seeded account.
+7. Confirm each role opens the dashboard listed in the seeded-account table.
+8. Refresh the page and confirm the session remains active.
+9. Remove or corrupt `oyster_auth` in browser local storage and refresh.
+10. Confirm an invalid session returns to the login page.
+11. Open `/admin` as a regular user and confirm access is blocked.
+12. Open `/center/dashboard` as a regular user and confirm access is blocked.
+13. Open `/booking/1` while logged out and confirm redirection to `/auth`.
+14. After login, confirm the user returns to the requested protected page.
+15. Stop the backend and confirm login displays a connection error.
 
 ## Frontend Page Tests
 
@@ -340,6 +344,8 @@ commit, or commit `.env`, tokens, real credentials, and generated build output.
 - Never commit `.env`, JWT tokens, or real passwords and database credentials.
 - `docker-compose.yml` is currently empty and does not start PostgreSQL.
 - Authentication uses the backend API and PostgreSQL.
+- Public registration allows Diver, Instructor, and Diving Center roles. Admin
+  accounts cannot be created through public registration.
 - `npm run seed` writes users, a diving center, a trip, and a course to
   PostgreSQL.
 - Frontend catalog pages still read mock data from

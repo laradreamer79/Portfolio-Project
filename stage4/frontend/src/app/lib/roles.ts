@@ -1,4 +1,5 @@
 export type UserRole = "user" | "instructor" | "diving_center" | "admin";
+export type RegistrationRole = Exclude<UserRole, "admin">;
 
 export const ROLE_LABELS: Record<UserRole, string> = {
   user: "Diver",
