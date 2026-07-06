@@ -1,5 +1,5 @@
 import { apiRequest } from "./apiClient";
-import type { UserRole } from "./roles";
+import type { RegistrationRole, UserRole } from "./roles";
 
 export type AuthUser = {
   id: number;
@@ -23,6 +23,7 @@ export type RegisterPayload = {
   name: string;
   email: string;
   password: string;
+  role: RegistrationRole;
 };
 
 export function login(payload: LoginPayload): Promise<AuthResponse> {
