@@ -12,6 +12,7 @@ import { Booking } from "./pages/Booking";
 import { Auth } from "./pages/Auth";
 import { AdminDashboard } from "./pages/AdminDashboard";
 import { CenterDashboard } from "./pages/CenterDashboard";
+import { InstructorDashboard } from "./pages/InstructorDashboard";
 import { UserDashboard } from "./pages/UserDashboard";
 import { NotFound } from "./pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -49,8 +50,16 @@ export const router = createBrowserRouter([
       {
         path: "dashboard",
         element: (
-          <ProtectedRoute allowedRoles={["user", "instructor"]}>
+          <ProtectedRoute allowedRoles={["user"]}>
             <UserDashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "instructor/dashboard",
+        element: (
+          <ProtectedRoute allowedRoles={["instructor"]}>
+            <InstructorDashboard />
           </ProtectedRoute>
         ),
       },

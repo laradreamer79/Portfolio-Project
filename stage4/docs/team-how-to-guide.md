@@ -120,7 +120,7 @@ Run `npm run seed` from `stage4/backend` before using these accounts.
 | Role | Email | Password | Expected dashboard |
 | --- | --- | --- | --- |
 | User | `user@example.com` | `123456` | `/dashboard` |
-| Instructor | `instructor@example.com` | `123456` | `/dashboard` |
+| Instructor | `instructor@example.com` | `123456` | `/instructor/dashboard` |
 | Diving center | `divingcenter@example.com` | `123456` | `/center/dashboard` |
 | Admin | `admin@example.com` | `123456` | `/admin` |
 
@@ -186,21 +186,26 @@ Also verify these failure cases:
 
 Test these flows in the browser:
 
-1. Register a Diver and confirm it opens `/dashboard`.
-2. Register an Instructor and confirm it opens `/dashboard`.
-3. Register a Diving Center and confirm it opens `/center/dashboard`.
+1. Register a Diver and confirm it opens the home page `/`.
+2. Register an Instructor with a license number and confirm it opens the home page `/`.
+3. Register a Diving Center with center name, city, and license number and confirm it opens the home page `/`.
 4. Confirm each registration stores the selected role in PostgreSQL.
-5. Log out and confirm the authenticated menu disappears.
-6. Log in with each seeded account.
-7. Confirm each role opens the dashboard listed in the seeded-account table.
-8. Refresh the page and confirm the session remains active.
-9. Remove or corrupt `oyster_auth` in browser local storage and refresh.
-10. Confirm an invalid session returns to the login page.
-11. Open `/admin` as a regular user and confirm access is blocked.
-12. Open `/center/dashboard` as a regular user and confirm access is blocked.
-13. Open `/booking/1` while logged out and confirm redirection to `/auth`.
-14. After login, confirm the user returns to the requested protected page.
-15. Stop the backend and confirm login displays a connection error.
+5. Confirm Instructor registration creates an `InstructorProfile` record.
+6. Confirm Diving Center registration creates a `DivingCenter` record linked to the owner user.
+7. Log out and confirm the authenticated menu disappears.
+8. Log in with each seeded account.
+9. Confirm login opens the home page `/`.
+10. Use the Dashboard button/menu and confirm each role opens the dashboard listed in the seeded-account table.
+11. Confirm Instructor dashboard has independent trip/course posting UI.
+12. Refresh the page and confirm the session remains active.
+13. Remove or corrupt `oyster_auth` in browser local storage and refresh.
+14. Confirm an invalid session returns to the login page.
+15. Open `/admin` as a regular user and confirm access is blocked.
+16. Open `/center/dashboard` as a regular user and confirm access is blocked.
+17. Open `/instructor/dashboard` as a regular user and confirm access is blocked.
+18. Open `/booking/1` while logged out and confirm redirection to `/auth`.
+19. After login, confirm the user returns to the requested protected page.
+20. Stop the backend and confirm login displays a connection error.
 
 ## Frontend Page Tests
 
@@ -219,6 +224,7 @@ Check these routes:
 /auth
 /admin
 /dashboard
+/instructor/dashboard
 /center/dashboard
 /a-route-that-does-not-exist
 ```
