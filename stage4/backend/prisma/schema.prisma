@@ -41,11 +41,23 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  ownedCenters  DivingCenter[] @relation("CenterOwner")
-  taughtTrips   Trip[]         @relation("TripInstructor")
-  taughtCourses Course[]       @relation("CourseInstructor")
-  bookings      Booking[]
-  reviews       Review[]
+  ownedCenters      DivingCenter[]     @relation("CenterOwner")
+  taughtTrips       Trip[]             @relation("TripInstructor")
+  taughtCourses     Course[]           @relation("CourseInstructor")
+  bookings          Booking[]
+  reviews           Review[]
+  instructorProfile InstructorProfile?
+}
+
+model InstructorProfile {
+  id            Int            @id @default(autoincrement())
+  licenseNumber String         @unique
+  status        ApprovalStatus @default(pending)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int  @unique
 }
 
 model DivingCenter {
@@ -76,17 +88,17 @@ model Trip {
   id              Int             @id @default(autoincrement())
   title           String
   description     String?
-  durationHours   Int             
+  durationHours   Int
   difficultyLevel DifficultyLevel
   pricePerPerson  Decimal         @db.Decimal(10, 2)
-  maxCapacity     Int             
+  maxCapacity     Int
   scheduleDate    DateTime
   status          ApprovalStatus  @default(pending)
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
-  center       DivingCenter @relation(fields: [centerId], references: [id], onDelete: Cascade)
-  centerId     Int
+  center   DivingCenter @relation(fields: [centerId], references: [id], onDelete: Cascade)
+  centerId Int
 
   instructor   User? @relation("TripInstructor", fields: [instructorId], references: [id], onDelete: SetNull)
   instructorId Int?
@@ -108,8 +120,8 @@ model Course {
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 
-  center       DivingCenter @relation(fields: [centerId], references: [id], onDelete: Cascade)
-  centerId     Int
+  center   DivingCenter @relation(fields: [centerId], references: [id], onDelete: Cascade)
+  centerId Int
 
   instructor   User? @relation("CourseInstructor", fields: [instructorId], references: [id], onDelete: SetNull)
   instructorId Int?
@@ -122,7 +134,7 @@ model Course {
 
 model Booking {
   id             Int           @id @default(autoincrement())
-  numberOfPeople Int           
+  numberOfPeople Int
   totalPrice     Decimal       @db.Decimal(10, 2)
   status         BookingStatus @default(pending)
   createdAt      DateTime      @default(now())
@@ -131,8 +143,8 @@ model Booking {
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int
 
-  trip     Trip?   @relation(fields: [tripId], references: [id], onDelete: Cascade)
-  tripId   Int?
+  trip   Trip? @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  tripId Int?
 
   course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId Int?
@@ -157,7 +169,7 @@ model Payment {
 
 model Review {
   id        Int      @id @default(autoincrement())
-  rating    Int      
+  rating    Int
   comment   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -168,8 +180,8 @@ model Review {
   center   DivingCenter @relation(fields: [centerId], references: [id], onDelete: Cascade)
   centerId Int
 
-  trip     Trip?   @relation(fields: [tripId], references: [id], onDelete: SetNull)
-  tripId   Int?
+  trip   Trip? @relation(fields: [tripId], references: [id], onDelete: SetNull)
+  tripId Int?
 
   course   Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
   courseId Int?

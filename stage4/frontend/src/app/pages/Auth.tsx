@@ -7,10 +7,7 @@ import {
 } from "react-router-dom";
 import { Anchor, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
-import {
-  dashboardPathForRole,
-  type RegistrationRole,
-} from "../lib/roles";
+import { type RegistrationRole } from "../lib/roles";
 
 type AuthTab = "login" | "register";
 
@@ -39,6 +36,10 @@ export function Auth() {
     email: "",
     password: "",
     role: "user" as RegistrationRole,
+    instructorLicenseNumber: "",
+    centerName: "",
+    centerCity: "",
+    centerLicenseNumber: "",
   });
 
   useEffect(() => {
@@ -54,11 +55,11 @@ export function Auth() {
     setTab(nextTab);
   };
 
-  const finishAuthentication = (role: NonNullable<typeof user>["role"]) => {
+  const finishAuthentication = () => {
     navigate(
       requestedPath && requestedPath !== "/auth"
         ? requestedPath
-        : dashboardPathForRole(role),
+        : "/",
       { replace: true },
     );
   };
@@ -67,8 +68,8 @@ export function Auth() {
     event.preventDefault();
 
     try {
-      const authenticatedUser = await login(loginForm);
-      finishAuthentication(authenticatedUser.role);
+      await login(loginForm);
+      finishAuthentication();
     } catch {
       // AuthProvider exposes the request error to the page.
     }
@@ -78,8 +79,8 @@ export function Auth() {
     event.preventDefault();
 
     try {
-      const authenticatedUser = await register(registerForm);
-      finishAuthentication(authenticatedUser.role);
+      await register(registerForm);
+      finishAuthentication();
     } catch {
       // AuthProvider exposes the request error to the page.
     }
@@ -94,7 +95,7 @@ export function Auth() {
   }
 
   if (isAuthenticated && user) {
-    return <Navigate to={dashboardPathForRole(user.role)} replace />;
+    return <Navigate to="/" replace />;
   }
 
   return (
@@ -229,6 +230,60 @@ export function Auth() {
                   autoComplete="new-password"
                   minLength={6}
                 />
+                {registerForm.role === "instructor" && (
+                  <Field
+                    label="Instructor License Number"
+                    value={registerForm.instructorLicenseNumber}
+                    onChange={(value) =>
+                      setRegisterForm((form) => ({
+                        ...form,
+                        instructorLicenseNumber: value,
+                      }))
+                    }
+                    autoComplete="off"
+                    minLength={2}
+                  />
+                )}
+                {registerForm.role === "diving_center" && (
+                  <div className="space-y-4 rounded-2xl border border-teal-100 bg-teal-50/50 p-4">
+                    <Field
+                      label="Diving Center Name"
+                      value={registerForm.centerName}
+                      onChange={(value) =>
+                        setRegisterForm((form) => ({
+                          ...form,
+                          centerName: value,
+                        }))
+                      }
+                      autoComplete="organization"
+                      minLength={2}
+                    />
+                    <Field
+                      label="City"
+                      value={registerForm.centerCity}
+                      onChange={(value) =>
+                        setRegisterForm((form) => ({
+                          ...form,
+                          centerCity: value,
+                        }))
+                      }
+                      autoComplete="address-level2"
+                      minLength={2}
+                    />
+                    <Field
+                      label="Diving Center License Number"
+                      value={registerForm.centerLicenseNumber}
+                      onChange={(value) =>
+                        setRegisterForm((form) => ({
+                          ...form,
+                          centerLicenseNumber: value,
+                        }))
+                      }
+                      autoComplete="off"
+                      minLength={2}
+                    />
+                  </div>
+                )}
                 <p className="text-xs text-slate-400">
                   Choose the account type that matches how you will use Oyster.
                   Admin accounts cannot be created through public registration.

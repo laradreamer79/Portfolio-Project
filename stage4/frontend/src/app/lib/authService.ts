@@ -24,6 +24,10 @@ export type RegisterPayload = {
   email: string;
   password: string;
   role: RegistrationRole;
+  instructorLicenseNumber?: string;
+  centerName?: string;
+  centerCity?: string;
+  centerLicenseNumber?: string;
 };
 
 export function login(payload: LoginPayload): Promise<AuthResponse> {
