@@ -120,7 +120,7 @@ Run `npm run seed` from `stage4/backend` before using these accounts.
 | Role | Email | Password | Expected dashboard |
 | --- | --- | --- | --- |
 | User | `user@example.com` | `123456` | `/dashboard` |
-| Instructor | `instructor@example.com` | `123456` | `/dashboard` |
+| Instructor | `instructor@example.com` | `123456` | `/instructor/dashboard` |
 | Diving center | `divingcenter@example.com` | `123456` | `/center/dashboard` |
 | Admin | `admin@example.com` | `123456` | `/admin` |
 
@@ -196,14 +196,16 @@ Test these flows in the browser:
 8. Log in with each seeded account.
 9. Confirm login opens the home page `/`.
 10. Use the Dashboard button/menu and confirm each role opens the dashboard listed in the seeded-account table.
-11. Refresh the page and confirm the session remains active.
-12. Remove or corrupt `oyster_auth` in browser local storage and refresh.
-13. Confirm an invalid session returns to the login page.
-14. Open `/admin` as a regular user and confirm access is blocked.
-15. Open `/center/dashboard` as a regular user and confirm access is blocked.
-16. Open `/booking/1` while logged out and confirm redirection to `/auth`.
-17. After login, confirm the user returns to the requested protected page.
-18. Stop the backend and confirm login displays a connection error.
+11. Confirm Instructor dashboard has independent trip/course posting UI.
+12. Refresh the page and confirm the session remains active.
+13. Remove or corrupt `oyster_auth` in browser local storage and refresh.
+14. Confirm an invalid session returns to the login page.
+15. Open `/admin` as a regular user and confirm access is blocked.
+16. Open `/center/dashboard` as a regular user and confirm access is blocked.
+17. Open `/instructor/dashboard` as a regular user and confirm access is blocked.
+18. Open `/booking/1` while logged out and confirm redirection to `/auth`.
+19. After login, confirm the user returns to the requested protected page.
+20. Stop the backend and confirm login displays a connection error.
 
 ## Frontend Page Tests
 
@@ -222,6 +224,7 @@ Check these routes:
 /auth
 /admin
 /dashboard
+/instructor/dashboard
 /center/dashboard
 /a-route-that-does-not-exist
 ```

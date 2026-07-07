@@ -14,6 +14,7 @@ export function roleLabel(role: UserRole): string {
 
 export function dashboardPathForRole(role: UserRole): string {
   if (role === "admin") return "/admin";
+  if (role === "instructor") return "/instructor/dashboard";
   if (role === "diving_center") return "/center/dashboard";
   return "/dashboard";
 }
