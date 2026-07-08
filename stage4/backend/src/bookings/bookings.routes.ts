@@ -7,7 +7,7 @@ import {
   allBookingsController,
 } from "./bookings.controller.js";
 
-import { authMiddleware } from "../middleware/auth.middleware.js";
+import { authenticate } from "../middleware/auth.middleware.js";
 
 
 export const bookingsRouter = Router();
@@ -15,28 +15,28 @@ export const bookingsRouter = Router();
 
 bookingsRouter.post(
   "/",
-  authMiddleware,
-  createBookingController
+  authenticate,
+  createBookingController,
 );
 
 
 bookingsRouter.patch(
   "/:id/cancel",
-  authMiddleware,
-  cancelBookingController
+  authenticate,
+  cancelBookingController,
 );
 
 
 bookingsRouter.get(
   "/my",
-  authMiddleware,
-  myBookingsController
+  authenticate,
+  myBookingsController,
 );
 
 
-// later protect with admin middleware
+// later we add admin role check
 bookingsRouter.get(
   "/",
-  authMiddleware,
-  allBookingsController
+  authenticate,
+  allBookingsController,
 );
