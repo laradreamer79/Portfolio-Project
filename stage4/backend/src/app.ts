@@ -7,9 +7,8 @@ import { healthRouter } from './routes/health.routes.js';
 import { authRouter } from "./auth/auth.routes.js";
 import { adminRouter } from "./routes/admin.routes.js";
 
-import { Module } from '@nestjs/common';
-import { BookingsModule } from './bookings/bookings.module';
-import { ReviewsModule } from './reviews/reviews.module';
+import { bookingsRouter } from "./bookings/bookings.routes.js";
+import { reviewsRouter } from "./reviews/reviews.routes.js";
 
 export const app = express();
 
@@ -22,13 +21,16 @@ app.use('/api/health', healthRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
 
+app.use(
+  "/api/bookings",
+  bookingsRouter
+);
+
+
+app.use(
+  "/api/reviews",
+  reviewsRouter
+);
+
 app.use(notFound);
 app.use(errorHandler);
-
-@Module({
-  imports: [
-    BookingsModule,
-    ReviewsModule,
-  ],
-})
-export class AppModule {}
