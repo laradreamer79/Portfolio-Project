@@ -1,4 +1,5 @@
-import { Request, Response } from "express";
+import { Response } from "express";
+import type { AuthRequest } from "../middleware/auth.middleware.js";
 
 import {
   createBooking,
@@ -10,7 +11,7 @@ import {
 
 
 export async function createBookingController(
-  req:Request,
+  req: AuthRequest,
   res:Response
 ){
 
@@ -47,7 +48,7 @@ export async function createBookingController(
 
 
 export async function cancelBookingController(
-  req:Request,
+  req: AuthRequest,
   res:Response
 ){
 
@@ -79,7 +80,7 @@ export async function cancelBookingController(
 
 
 export async function myBookingsController(
-  req:Request,
+  req: AuthRequest,
   res:Response
 ){
 
@@ -96,7 +97,7 @@ export async function myBookingsController(
 
 
 export async function allBookingsController(
-  req:Request,
+  req: AuthRequest,
   res:Response
 ){
 
