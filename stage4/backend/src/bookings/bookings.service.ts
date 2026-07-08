@@ -1,172 +1,218 @@
-import {
-  Injectable,
-  BadRequestException,
-  NotFoundException,
-} from '@nestjs/common';
-import { PrismaService } from '../database/prisma.service';
-
-@Injectable()
-export class BookingsService {
-  constructor(
-    private readonly prisma: PrismaService,
-  ) {}
+import { prisma } from "../lib/prisma.js";
 
 
-  // Create booking for trip
-  async createBooking(
-    userId: number,
-    tripId: number,
-    numberOfPeople: number,
-  ) {
+interface CreateBookingInput {
+  userId: number;
+  tripId?: number;
+  courseId?: number;
+  numberOfPeople: number;
+}
 
-    const trip = await this.prisma.trip.findUnique({
-      where: {
-        id: tripId,
+
+export async function createBooking(
+  data: CreateBookingInput
+) {
+
+  if (!data.tripId && !data.courseId) {
+    throw new Error(
+      "Booking must have a trip or course"
+    );
+  }
+
+
+  let totalPrice = 0;
+
+
+  if (data.tripId) {
+
+    const trip = await prisma.trip.findUnique({
+      where:{
+        id:data.tripId
       },
-      include: {
-        bookings: true,
-      },
+      include:{
+        bookings:true
+      }
     });
 
 
-    if (!trip) {
-      throw new NotFoundException(
-        'Trip not found',
-      );
+    if(!trip){
+      throw new Error("Trip not found");
     }
 
 
-    const currentBookings =
+    const bookedPeople =
       trip.bookings
-        .filter(
-          booking => booking.status !== 'cancelled',
-        )
-        .reduce(
-          (total, booking) =>
-            total + booking.numberOfPeople,
-          0,
-        );
+      .filter(
+        booking =>
+          booking.status !== "cancelled"
+      )
+      .reduce(
+        (sum, booking)=>
+          sum + booking.numberOfPeople,
+        0
+      );
 
 
-    // Prevent overbooking
-    if (
-      currentBookings + numberOfPeople >
+    if(
+      bookedPeople + data.numberOfPeople
+      >
       trip.maxCapacity
-    ) {
-      throw new BadRequestException(
-        'Not enough available seats',
+    ){
+      throw new Error(
+        "No available seats"
       );
     }
 
 
-    return this.prisma.booking.create({
-      data: {
-        userId,
-        tripId,
-        numberOfPeople,
-        totalPrice:
-          Number(trip.pricePerPerson) *
-          numberOfPeople,
-      },
-      include: {
-        trip: true,
-      },
-    });
+    totalPrice =
+      Number(trip.pricePerPerson)
+      *
+      data.numberOfPeople;
   }
 
 
 
-  // Cancel booking
-  async cancelBooking(
-    bookingId: number,
-    userId: number,
-  ) {
+  if(data.courseId){
 
-    const booking =
-      await this.prisma.booking.findUnique({
+    const course =
+      await prisma.course.findUnique({
         where:{
-          id: bookingId,
-        },
+          id:data.courseId
+        }
       });
 
 
-    if (!booking) {
-      throw new NotFoundException(
-        'Booking not found',
+    if(!course){
+      throw new Error(
+        "Course not found"
       );
     }
 
 
-    if (booking.userId !== userId) {
-      throw new BadRequestException(
-        'You cannot cancel this booking',
-      );
-    }
-
-
-    return this.prisma.booking.update({
-      where:{
-        id: bookingId,
-      },
-      data:{
-        status:'cancelled',
-      },
-    });
+    totalPrice =
+      Number(course.price)
+      *
+      data.numberOfPeople;
   }
 
 
 
-  // User booking history
-  async getUserBookings(
-    userId:number,
+  return prisma.booking.create({
+
+    data:{
+      userId:data.userId,
+      tripId:data.tripId,
+      courseId:data.courseId,
+      numberOfPeople:data.numberOfPeople,
+      totalPrice,
+    },
+
+    include:{
+      trip:true,
+      course:true
+    }
+
+  });
+
+}
+
+
+
+export async function cancelBooking(
+  bookingId:number,
+  userId:number
+){
+
+  const booking =
+    await prisma.booking.findUnique({
+      where:{
+        id:bookingId
+      }
+    });
+
+
+  if(!booking){
+    throw new Error(
+      "Booking not found"
+    );
+  }
+
+
+  if(
+    booking.userId !== userId
   ){
-
-    return this.prisma.booking.findMany({
-
-      where:{
-        userId,
-      },
-
-      include:{
-        trip:{
-          include:{
-            center:true,
-          },
-        },
-
-        course:{
-          include:{
-            center:true,
-          },
-        },
-
-      },
-
-      orderBy:{
-        createdAt:'desc',
-      },
-
-    });
+    throw new Error(
+      "Not allowed"
+    );
   }
 
 
-  // Admin list all bookings
-  async getAllBookings(){
+  return prisma.booking.update({
 
-    return this.prisma.booking.findMany({
+    where:{
+      id:bookingId
+    },
 
-      include:{
-        user:true,
-        trip:true,
-        course:true,
+    data:{
+      status:"cancelled"
+    }
+
+  });
+
+}
+
+
+
+export async function getUserBookings(
+  userId:number
+){
+
+  return prisma.booking.findMany({
+
+    where:{
+      userId
+    },
+
+    include:{
+      trip:{
+        include:{
+          center:true
+        }
       },
 
-      orderBy:{
-        createdAt:'desc',
-      },
+      course:{
+        include:{
+          center:true
+        }
+      }
 
-    });
+    },
 
-  }
+    orderBy:{
+      createdAt:"desc"
+    }
+
+  });
+
+}
+
+
+
+export async function getAllBookings(){
+
+  return prisma.booking.findMany({
+
+    include:{
+      user:true,
+      trip:true,
+      course:true,
+      payment:true
+    },
+
+    orderBy:{
+      createdAt:"desc"
+    }
+
+  });
 
 }
