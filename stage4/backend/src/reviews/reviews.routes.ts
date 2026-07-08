@@ -19,6 +19,6 @@ reviewsRouter.post(
 
 
 reviewsRouter.get(
-  "/",
+  "/center/:centerId",
   getReviewsController,
 );
