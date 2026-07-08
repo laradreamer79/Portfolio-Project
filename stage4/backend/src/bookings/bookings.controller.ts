@@ -1,78 +1,109 @@
+import { Request, Response } from "express";
+
 import {
-  Controller,
-  Post,
-  Get,
-  Patch,
-  Param,
-  Body,
-  Req,
-} from '@nestjs/common';
-
-import { BookingsService } from './bookings.service';
-
-
-@Controller('bookings')
-export class BookingsController {
-
-  constructor(
-    private readonly bookingsService: BookingsService,
-  ) {}
+  createBooking,
+  cancelBooking,
+  getUserBookings,
+  getAllBookings
+} from "./bookings.service.js";
 
 
 
-  // Create booking
-  @Post()
-  async createBooking(
-    @Req() req,
-    @Body() body,
-  ) {
+export async function createBookingController(
+  req:Request,
+  res:Response
+){
 
-    return this.bookingsService.createBooking(
-      req.user.id,
-      body.tripId,
-      body.numberOfPeople,
+  try{
+
+    const booking =
+      await createBooking({
+
+        userId:req.user.id,
+
+        tripId:req.body.tripId,
+
+        courseId:req.body.courseId,
+
+        numberOfPeople:
+          req.body.numberOfPeople
+
+      });
+
+
+    res.status(201).json(booking);
+
+
+  }catch(error:any){
+
+    res.status(400).json({
+      message:error.message
+    });
+
+  }
+
+}
+
+
+
+export async function cancelBookingController(
+  req:Request,
+  res:Response
+){
+
+  try{
+
+    const booking =
+      await cancelBooking(
+
+        Number(req.params.id),
+
+        req.user.id
+
+      );
+
+
+    res.json(booking);
+
+
+  }catch(error:any){
+
+    res.status(400).json({
+      message:error.message
+    });
+
+  }
+
+}
+
+
+
+export async function myBookingsController(
+  req:Request,
+  res:Response
+){
+
+  const bookings =
+    await getUserBookings(
+      req.user.id
     );
 
-  }
+
+  res.json(bookings);
+
+}
 
 
 
-  // Cancel booking
-  @Patch(':id/cancel')
-  async cancelBooking(
-    @Req() req,
-    @Param('id') id: string,
-  ) {
+export async function allBookingsController(
+  req:Request,
+  res:Response
+){
 
-    return this.bookingsService.cancelBooking(
-      Number(id),
-      req.user.id,
-    );
-
-  }
+  const bookings =
+    await getAllBookings();
 
 
-
-  // User booking history
-  @Get('my')
-  async getMyBookings(
-    @Req() req,
-  ) {
-
-    return this.bookingsService.getUserBookings(
-      req.user.id,
-    );
-
-  }
-
-
-
-  // Admin - list all bookings
-  @Get()
-  async getAllBookings(){
-
-    return this.bookingsService.getAllBookings();
-
-  }
+  res.json(bookings);
 
 }
