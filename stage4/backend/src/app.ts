@@ -7,6 +7,10 @@ import { healthRouter } from './routes/health.routes.js';
 import { authRouter } from "./auth/auth.routes.js";
 import { adminRouter } from "./routes/admin.routes.js";
 
+import { Module } from '@nestjs/common';
+import { BookingsModule } from './bookings/bookings.module';
+import { ReviewsModule } from './reviews/reviews.module';
+
 export const app = express();
 
 app.use(cors());
@@ -20,3 +24,11 @@ app.use("/api/admin", adminRouter);
 
 app.use(notFound);
 app.use(errorHandler);
+
+@Module({
+  imports: [
+    BookingsModule,
+    ReviewsModule,
+  ],
+})
+export class AppModule {}
