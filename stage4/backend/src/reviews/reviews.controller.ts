@@ -1,4 +1,5 @@
-import { Request, Response } from "express";
+import { Response } from "express";
+import type { AuthRequest } from "../middleware/auth.middleware.js";
 
 import {
   createReview,
@@ -8,7 +9,7 @@ import {
 
 
 export async function createReviewController(
-  req:Request,
+  req: AuthRequest,
   res:Response
 ){
 
@@ -37,7 +38,7 @@ export async function createReviewController(
 
 
 export async function getReviewsController(
-  req:Request,
+  req: AuthRequest,
   res:Response
 ){
 
