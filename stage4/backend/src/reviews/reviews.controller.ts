@@ -1,34 +1,43 @@
-import { Response } from "express";
+import type { Response } from "express";
 import type { AuthRequest } from "../middleware/auth.middleware.js";
 
 import {
   createReview,
-  getReviews
+  getReviews,
 } from "./reviews.service.js";
 
 
 
 export async function createReviewController(
   req: AuthRequest,
-  res:Response
-){
+  res: Response,
+) {
 
-  try{
+  try {
 
-    const review =
-      await createReview(
-        req.user.id,
-        req.body
-      );
-
-
-    res.status(201).json(review);
+    if (!req.user) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
 
 
-  }catch(error:any){
+    const review = await createReview(
+      req.user.id,
+      req.body,
+    );
 
-    res.status(400).json({
-      message:error.message
+
+    return res.status(201).json(review);
+
+
+  } catch (error) {
+
+    return res.status(400).json({
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to create review",
     });
 
   }
@@ -37,15 +46,31 @@ export async function createReviewController(
 
 
 
+
 export async function getReviewsController(
   req: AuthRequest,
-  res:Response
-){
+  res: Response,
+) {
 
-  const reviews =
-    await getReviews();
+  try {
+
+    const reviews = await getReviews(
+      Number(req.params.centerId),
+    );
 
 
-  res.json(reviews);
+    return res.status(200).json(reviews);
+
+
+  } catch (error) {
+
+    return res.status(400).json({
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to get reviews",
+    });
+
+  }
 
 }
