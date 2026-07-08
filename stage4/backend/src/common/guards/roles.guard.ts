@@ -1,66 +1,44 @@
-import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-} from '@nestjs/common';
-
-import { Reflector } from '@nestjs/core';
-
-import { ROLES_KEY } from '../decorators/roles.decorator';
+import type { NextFunction, Response } from "express";
+import type { AuthRequest } from "../../middleware/auth.middleware.js";
 
 
-@Injectable()
-export class RolesGuard implements CanActivate {
+export function roleGuard(
+  ...allowedRoles: string[]
+) {
+
+  return (
+    request: AuthRequest,
+    response: Response,
+    next: NextFunction,
+  ) => {
 
 
-  constructor(
-    private reflector: Reflector,
-  ) {}
+    if (!request.user) {
 
+      return response.status(401).json({
+        message: "Unauthorized",
+      });
 
-
-  canActivate(
-    context: ExecutionContext,
-  ): boolean {
-
-
-    const requiredRoles =
-      this.reflector.getAllAndOverride<string[]>(
-        ROLES_KEY,
-        [
-          context.getHandler(),
-          context.getClass(),
-        ],
-      );
-
-
-
-    // No role restriction
-    if (!requiredRoles) {
-      return true;
     }
 
 
 
-    const request =
-      context.switchToHttp().getRequest();
+    if (
+      !allowedRoles.includes(
+        request.user.role,
+      )
+    ) {
 
+      return response.status(403).json({
+        message: "Forbidden",
+      });
 
-
-    const user = request.user;
-
-
-
-    if (!user) {
-      return false;
     }
 
 
 
-    return requiredRoles.includes(
-      user.role,
-    );
+    next();
 
-  }
+  };
 
 }
