@@ -1,76 +1,83 @@
-import { Response } from "express";
+import type { Response } from "express";
 import type { AuthRequest } from "../middleware/auth.middleware.js";
-
 import {
   createBooking,
   cancelBooking,
   getUserBookings,
-  getAllBookings
 } from "./bookings.service.js";
-
 
 
 export async function createBookingController(
   req: AuthRequest,
-  res:Response
-){
+  res: Response,
+) {
+  try {
 
-  try{
-
-    const booking =
-      await createBooking({
-
-        userId:req.user.id,
-
-        tripId:req.body.tripId,
-
-        courseId:req.body.courseId,
-
-        numberOfPeople:
-          req.body.numberOfPeople
-
+    if (!req.user) {
+      return res.status(401).json({
+        message: "Unauthorized",
       });
+    }
 
 
-    res.status(201).json(booking);
+    const booking = await createBooking({
+      userId: req.user.id,
+      tripId: req.body.tripId,
+      courseId: req.body.courseId,
+      numberOfPeople: req.body.numberOfPeople,
+    });
 
 
-  }catch(error:any){
+    return res.status(201).json(booking);
 
-    res.status(400).json({
-      message:error.message
+
+  } catch (error) {
+
+    return res.status(400).json({
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to create booking",
     });
 
   }
-
 }
 
 
 
 export async function cancelBookingController(
   req: AuthRequest,
-  res:Response
-){
+  res: Response,
+) {
 
-  try{
+  try {
 
-    const booking =
-      await cancelBooking(
-
-        Number(req.params.id),
-
-        req.user.id
-
-      );
+    if (!req.user) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
 
 
-    res.json(booking);
+    const bookingId = Number(req.params.id);
 
 
-  }catch(error:any){
+    const booking = await cancelBooking(
+      bookingId,
+      req.user.id,
+    );
 
-    res.status(400).json({
-      message:error.message
+
+    return res.status(200).json(booking);
+
+
+  } catch (error) {
+
+    return res.status(400).json({
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to cancel booking",
     });
 
   }
@@ -79,32 +86,37 @@ export async function cancelBookingController(
 
 
 
-export async function myBookingsController(
+export async function getMyBookingsController(
   req: AuthRequest,
-  res:Response
-){
+  res: Response,
+) {
 
-  const bookings =
-    await getUserBookings(
-      req.user.id
+  try {
+
+    if (!req.user) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+
+    const bookings = await getUserBookings(
+      req.user.id,
     );
 
 
-  res.json(bookings);
-
-}
+    return res.status(200).json(bookings);
 
 
+  } catch (error) {
 
-export async function allBookingsController(
-  req: AuthRequest,
-  res:Response
-){
+    return res.status(400).json({
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to get bookings",
+    });
 
-  const bookings =
-    await getAllBookings();
-
-
-  res.json(bookings);
+  }
 
 }
