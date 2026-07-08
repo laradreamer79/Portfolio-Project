@@ -10,7 +10,7 @@ if (!JWT_SECRET) {
 const jwtSecret: string = JWT_SECRET;
 
 export interface AuthRequest extends Request {
-  user?: {
+  user: {
     id: number;
     role: string;
   };
