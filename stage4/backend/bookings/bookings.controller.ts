@@ -1,12 +1,11 @@
 import {
- Controller,
- Post,
- Get,
- Patch,
- Param,
- Body,
- Req,
- UseGuards,
+  Controller,
+  Post,
+  Get,
+  Patch,
+  Param,
+  Body,
+  Req,
 } from '@nestjs/common';
 
 import { BookingsService } from './bookings.service';
@@ -15,63 +14,65 @@ import { BookingsService } from './bookings.service';
 @Controller('bookings')
 export class BookingsController {
 
-
-constructor(
- private bookingsService: BookingsService
-){}
-
-
-
-@Post()
-async create(
- @Req() req,
- @Body() body
-){
-
- return this.bookingsService.createBooking(
-   req.user.id,
-   body.tripId,
-   body.numberOfPeople,
- );
-
-}
+  constructor(
+    private readonly bookingsService: BookingsService,
+  ) {}
 
 
 
-@Patch(':id/cancel')
-async cancel(
- @Param('id') id:number,
- @Req() req
-){
+  // Create booking
+  @Post()
+  async createBooking(
+    @Req() req,
+    @Body() body,
+  ) {
 
- return this.bookingsService.cancelBooking(
-   Number(id),
-   req.user.id,
- );
+    return this.bookingsService.createBooking(
+      req.user.id,
+      body.tripId,
+      body.numberOfPeople,
+    );
 
-}
-
-
-
-@Get('history')
-async history(
- @Req() req
-){
-
- return this.bookingsService.getUserBookings(
-   req.user.id,
- );
-
-}
+  }
 
 
 
-@Get()
-async findAll(){
+  // Cancel booking
+  @Patch(':id/cancel')
+  async cancelBooking(
+    @Req() req,
+    @Param('id') id: string,
+  ) {
 
- return this.bookingsService.findAll();
+    return this.bookingsService.cancelBooking(
+      Number(id),
+      req.user.id,
+    );
 
-}
+  }
 
+
+
+  // User booking history
+  @Get('my')
+  async getMyBookings(
+    @Req() req,
+  ) {
+
+    return this.bookingsService.getUserBookings(
+      req.user.id,
+    );
+
+  }
+
+
+
+  // Admin - list all bookings
+  @Get()
+  async getAllBookings(){
+
+    return this.bookingsService.getAllBookings();
+
+  }
 
 }
