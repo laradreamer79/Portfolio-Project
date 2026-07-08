@@ -9,40 +9,57 @@ if (!JWT_SECRET) {
 
 const jwtSecret: string = JWT_SECRET;
 
+
 export interface AuthRequest extends Request {
-  user: {
+  user?: {
     id: number;
     role: string;
   };
 }
 
+
 export function authenticate(
   request: AuthRequest,
   response: Response,
   next: NextFunction,
-) {
+): void {
+
   const authHeader = request.headers.authorization;
 
+
   if (!authHeader?.startsWith("Bearer ")) {
-    return response.status(401).json({
+    response.status(401).json({
       message: "Unauthorized",
     });
+    return;
   }
+
 
   const token = authHeader.split(" ")[1];
 
+
   try {
-    const decoded = jwt.verify(token, jwtSecret) as {
-      id: number;
-      role: string;
+
+    const decoded = jwt.verify(
+      token,
+      jwtSecret,
+    ) as {
+      id:number;
+      role:string;
     };
+
 
     request.user = decoded;
 
     next();
+
+
   } catch {
-    return response.status(401).json({
-      message: "Invalid token",
+
+    response.status(401).json({
+      message:"Invalid token",
     });
+
   }
+
 }
