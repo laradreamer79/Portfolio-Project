@@ -5,7 +5,7 @@ import {
   getReviewsController,
 } from "./reviews.controller.js";
 
-import { authMiddleware } from "../middleware/auth.middleware.js";
+import { authenticate } from "../middleware/auth.middleware.js";
 
 
 export const reviewsRouter = Router();
@@ -13,12 +13,12 @@ export const reviewsRouter = Router();
 
 reviewsRouter.post(
   "/",
-  authMiddleware,
-  createReviewController
+  authenticate,
+  createReviewController,
 );
 
 
 reviewsRouter.get(
   "/",
-  getReviewsController
+  getReviewsController,
 );
