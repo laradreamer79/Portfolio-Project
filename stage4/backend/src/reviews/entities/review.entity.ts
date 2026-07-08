@@ -1,19 +1,21 @@
 export class ReviewEntity {
-  id: number;
 
-  rating: number;
+  id!: number;
+
+  rating!: number;
 
   comment?: string;
 
-  createdAt: Date;
+  createdAt!: Date;
 
-  updatedAt: Date;
+  updatedAt!: Date;
 
-  userId: number;
+  userId!: number;
 
-  centerId: number;
+  centerId!: number;
 
   tripId?: number;
 
   courseId?: number;
+
 }
