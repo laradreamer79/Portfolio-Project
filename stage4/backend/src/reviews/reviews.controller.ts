@@ -12,7 +12,6 @@ export async function createReviewController(
   req: AuthRequest,
   res: Response,
 ) {
-
   try {
 
     if (!req.user) {
@@ -41,7 +40,6 @@ export async function createReviewController(
     });
 
   }
-
 }
 
 
@@ -51,12 +49,9 @@ export async function getReviewsController(
   req: AuthRequest,
   res: Response,
 ) {
-
   try {
 
-    const reviews = await getReviews(
-      Number(req.params.centerId),
-    );
+    const reviews = await getReviews();
 
 
     return res.status(200).json(reviews);
@@ -72,5 +67,4 @@ export async function getReviewsController(
     });
 
   }
-
 }
