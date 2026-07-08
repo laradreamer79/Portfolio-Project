@@ -1,67 +1,50 @@
+import { Request, Response } from "express";
+
 import {
-  Controller,
-  Post,
-  Get,
-  Body,
-  Req,
-  Param,
-} from '@nestjs/common';
-
-
-import { ReviewsService } from './reviews.service';
+  createReview,
+  getReviews
+} from "./reviews.service.js";
 
 
 
-@Controller('reviews')
-export class ReviewsController {
+export async function createReviewController(
+  req:Request,
+  res:Response
+){
+
+  try{
+
+    const review =
+      await createReview(
+        req.user.id,
+        req.body
+      );
 
 
-  constructor(
-    private readonly reviewsService: ReviewsService,
-  ) {}
+    res.status(201).json(review);
 
 
+  }catch(error:any){
 
-
-  // Create review
-  @Post()
-  async createReview(
-    @Req() req,
-    @Body() body,
-  ){
-
-    return this.reviewsService.createReview(
-      req.user.id,
-      body,
-    );
+    res.status(400).json({
+      message:error.message
+    });
 
   }
 
+}
 
 
 
-  // Get all reviews
-  @Get()
-  async getReviews(){
+export async function getReviewsController(
+  req:Request,
+  res:Response
+){
 
-    return this.reviewsService.getReviews();
-
-  }
-
-
+  const reviews =
+    await getReviews();
 
 
-  // Get reviews by center
-  @Get('center/:id')
-  async getCenterReviews(
-    @Param('id') id:string,
-  ){
-
-    return this.reviewsService.getCenterReviews(
-      Number(id),
-    );
-
-  }
-
+  res.json(reviews);
 
 }
