@@ -1,19 +1,21 @@
 export class BookingEntity {
-  id: number;
 
-  numberOfPeople: number;
+  id!: number;
 
-  totalPrice: number;
+  numberOfPeople!: number;
 
-  status: string;
+  totalPrice!: number;
 
-  createdAt: Date;
+  status!: string;
 
-  updatedAt: Date;
+  createdAt!: Date;
 
-  userId: number;
+  updatedAt!: Date;
+
+  userId!: number;
 
   tripId?: number;
 
   courseId?: number;
+
 }
