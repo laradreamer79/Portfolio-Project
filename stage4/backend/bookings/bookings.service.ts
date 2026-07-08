@@ -1,138 +1,133 @@
-import { prisma } from "../generated/prisma";
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 
-interface CreateBookingData {
-  userId: number;
-  tripId?: number;
-  courseId?: number;
-  numberOfPeople: number;
-  totalPrice: number;
-}
+@Injectable()
+export class BookingsService {
+  constructor(
+    private prisma: PrismaService,
+  ) {}
 
 
-// Create booking
-export async function createBooking(data: CreateBookingData) {
-  if (!data.tripId && !data.courseId) {
-    throw new Error("Booking must have a trip or a course");
+  // Create booking
+  async createBooking(
+    userId: number,
+    tripId: number,
+    numberOfPeople: number,
+  ) {
+
+    const trip = await this.prisma.trip.findUnique({
+      where: { id: tripId },
+      include: {
+        bookings: true,
+      },
+    });
+
+
+    if (!trip) {
+      throw new NotFoundException("Trip not found");
+    }
+
+
+    // prevent overbooking
+    const bookedPeople = trip.bookings.reduce(
+      (sum, booking) => sum + booking.numberOfPeople,
+      0,
+    );
+
+
+    if (bookedPeople + numberOfPeople > trip.maxCapacity) {
+      throw new BadRequestException(
+        "Trip capacity exceeded",
+      );
+    }
+
+
+    const booking = await this.prisma.booking.create({
+      data: {
+        userId,
+        tripId,
+        numberOfPeople,
+        totalPrice:
+          Number(trip.pricePerPerson) * numberOfPeople,
+      },
+    });
+
+
+    return booking;
   }
 
-  const booking = await prisma.booking.create({
-    data: {
-      userId: data.userId,
-      tripId: data.tripId,
-      courseId: data.courseId,
-      numberOfPeople: data.numberOfPeople,
-      totalPrice: data.totalPrice,
-      status: "pending",
-    },
-    include: {
-      trip: true,
-      course: true,
-      user: true,
-    },
-  });
-
-  return booking;
-}
 
 
-// Get booking by ID
-export async function getBookingById(id: number) {
-  const booking = await prisma.booking.findUnique({
-    where: {
-      id,
-    },
-    include: {
-      user: true,
-      trip: {
-        include: {
-          center: true,
-        },
+  // Cancel booking
+  async cancelBooking(
+    bookingId: number,
+    userId: number,
+  ) {
+
+    const booking = await this.prisma.booking.findUnique({
+      where:{
+        id: bookingId,
       },
-      course: {
-        include: {
-          center: true,
-        },
-      },
-      payment: true,
-    },
-  });
+    });
 
-  if (!booking) {
-    throw new Error("Booking not found");
+
+    if (!booking) {
+      throw new NotFoundException(
+        "Booking not found",
+      );
+    }
+
+
+    if (booking.userId !== userId) {
+      throw new BadRequestException(
+        "Not allowed",
+      );
+    }
+
+
+    return this.prisma.booking.update({
+      where:{
+        id: bookingId,
+      },
+      data:{
+        status:"cancelled",
+      },
+    });
   }
 
-  return booking;
-}
 
 
-// Get all bookings for user
-export async function getUserBookings(userId: number) {
-  return prisma.booking.findMany({
-    where: {
-      userId,
-    },
-    include: {
-      trip: true,
-      course: true,
-      payment: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-}
+  // User booking history
+  async getUserBookings(userId:number){
+
+    return this.prisma.booking.findMany({
+      where:{
+        userId,
+      },
+      include:{
+        trip:true,
+        course:true,
+      },
+      orderBy:{
+        createdAt:"desc",
+      },
+    });
+
+  }
 
 
-// Get all bookings (Admin)
-export async function getAllBookings() {
-  return prisma.booking.findMany({
-    include: {
-      user: true,
-      trip: true,
-      course: true,
-      payment: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-}
 
+  // Get all bookings
+  async findAll(){
 
-// Update booking status
-export async function updateBookingStatus(
-  id: number,
-  status: "pending" | "confirmed" | "cancelled",
-) {
-  return prisma.booking.update({
-    where: {
-      id,
-    },
-    data: {
-      status,
-    },
-  });
-}
+    return this.prisma.booking.findMany({
+      include:{
+        user:true,
+        trip:true,
+        course:true,
+      },
+    });
 
+  }
 
-// Cancel booking
-export async function cancelBooking(id: number) {
-  return prisma.booking.update({
-    where: {
-      id,
-    },
-    data: {
-      status: "cancelled",
-    },
-  });
-}
-
-
-// Delete booking
-export async function deleteBooking(id: number) {
-  return prisma.booking.delete({
-    where: {
-      id,
-    },
-  });
 }
