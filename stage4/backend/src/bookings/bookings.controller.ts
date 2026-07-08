@@ -120,3 +120,38 @@ export async function getMyBookingsController(
   }
 
 }
+
+export const myBookingsController = getMyBookingsController;
+
+
+export async function allBookingsController(
+  req: AuthRequest,
+  res: Response,
+) {
+  try {
+
+    const { prisma } = await import("../prisma/client.js");
+
+    const bookings = await prisma.booking.findMany({
+      include: {
+        user: true,
+        trip: true,
+        course: true,
+      },
+    });
+
+
+    return res.status(200).json(bookings);
+
+
+  } catch (error) {
+
+    return res.status(500).json({
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to get bookings",
+    });
+
+  }
+}
