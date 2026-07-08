@@ -1,46 +1,53 @@
-import { prisma } from "../lib/prisma.js";
-import type { CreateReviewInput } from "./reviews.validation.js";
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 
-export async function createReview(userId: number, input: CreateReviewInput) {
-  const booking = await prisma.booking.findUnique({
-    where: { id: input.bookingId },
-  });
 
-  if (!booking) {
-    throw { status: 404, message: "Booking not found" };
-  }
+@Injectable()
+export class ReviewsService {
 
-  if (booking.userId !== userId) {
-    throw { status: 403, message: "Forbidden" };
-  }
 
-  if (booking.status !== "COMPLETED") {
-    throw { status: 400, message: "You can only review completed stays" };
-  }
+constructor(
+ private prisma:PrismaService
+){}
 
-  const existing = await prisma.review.findUnique({
-    where: { bookingId: input.bookingId },
-  });
 
-  if (existing) {
-    throw { status: 409, message: "Review already exists for this booking" };
-  }
 
-  return prisma.review.create({
-    data: {
-      bookingId: input.bookingId,
-      userId,
-      listingId: booking.listingId,
-      rating: input.rating,
-      comment: input.comment,
-    },
-  });
+async create(
+ userId:number,
+ data:any
+){
+
+return this.prisma.review.create({
+
+data:{
+ userId,
+ centerId:data.centerId,
+ tripId:data.tripId,
+ courseId:data.courseId,
+ rating:data.rating,
+ comment:data.comment,
 }
 
-export async function getListingReviews(listingId: number) {
-  return prisma.review.findMany({
-    where: { listingId },
-    include: { user: { select: { id: true, name: true } } },
-    orderBy: { createdAt: "desc" },
-  });
+});
+
+}
+
+
+
+async findAll(){
+
+return this.prisma.review.findMany({
+
+include:{
+ user:true,
+ trip:true,
+ course:true,
+ center:true,
+}
+
+});
+
+}
+
+
 }
