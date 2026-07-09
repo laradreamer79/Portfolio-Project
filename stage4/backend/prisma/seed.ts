@@ -1,6 +1,6 @@
 /**
  * Development password for all seeded users:
- * Password123!
+ * 123456
  */
 
 import "dotenv/config";
@@ -8,7 +8,7 @@ import { prisma } from "../src/prisma/client.js";
 import bcrypt from "bcryptjs";
 
 async function main() {
-  const password = "Password123!";
+  const password = "123456";
   const passwordHash = await bcrypt.hash(password, 10);
 
   // =====================
@@ -16,7 +16,7 @@ async function main() {
   // =====================
   const user = await prisma.user.upsert({
     where: { email: "user@example.com" },
-    update: {},
+    update: { passwordHash },
     create: {
       name: "Test User",
       email: "user@example.com",
@@ -27,7 +27,7 @@ async function main() {
 
   const instructor = await prisma.user.upsert({
     where: { email: "instructor@example.com" },
-    update: {},
+    update: { passwordHash },
     create: {
       name: "Test Instructor",
       email: "instructor@example.com",
@@ -38,7 +38,7 @@ async function main() {
 
   const centerOwner = await prisma.user.upsert({
     where: { email: "divingcenter@example.com" },
-    update: {},
+    update: { passwordHash },
     create: {
       name: "Test Diving Center",
       email: "divingcenter@example.com",
@@ -49,7 +49,7 @@ async function main() {
 
   await prisma.user.upsert({
     where: { email: "admin@example.com" },
-    update: {},
+    update: { passwordHash },
     create: {
       name: "Test Admin",
       email: "admin@example.com",

@@ -14,6 +14,11 @@ export async function registerUser(data: {
   name: string;
   email: string;
   password: string;
+  role: "user" | "instructor" | "diving_center";
+  instructorLicenseNumber?: string;
+  centerName?: string;
+  centerCity?: string;
+  centerLicenseNumber?: string;
 }) {
   const existingUser = await prisma.user.findUnique({
     where: {
@@ -28,15 +33,75 @@ export async function registerUser(data: {
     };
   }
 
+  if (data.role === "instructor" && data.instructorLicenseNumber) {
+    const existingInstructorProfile = await prisma.instructorProfile.findUnique({
+      where: {
+        licenseNumber: data.instructorLicenseNumber,
+      },
+    });
+
+    if (existingInstructorProfile) {
+      throw {
+        status: 409,
+        message: "Instructor license number already exists",
+      };
+    }
+  }
+
+  if (data.role === "diving_center" && data.centerLicenseNumber) {
+    const existingCenter = await prisma.divingCenter.findUnique({
+      where: {
+        licenseNumber: data.centerLicenseNumber,
+      },
+    });
+
+    if (existingCenter) {
+      throw {
+        status: 409,
+        message: "Diving center license number already exists",
+      };
+    }
+  }
+
   const passwordHash = await bcrypt.hash(data.password, 10);
 
-  const user = await prisma.user.create({
-    data: {
-      name: data.name,
-      email: data.email,
-      passwordHash,
-      role: "user",
-    },
+  const user = await prisma.$transaction(async (transaction) => {
+    const createdUser = await transaction.user.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        passwordHash,
+        role: data.role,
+      },
+    });
+
+    if (data.role === "instructor" && data.instructorLicenseNumber) {
+      await transaction.instructorProfile.create({
+        data: {
+          licenseNumber: data.instructorLicenseNumber,
+          userId: createdUser.id,
+        },
+      });
+    }
+
+    if (
+      data.role === "diving_center" &&
+      data.centerName &&
+      data.centerCity &&
+      data.centerLicenseNumber
+    ) {
+      await transaction.divingCenter.create({
+        data: {
+          name: data.centerName,
+          city: data.centerCity,
+          licenseNumber: data.centerLicenseNumber,
+          contactEmail: data.email,
+          ownerId: createdUser.id,
+        },
+      });
+    }
+
+    return createdUser;
   });
 
   const token = jwt.sign(
