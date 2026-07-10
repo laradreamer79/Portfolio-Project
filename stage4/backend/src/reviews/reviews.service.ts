@@ -47,7 +47,9 @@ export async function createReview(
 
 
 
-export async function getReviews(centerId: number) {
+export async function getReviews(
+  centerId: number,
+) {
   return prisma.review.findMany({
     where: {
       centerId,
