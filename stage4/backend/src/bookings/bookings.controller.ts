@@ -19,6 +19,35 @@ export async function createBookingController(
       });
     }
 
+if (
+  req.body.tripId &&
+  req.body.courseId
+) {
+  return res.status(400).json({
+    message:
+      "Choose either a trip or a course.",
+  });
+}
+
+if (
+  !req.body.tripId &&
+  !req.body.courseId
+) {
+  return res.status(400).json({
+    message:
+      "tripId or courseId is required.",
+  });
+}
+
+if (
+  !req.body.numberOfPeople ||
+  req.body.numberOfPeople < 1
+) {
+  return res.status(400).json({
+    message:
+      "numberOfPeople must be greater than 0",
+  });
+}
 
     const booking = await createBooking({
       userId: req.user.id,
