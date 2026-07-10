@@ -1,4 +1,11 @@
 import { Router } from "express";
+import {
+  authorizeRoles,
+} from "../common/decorators/roles.js";
+import {
+  ROLES,
+  authorizeRoles,
+} from "../common/decorators/roles.js";
 
 import {
   createBookingController,
@@ -28,10 +35,10 @@ bookingsRouter.patch(
 
 
 bookingsRouter.get(
-  "/my",
+  "/",
   authenticate,
-authorizeRoles("admin"),
-allBookingsController,
+  authorizeRoles(ROLES.ADMIN),
+  allBookingsController,
 );
 
 
