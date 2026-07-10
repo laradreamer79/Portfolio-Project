@@ -63,20 +63,3 @@ export async function getReviews(centerId: number) {
     },
   });
 }
-
-  return prisma.review.findMany({
-
-    include:{
-      user:true,
-      center:true,
-      trip:true,
-      course:true
-    },
-
-    orderBy:{
-      createdAt:"desc"
-    }
-
-  });
-
-}
