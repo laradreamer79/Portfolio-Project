@@ -10,6 +10,7 @@ export const coursesService = {
     city?: string;
   }) {
     const { level, minPrice, maxPrice, search, centerId, city } = filters;
+
     return prisma.course.findMany({
       where: {
         status: "approved",
@@ -57,18 +58,26 @@ export const coursesService = {
     startDate: Date;
     centerId: number;
     instructorId?: number;
+    imageUrl?: string;
   }) {
     return prisma.course.create({ data: data as any });
   },
 
-  async update(id: number, data: Partial<{
-    title: string;
-    description: string;
-    level: string;
-    price: number;
-    startDate: Date;
-  }>) {
-    return prisma.course.update({ where: { id }, data: data as any });
+  async update(
+    id: number,
+    data: Partial<{
+      title: string;
+      description: string;
+      level: string;
+      price: number;
+      startDate: Date;
+      imageUrl: string;
+    }>
+  ) {
+    return prisma.course.update({
+      where: { id },
+      data: data as any,
+    });
   },
 
   async delete(id: number) {

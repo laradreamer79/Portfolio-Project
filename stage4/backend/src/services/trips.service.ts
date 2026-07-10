@@ -59,20 +59,28 @@ export const tripsService = {
     scheduleDate: Date;
     centerId: number;
     instructorId?: number;
+    imageUrl?: string;
   }) {
     return prisma.trip.create({ data: data as any });
   },
 
-  async update(id: number, data: Partial<{
-    title: string;
-    description: string;
-    durationHours: number;
-    difficultyLevel: string;
-    pricePerPerson: number;
-    maxCapacity: number;
-    scheduleDate: Date;
-  }>) {
-    return prisma.trip.update({ where: { id }, data: data as any });
+  async update(
+    id: number,
+    data: Partial<{
+      title: string;
+      description: string;
+      durationHours: number;
+      difficultyLevel: string;
+      pricePerPerson: number;
+      maxCapacity: number;
+      scheduleDate: Date;
+      imageUrl: string;
+    }>
+  ) {
+    return prisma.trip.update({
+      where: { id },
+      data: data as any,
+    });
   },
 
   async delete(id: number) {

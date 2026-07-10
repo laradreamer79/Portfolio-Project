@@ -7,6 +7,7 @@ export const centersService = {
     status?: string;
   }) {
     const { city, search, status } = filters;
+
     return prisma.divingCenter.findMany({
       where: {
         ...(city && { city: { contains: city, mode: "insensitive" } }),
@@ -52,20 +53,28 @@ export const centersService = {
     contactEmail?: string;
     contactPhone?: string;
     ownerId: number;
+    imageUrl?: string;
   }) {
     return prisma.divingCenter.create({ data });
   },
 
-  async update(id: number, data: Partial<{
-    name: string;
-    city: string;
-    address: string;
-    description: string;
-    priceRange: string;
-    contactEmail: string;
-    contactPhone: string;
-  }>) {
-    return prisma.divingCenter.update({ where: { id }, data });
+  async update(
+    id: number,
+    data: Partial<{
+      name: string;
+      city: string;
+      address: string;
+      description: string;
+      priceRange: string;
+      contactEmail: string;
+      contactPhone: string;
+      imageUrl: string;
+    }>
+  ) {
+    return prisma.divingCenter.update({
+      where: { id },
+      data,
+    });
   },
 
   async delete(id: number) {

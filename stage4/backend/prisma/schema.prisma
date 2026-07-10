@@ -70,6 +70,7 @@ model DivingCenter {
   priceRange    String?
   contactEmail  String?
   contactPhone  String?
+  imageUrl      String?
   status        ApprovalStatus @default(pending)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -93,6 +94,7 @@ model Trip {
   pricePerPerson  Decimal         @db.Decimal(10, 2)
   maxCapacity     Int
   scheduleDate    DateTime
+  imageUrl        String?
   status          ApprovalStatus  @default(pending)
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
@@ -116,6 +118,7 @@ model Course {
   level       String
   price       Decimal        @db.Decimal(10, 2)
   startDate   DateTime
+  imageUrl    String?
   status      ApprovalStatus @default(pending)
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt

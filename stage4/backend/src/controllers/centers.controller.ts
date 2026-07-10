@@ -27,7 +27,12 @@ export const centersController = {
   async create(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const ownerId = req.user!.id;
-      const center = await centersService.create({ ...req.body, ownerId });
+      const imageUrl = (req.file as any)?.path;
+      const center = await centersService.create({
+        ...req.body,
+        ownerId,
+        ...(imageUrl && { imageUrl }),
+      });
       res.status(201).json(center);
     } catch (err) { next(err); }
   },
@@ -35,7 +40,11 @@ export const centersController = {
   async update(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const id = parseInt(req.params.id as string);
-      const center = await centersService.update(id, req.body);
+      const imageUrl = (req.file as any)?.path;
+      const center = await centersService.update(id, {
+        ...req.body,
+        ...(imageUrl && { imageUrl }),
+      });
       res.json(center);
     } catch (err) { next(err); }
   },

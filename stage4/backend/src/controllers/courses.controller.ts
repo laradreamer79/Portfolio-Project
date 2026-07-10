@@ -6,6 +6,7 @@ export const coursesController = {
   async getAll(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { city, level, minPrice, maxPrice, search, centerId } = req.query;
+
       const courses = await coursesService.getAll({
         city: city as string,
         level: level as string,
@@ -14,45 +15,90 @@ export const coursesController = {
         search: search as string,
         centerId: centerId ? parseInt(centerId as string) : undefined,
       });
+
       res.json(courses);
-    } catch (err) { next(err); }
+    } catch (err) {
+      next(err);
+    }
   },
 
   async getById(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const id = parseInt(req.params.id as string);
+
       const course = await coursesService.getById(id);
-      if (!course) return res.status(404).json({ message: "Course not found" });
+
+      if (!course) {
+        return res.status(404).json({ message: "Course not found" });
+      }
+
       res.json(course);
-    } catch (err) { next(err); }
+    } catch (err) {
+      next(err);
+    }
   },
 
   async create(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const course = await coursesService.create({
-        ...req.body,
+        title: req.body.title,
+        description: req.body.description,
+        level: req.body.level,
+        price: Number(req.body.price),
         startDate: new Date(req.body.startDate),
+        centerId: Number(req.body.centerId),
+        instructorId: req.body.instructorId
+          ? Number(req.body.instructorId)
+          : undefined,
+        imageUrl: req.file?.path,
       });
+
       res.status(201).json(course);
-    } catch (err) { next(err); }
+    } catch (err) {
+      next(err);
+    }
   },
 
   async update(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const id = parseInt(req.params.id as string);
-      const data = req.body.startDate
-        ? { ...req.body, startDate: new Date(req.body.startDate) }
-        : req.body;
+
+      const data = {
+        ...req.body,
+        ...(req.body.price && {
+          price: Number(req.body.price),
+        }),
+        ...(req.body.centerId && {
+          centerId: Number(req.body.centerId),
+        }),
+        ...(req.body.instructorId && {
+          instructorId: Number(req.body.instructorId),
+        }),
+        ...(req.body.startDate && {
+          startDate: new Date(req.body.startDate),
+        }),
+        ...(req.file && {
+          imageUrl: req.file.path,
+        }),
+      };
+
       const course = await coursesService.update(id, data);
+
       res.json(course);
-    } catch (err) { next(err); }
+    } catch (err) {
+      next(err);
+    }
   },
 
   async delete(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const id = parseInt(req.params.id as string);
+
       await coursesService.delete(id);
+
       res.json({ message: "Course deleted successfully" });
-    } catch (err) { next(err); }
+    } catch (err) {
+      next(err);
+    }
   },
 };
