@@ -20,7 +20,26 @@ export async function createReviewController(
       });
     }
 
+if (
+  !req.body.centerId
+) {
+  return res.status(400).json({
+    message:
+      "centerId is required",
+  });
+}
 
+if (
+  req.body.rating < 1 ||
+  req.body.rating > 5
+) {
+  return res.status(400).json({
+    message:
+      "Rating must be between 1 and 5",
+  });
+}
+
+    
     const review = await createReview(
       req.user.id,
       req.body,
