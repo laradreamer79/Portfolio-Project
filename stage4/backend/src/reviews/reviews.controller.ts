@@ -17,15 +17,34 @@ export async function createReviewController(
       });
     }
 
-    if (!req.body.centerId) {
+    const {
+      centerId,
+      rating,
+      tripId,
+      courseId,
+    } = req.body;
+
+    // Validation
+
+    if (!centerId) {
       return res.status(400).json({
         message: "centerId is required",
       });
     }
 
-    if (req.body.rating < 1 || req.body.rating > 5) {
+    if (
+      typeof rating !== "number" ||
+      rating < 1 ||
+      rating > 5
+    ) {
       return res.status(400).json({
         message: "Rating must be between 1 and 5",
+      });
+    }
+
+    if (tripId && courseId) {
+      return res.status(400).json({
+        message: "Choose either a trip or a course.",
       });
     }
 
@@ -36,12 +55,16 @@ export async function createReviewController(
 
     return res.status(201).json(review);
   } catch (error) {
-    return res.status(400).json({
-      message:
-        error instanceof Error
-          ? error.message
-          : "Failed to create review",
-    });
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Failed to create review";
+
+    if (message.includes("already")) {
+      return res.status(409).json({ message });
+    }
+
+    return res.status(400).json({ message });
   }
 }
 
@@ -50,9 +73,15 @@ export async function getReviewsController(
   res: Response,
 ) {
   try {
-    const reviews = await getReviews(
-      Number(req.params.centerId),
-    );
+    const centerId = Number(req.params.centerId);
+
+    if (Number.isNaN(centerId)) {
+      return res.status(400).json({
+        message: "Invalid centerId",
+      });
+    }
+
+    const reviews = await getReviews(centerId);
 
     return res.status(200).json(reviews);
   } catch (error) {
