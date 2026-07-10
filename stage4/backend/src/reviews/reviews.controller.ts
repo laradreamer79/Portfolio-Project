@@ -51,7 +51,15 @@ export async function getReviewsController(
 ) {
   try {
 
-    const reviews = await getReviews();
+    const centerId = Number(req.params.centerId);
+
+if (Number.isNaN(centerId)) {
+  return res.status(400).json({
+    message: "Invalid center id",
+  });
+}
+
+const reviews = await getReviews(centerId);
 
 
     return res.status(200).json(reviews);
