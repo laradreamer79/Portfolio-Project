@@ -47,7 +47,22 @@ export async function createReview(
 
 
 
-export async function getReviews(){
+export async function getReviews(centerId: number) {
+  return prisma.review.findMany({
+    where: {
+      centerId,
+    },
+    include: {
+      user: true,
+      center: true,
+      trip: true,
+      course: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
 
   return prisma.review.findMany({
 
