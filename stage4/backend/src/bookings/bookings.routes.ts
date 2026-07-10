@@ -30,11 +30,11 @@ bookingsRouter.patch(
 bookingsRouter.get(
   "/my",
   authenticate,
-  myBookingsController,
+authorizeRoles("admin"),
+allBookingsController,
 );
 
 
-// later we add admin role check
 bookingsRouter.get(
   "/",
   authenticate,
