@@ -13,6 +13,12 @@ export async function createBooking(
   data: CreateBookingInput
 ) {
 
+   if (data.tripId && data.courseId) {
+    throw new Error(
+      "Choose either a trip or a course"
+    );
+  }
+
   if (!data.tripId && !data.courseId) {
     throw new Error(
       "Booking must have a trip or course"
