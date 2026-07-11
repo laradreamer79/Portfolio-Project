@@ -8,17 +8,49 @@ export async function createReview(
     throw new Error("Rating must be between 1 and 5");
   }
 
-  const existingReview =
-    await prisma.review.findFirst({
-      where: {
-        userId,
-        centerId: data.centerId,
-      },
-    });
+
+  if (
+    Number(!!data.centerId) +
+      Number(!!data.tripId) +
+      Number(!!data.courseId) !==
+    1
+  ) {
+    throw new Error(
+      "Review must be for exactly one item",
+    );
+  }
+
+  let existingReview;
+
+  if (data.tripId) {
+    existingReview =
+      await prisma.review.findFirst({
+        where: {
+          userId,
+          tripId: data.tripId,
+        },
+      });
+  } else if (data.courseId) {
+    existingReview =
+      await prisma.review.findFirst({
+        where: {
+          userId,
+          courseId: data.courseId,
+        },
+      });
+  } else {
+    existingReview =
+      await prisma.review.findFirst({
+        where: {
+          userId,
+          centerId: data.centerId,
+        },
+      });
+  }
 
   if (existingReview) {
     throw new Error(
-      "You have already reviewed this center",
+      "You have already reviewed this item",
     );
   }
 
@@ -31,7 +63,6 @@ export async function createReview(
       rating: data.rating,
       comment: data.comment,
     },
-
     include: {
       user: true,
       center: true,
@@ -48,14 +79,12 @@ export async function getReviews(
     where: {
       centerId,
     },
-
     include: {
       user: true,
       center: true,
       trip: true,
       course: true,
     },
-
     orderBy: {
       createdAt: "desc",
     },
