@@ -2,6 +2,10 @@ import { Response, NextFunction } from "express";
 import { coursesService } from "../services/courses.service.js";
 import { AuthRequest } from "../middleware/auth.middleware.js";
 import { uploadToCloudinary } from "../middleware/upload.middleware.js";
+import {
+  courseCreateSchema,
+  courseUpdateSchema,
+} from "../validation/catalog.validation.js";
 
 export const coursesController = {
   async getAll(req: AuthRequest, res: Response, next: NextFunction) {
@@ -52,19 +56,12 @@ export const coursesController = {
 
   async create(req: AuthRequest, res: Response, next: NextFunction) {
     try {
+      const body = courseCreateSchema.parse(req.body);
       const imageUrl = req.file
         ? await uploadToCloudinary(req.file, "oyster/courses")
         : undefined;
-      const course = await coursesService.create({
-        title: req.body.title,
-        description: req.body.description,
-        level: req.body.level,
-        price: Number(req.body.price),
-        startDate: new Date(req.body.startDate),
-        centerId: Number(req.body.centerId),
-        instructorId: req.body.instructorId
-          ? Number(req.body.instructorId)
-          : undefined,
+      const course = await coursesService.create(req.user!, {
+        ...body,
         imageUrl,
       });
 
@@ -77,27 +74,16 @@ export const coursesController = {
   async update(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const id = parseInt(req.params.id as string);
+      const body = courseUpdateSchema.parse(req.body);
 
       const data = {
-        ...req.body,
-        ...(req.body.price && {
-          price: Number(req.body.price),
-        }),
-        ...(req.body.centerId && {
-          centerId: Number(req.body.centerId),
-        }),
-        ...(req.body.instructorId && {
-          instructorId: Number(req.body.instructorId),
-        }),
-        ...(req.body.startDate && {
-          startDate: new Date(req.body.startDate),
-        }),
+        ...body,
         ...(req.file && {
           imageUrl: await uploadToCloudinary(req.file, "oyster/courses"),
         }),
       };
 
-      const course = await coursesService.update(id, data);
+      const course = await coursesService.update(id, req.user!, data);
 
       res.json(course);
     } catch (err) {
@@ -109,7 +95,7 @@ export const coursesController = {
     try {
       const id = parseInt(req.params.id as string);
 
-      await coursesService.delete(id);
+      await coursesService.delete(id, req.user!);
 
       res.json({ message: "Course deleted successfully" });
     } catch (err) {

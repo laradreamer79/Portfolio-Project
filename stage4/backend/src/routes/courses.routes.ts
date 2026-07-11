@@ -28,6 +28,6 @@ coursesRouter.put(
 coursesRouter.delete(
   "/:id",
   authenticate,
-  authorize("admin"),
+  authorize("diving_center", "instructor", "admin"),
   coursesController.delete
 );

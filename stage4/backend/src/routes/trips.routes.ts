@@ -28,6 +28,6 @@ tripsRouter.put(
 tripsRouter.delete(
   "/:id",
   authenticate,
-  authorize("admin"),
+  authorize("diving_center", "instructor", "admin"),
   tripsController.delete
 );

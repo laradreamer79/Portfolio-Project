@@ -2,6 +2,10 @@ import { Response, NextFunction } from "express";
 import { centersService } from "../services/centers.service.js";
 import { AuthRequest } from "../middleware/auth.middleware.js";
 import { uploadToCloudinary } from "../middleware/upload.middleware.js";
+import {
+  centerCreateSchema,
+  centerUpdateSchema,
+} from "../validation/catalog.validation.js";
 
 export const centersController = {
   async getAll(req: AuthRequest, res: Response, next: NextFunction) {
@@ -28,12 +32,13 @@ export const centersController = {
 
   async create(req: AuthRequest, res: Response, next: NextFunction) {
     try {
+      const body = centerCreateSchema.parse(req.body);
       const ownerId = req.user!.id;
       const imageUrl = req.file
         ? await uploadToCloudinary(req.file, "oyster/centers")
         : undefined;
       const center = await centersService.create({
-        ...req.body,
+        ...body,
         ownerId,
         ...(imageUrl && { imageUrl }),
       });
@@ -44,11 +49,12 @@ export const centersController = {
   async update(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const id = parseInt(req.params.id as string);
+      const body = centerUpdateSchema.parse(req.body);
       const imageUrl = req.file
         ? await uploadToCloudinary(req.file, "oyster/centers")
         : undefined;
-      const center = await centersService.update(id, {
-        ...req.body,
+      const center = await centersService.update(id, req.user!, {
+        ...body,
         ...(imageUrl && { imageUrl }),
       });
       res.json(center);

@@ -1,5 +1,6 @@
 import multer from "multer";
-import cloudinary from "../config/cloudinary.js";
+import cloudinary, { hasCloudinaryConfig } from "../config/cloudinary.js";
+import { HttpError } from "../utils/http-error.js";
 
 const storage = multer.memoryStorage();
 const allowedImageTypes = ["image/jpeg", "image/png", "image/webp"];
@@ -22,6 +23,13 @@ export async function uploadToCloudinary(
   file: Express.Multer.File,
   folder = "oyster/catalog",
 ): Promise<string> {
+  if (!hasCloudinaryConfig()) {
+    throw new HttpError(
+      500,
+      "Cloudinary upload is not configured. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET.",
+    );
+  }
+
   return new Promise((resolve, reject) => {
     cloudinary.uploader.upload_stream(
       {

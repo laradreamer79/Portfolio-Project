@@ -1,4 +1,25 @@
 import { prisma } from "../prisma/client.js";
+import { HttpError } from "../utils/http-error.js";
+
+type Actor = {
+  id: number;
+  role: string;
+};
+
+async function assertCenterAccess(id: number, actor: Actor) {
+  const center = await prisma.divingCenter.findUnique({
+    where: { id },
+    select: { ownerId: true },
+  });
+
+  if (!center) {
+    throw new HttpError(404, "Diving center not found");
+  }
+
+  if (actor.role !== "admin" && center.ownerId !== actor.id) {
+    throw new HttpError(403, "Forbidden");
+  }
+}
 
 export const centersService = {
   async getAll(filters: {
@@ -62,6 +83,7 @@ export const centersService = {
 
   async update(
     id: number,
+    actor: Actor,
     data: Partial<{
       name: string;
       city: string;
@@ -73,6 +95,8 @@ export const centersService = {
       imageUrl: string;
     }>
   ) {
+    await assertCenterAccess(id, actor);
+
     return prisma.divingCenter.update({
       where: { id },
       data,

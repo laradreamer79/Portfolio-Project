@@ -2,6 +2,10 @@ import { Response, NextFunction } from "express";
 import { tripsService } from "../services/trips.service.js";
 import { AuthRequest } from "../middleware/auth.middleware.js";
 import { uploadToCloudinary } from "../middleware/upload.middleware.js";
+import {
+  tripCreateSchema,
+  tripUpdateSchema,
+} from "../validation/catalog.validation.js";
 
 export const tripsController = {
   async getAll(req: AuthRequest, res: Response, next: NextFunction) {
@@ -51,21 +55,12 @@ export const tripsController = {
 
   async create(req: AuthRequest, res: Response, next: NextFunction) {
     try {
+      const body = tripCreateSchema.parse(req.body);
       const imageUrl = req.file
         ? await uploadToCloudinary(req.file, "oyster/trips")
         : undefined;
-      const trip = await tripsService.create({
-        title: req.body.title,
-        description: req.body.description,
-        durationHours: Number(req.body.durationHours),
-        difficultyLevel: req.body.difficultyLevel,
-        pricePerPerson: Number(req.body.pricePerPerson),
-        maxCapacity: Number(req.body.maxCapacity),
-        scheduleDate: new Date(req.body.scheduleDate),
-        centerId: Number(req.body.centerId),
-        instructorId: req.body.instructorId
-          ? Number(req.body.instructorId)
-          : undefined,
+      const trip = await tripsService.create(req.user!, {
+        ...body,
         imageUrl,
       });
 
@@ -78,33 +73,16 @@ export const tripsController = {
   async update(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const id = parseInt(req.params.id as string);
+      const body = tripUpdateSchema.parse(req.body);
 
       const data = {
-        ...req.body,
-        ...(req.body.durationHours && {
-          durationHours: Number(req.body.durationHours),
-        }),
-        ...(req.body.pricePerPerson && {
-          pricePerPerson: Number(req.body.pricePerPerson),
-        }),
-        ...(req.body.maxCapacity && {
-          maxCapacity: Number(req.body.maxCapacity),
-        }),
-        ...(req.body.centerId && {
-          centerId: Number(req.body.centerId),
-        }),
-        ...(req.body.instructorId && {
-          instructorId: Number(req.body.instructorId),
-        }),
-        ...(req.body.scheduleDate && {
-          scheduleDate: new Date(req.body.scheduleDate),
-        }),
+        ...body,
         ...(req.file && {
           imageUrl: await uploadToCloudinary(req.file, "oyster/trips"),
         }),
       };
 
-      const trip = await tripsService.update(id, data);
+      const trip = await tripsService.update(id, req.user!, data);
 
       res.json(trip);
     } catch (err) {
@@ -116,7 +94,7 @@ export const tripsController = {
     try {
       const id = parseInt(req.params.id as string);
 
-      await tripsService.delete(id);
+      await tripsService.delete(id, req.user!);
 
       res.json({ message: "Trip deleted successfully" });
     } catch (err) {
