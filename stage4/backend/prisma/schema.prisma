@@ -99,8 +99,8 @@ model Trip {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
-  center   DivingCenter @relation(fields: [centerId], references: [id], onDelete: Cascade)
-  centerId Int
+  center   DivingCenter? @relation(fields: [centerId], references: [id], onDelete: Cascade)
+  centerId Int?
 
   instructor   User? @relation("TripInstructor", fields: [instructorId], references: [id], onDelete: SetNull)
   instructorId Int?
@@ -123,8 +123,8 @@ model Course {
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 
-  center   DivingCenter @relation(fields: [centerId], references: [id], onDelete: Cascade)
-  centerId Int
+  center   DivingCenter? @relation(fields: [centerId], references: [id], onDelete: Cascade)
+  centerId Int?
 
   instructor   User? @relation("CourseInstructor", fields: [instructorId], references: [id], onDelete: SetNull)
   instructorId Int?

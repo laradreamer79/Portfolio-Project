@@ -1,13 +1,16 @@
 import { Router } from "express";
 import { coursesController } from "../controllers/courses.controller.js";
-import { authenticate } from "../middleware/auth.middleware.js";
+import {
+  authenticate,
+  optionalAuthenticate,
+} from "../middleware/auth.middleware.js";
 import { authorize } from "../middleware/role.middleware.js";
 import { upload } from "../middleware/upload.middleware.js";
 
 export const coursesRouter = Router();
 
-coursesRouter.get("/", coursesController.getAll);
-coursesRouter.get("/:id", coursesController.getById);
+coursesRouter.get("/", optionalAuthenticate, coursesController.getAll);
+coursesRouter.get("/:id", optionalAuthenticate, coursesController.getById);
 
 coursesRouter.post(
   "/",

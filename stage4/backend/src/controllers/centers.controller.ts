@@ -16,6 +16,7 @@ export const centersController = {
         search: search as string,
         status: status as string,
         ownerId: ownerId ? Number(ownerId) : undefined,
+        actor: req.user,
       });
       res.json(centers);
     } catch (err) { next(err); }
@@ -24,7 +25,7 @@ export const centersController = {
   async getById(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const id = parseInt(req.params.id as string);
-      const center = await centersService.getById(id);
+      const center = await centersService.getById(id, req.user);
       if (!center) return res.status(404).json({ message: "Diving center not found" });
       res.json(center);
     } catch (err) { next(err); }

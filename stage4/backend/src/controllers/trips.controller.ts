@@ -30,6 +30,7 @@ export const tripsController = {
         centerId: centerId ? parseInt(centerId as string) : undefined,
         instructorId: instructorId ? parseInt(instructorId as string) : undefined,
         status: status as string,
+        actor: req.user,
       });
 
       res.json(trips);
@@ -41,7 +42,7 @@ export const tripsController = {
   async getById(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const id = parseInt(req.params.id as string);
-      const trip = await tripsService.getById(id);
+      const trip = await tripsService.getById(id, req.user);
 
       if (!trip) {
         return res.status(404).json({ message: "Trip not found" });

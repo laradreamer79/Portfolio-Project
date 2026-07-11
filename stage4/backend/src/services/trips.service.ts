@@ -19,9 +19,12 @@ type TripCreateInput = {
   imageUrl?: string;
 };
 
-type TripUpdateInput = Partial<TripCreateInput>;
+type TripUpdateInput = Partial<Omit<TripCreateInput, "centerId" | "instructorId">> & {
+  centerId?: number | null;
+  instructorId?: number | null;
+};
 
-async function resolveCenterId(actor: Actor, requestedCenterId?: number) {
+async function resolveOwnedCenterId(actor: Actor, requestedCenterId?: number) {
   if (actor.role === "admin") {
     if (!requestedCenterId) {
       throw new HttpError(400, "centerId is required");
@@ -76,6 +79,99 @@ async function resolveCenterId(actor: Actor, requestedCenterId?: number) {
   return ownedCenters[0].id;
 }
 
+function assertExactlyOneOwner(centerId?: number | null, instructorId?: number | null) {
+  if (Boolean(centerId) === Boolean(instructorId)) {
+    throw new HttpError(400, "Provide exactly one owner: centerId or instructorId");
+  }
+}
+
+async function resolveCreateOwnership(actor: Actor, data: TripCreateInput) {
+  if (actor.role === "admin") {
+    assertExactlyOneOwner(data.centerId, data.instructorId);
+
+    if (data.centerId) {
+      await resolveOwnedCenterId(actor, data.centerId);
+    }
+
+    return {
+      centerId: data.centerId,
+      instructorId: data.instructorId,
+    };
+  }
+
+  if (actor.role === "instructor") {
+    return {
+      centerId: undefined,
+      instructorId: actor.id,
+    };
+  }
+
+  return {
+    centerId: await resolveOwnedCenterId(actor, data.centerId),
+    instructorId: undefined,
+  };
+}
+
+async function resolveAdminUpdateOwnership(data: TripUpdateInput) {
+  if (data.centerId === undefined && data.instructorId === undefined) {
+    return data;
+  }
+
+  assertExactlyOneOwner(data.centerId, data.instructorId);
+
+  if (data.centerId) {
+    await resolveOwnedCenterId({ id: 0, role: "admin" }, data.centerId);
+    data.instructorId = null;
+  } else {
+    data.centerId = null;
+  }
+
+  return data;
+}
+
+function tripOwnerWhere(actor: Actor) {
+  if (actor.role === "instructor") {
+    return { instructorId: actor.id };
+  }
+
+  if (actor.role === "diving_center") {
+    return { center: { ownerId: actor.id } };
+  }
+
+  return {};
+}
+
+function tripVisibilityWhere(actor: Actor | undefined, status?: string) {
+  if (status === "all") {
+    if (!actor) {
+      return { status: "approved" as const };
+    }
+
+    if (actor.role === "admin") {
+      return {};
+    }
+
+    return tripOwnerWhere(actor);
+  }
+
+  if (!status || status === "approved") {
+    return { status: "approved" as const };
+  }
+
+  if (!actor) {
+    return { status: "approved" as const };
+  }
+
+  if (actor.role === "admin") {
+    return { status: status as any };
+  }
+
+  return {
+    status: status as any,
+    ...tripOwnerWhere(actor),
+  };
+}
+
 async function assertTripAccess(id: number, actor: Actor) {
   const trip = await prisma.trip.findUnique({
     where: { id },
@@ -97,7 +193,7 @@ async function assertTripAccess(id: number, actor: Actor) {
     return;
   }
 
-  if (actor.role === "diving_center" && trip.center.ownerId === actor.id) {
+  if (actor.role === "diving_center" && trip.center?.ownerId === actor.id) {
     return;
   }
 
@@ -114,6 +210,7 @@ export const tripsService = {
     centerId?: number;
     instructorId?: number;
     status?: string;
+    actor?: Actor;
   }) {
     const {
       city,
@@ -124,10 +221,11 @@ export const tripsService = {
       centerId,
       instructorId,
       status,
+      actor,
     } = filters;
     return prisma.trip.findMany({
       where: {
-        ...(status !== "all" && { status: (status as any) ?? "approved" }),
+        ...tripVisibilityWhere(actor, status),
         ...(centerId !== undefined && { centerId }),
         ...(instructorId !== undefined && { instructorId }),
         ...(difficulty && { difficultyLevel: difficulty as any }),
@@ -154,9 +252,12 @@ export const tripsService = {
     });
   },
 
-  async getById(id: number) {
-    return prisma.trip.findUnique({
-      where: { id },
+  async getById(id: number, actor?: Actor) {
+    return prisma.trip.findFirst({
+      where: {
+        id,
+        ...tripVisibilityWhere(actor),
+      },
       include: {
         center: { select: { id: true, name: true, city: true, contactPhone: true } },
         instructor: { select: { id: true, name: true } },
@@ -170,13 +271,7 @@ export const tripsService = {
   },
 
   async create(actor: Actor, data: TripCreateInput) {
-    const centerId = await resolveCenterId(actor, data.centerId);
-    const instructorId =
-      actor.role === "admin"
-        ? data.instructorId
-        : actor.role === "instructor"
-          ? actor.id
-          : undefined;
+    const { centerId, instructorId } = await resolveCreateOwnership(actor, data);
 
     return prisma.trip.create({
       data: {
@@ -190,7 +285,7 @@ export const tripsService = {
         centerId,
         instructorId,
         imageUrl: data.imageUrl,
-      },
+      } as any,
     });
   },
 
@@ -202,8 +297,8 @@ export const tripsService = {
     if (actor.role !== "admin") {
       delete nextData.centerId;
       delete nextData.instructorId;
-    } else if (nextData.centerId !== undefined) {
-      nextData.centerId = await resolveCenterId(actor, nextData.centerId);
+    } else {
+      await resolveAdminUpdateOwnership(nextData);
     }
 
     return prisma.trip.update({

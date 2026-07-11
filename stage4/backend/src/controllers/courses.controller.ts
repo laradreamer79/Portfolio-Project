@@ -30,6 +30,7 @@ export const coursesController = {
         centerId: centerId ? parseInt(centerId as string) : undefined,
         instructorId: instructorId ? parseInt(instructorId as string) : undefined,
         status: status as string,
+        actor: req.user,
       });
 
       res.json(courses);
@@ -42,7 +43,7 @@ export const coursesController = {
     try {
       const id = parseInt(req.params.id as string);
 
-      const course = await coursesService.getById(id);
+      const course = await coursesService.getById(id, req.user);
 
       if (!course) {
         return res.status(404).json({ message: "Course not found" });

@@ -21,17 +21,42 @@ async function assertCenterAccess(id: number, actor: Actor) {
   }
 }
 
+function canReadAllStatuses(actor: Actor | undefined, ownerId?: number) {
+  if (!actor) {
+    return false;
+  }
+
+  return actor.role === "admin" || ownerId === actor.id;
+}
+
+function centerVisibilityWhere(actor: Actor | undefined) {
+  if (!actor) {
+    return { status: "approved" as const };
+  }
+
+  if (actor.role === "admin") {
+    return {};
+  }
+
+  return {
+    OR: [{ status: "approved" as const }, { ownerId: actor.id }],
+  };
+}
+
 export const centersService = {
   async getAll(filters: {
     city?: string;
     search?: string;
     status?: string;
     ownerId?: number;
+    actor?: Actor;
   }) {
-    const { city, search, status, ownerId } = filters;
+    const { city, search, status, ownerId, actor } = filters;
+    const allowAllStatuses = status === "all" && canReadAllStatuses(actor, ownerId);
 
     return prisma.divingCenter.findMany({
       where: {
+        ...(allowAllStatuses ? {} : centerVisibilityWhere(actor)),
         ...(ownerId !== undefined && { ownerId }),
         ...(city && { city: { contains: city, mode: "insensitive" } }),
         ...(search && {
@@ -40,7 +65,7 @@ export const centersService = {
             { description: { contains: search, mode: "insensitive" } },
           ],
         }),
-        ...(status !== "all" && { status: (status as any) ?? "approved" }),
+        ...(status && status !== "all" && { status: status as any }),
       },
       include: {
         owner: { select: { id: true, name: true, email: true } },
@@ -50,9 +75,12 @@ export const centersService = {
     });
   },
 
-  async getById(id: number) {
-    return prisma.divingCenter.findUnique({
-      where: { id },
+  async getById(id: number, actor?: Actor) {
+    return prisma.divingCenter.findFirst({
+      where: {
+        id,
+        ...centerVisibilityWhere(actor),
+      },
       include: {
         owner: { select: { id: true, name: true, email: true } },
         trips: { where: { status: "approved" }, orderBy: { scheduleDate: "asc" } },
