@@ -1,15 +1,17 @@
 import { Response, NextFunction } from "express";
 import { centersService } from "../services/centers.service.js";
 import { AuthRequest } from "../middleware/auth.middleware.js";
+import { uploadToCloudinary } from "../middleware/upload.middleware.js";
 
 export const centersController = {
   async getAll(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const { city, search, status } = req.query;
+      const { city, search, status, ownerId } = req.query;
       const centers = await centersService.getAll({
         city: city as string,
         search: search as string,
         status: status as string,
+        ownerId: ownerId ? Number(ownerId) : undefined,
       });
       res.json(centers);
     } catch (err) { next(err); }
@@ -27,7 +29,9 @@ export const centersController = {
   async create(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const ownerId = req.user!.id;
-      const imageUrl = (req.file as any)?.path;
+      const imageUrl = req.file
+        ? await uploadToCloudinary(req.file, "oyster/centers")
+        : undefined;
       const center = await centersService.create({
         ...req.body,
         ownerId,
@@ -40,7 +44,9 @@ export const centersController = {
   async update(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const id = parseInt(req.params.id as string);
-      const imageUrl = (req.file as any)?.path;
+      const imageUrl = req.file
+        ? await uploadToCloudinary(req.file, "oyster/centers")
+        : undefined;
       const center = await centersService.update(id, {
         ...req.body,
         ...(imageUrl && { imageUrl }),

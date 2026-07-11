@@ -8,15 +8,31 @@ export const tripsService = {
     maxPrice?: number;
     search?: string;
     centerId?: number;
+    instructorId?: number;
+    status?: string;
   }) {
-    const { city, difficulty, minPrice, maxPrice, search, centerId } = filters;
+    const {
+      city,
+      difficulty,
+      minPrice,
+      maxPrice,
+      search,
+      centerId,
+      instructorId,
+      status,
+    } = filters;
     return prisma.trip.findMany({
       where: {
-        status: "approved",
-        ...(centerId && { centerId }),
+        ...(status !== "all" && { status: (status as any) ?? "approved" }),
+        ...(centerId !== undefined && { centerId }),
+        ...(instructorId !== undefined && { instructorId }),
         ...(difficulty && { difficultyLevel: difficulty as any }),
-        ...(minPrice && { pricePerPerson: { gte: minPrice } }),
-        ...(maxPrice && { pricePerPerson: { lte: maxPrice } }),
+        ...((minPrice !== undefined || maxPrice !== undefined) && {
+          pricePerPerson: {
+            ...(minPrice !== undefined && { gte: minPrice }),
+            ...(maxPrice !== undefined && { lte: maxPrice }),
+          },
+        }),
         ...(city && { center: { city: { contains: city, mode: "insensitive" } } }),
         ...(search && {
           OR: [

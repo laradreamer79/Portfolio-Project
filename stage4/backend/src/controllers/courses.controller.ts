@@ -1,11 +1,21 @@
 import { Response, NextFunction } from "express";
 import { coursesService } from "../services/courses.service.js";
 import { AuthRequest } from "../middleware/auth.middleware.js";
+import { uploadToCloudinary } from "../middleware/upload.middleware.js";
 
 export const coursesController = {
   async getAll(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const { city, level, minPrice, maxPrice, search, centerId } = req.query;
+      const {
+        city,
+        level,
+        minPrice,
+        maxPrice,
+        search,
+        centerId,
+        instructorId,
+        status,
+      } = req.query;
 
       const courses = await coursesService.getAll({
         city: city as string,
@@ -14,6 +24,8 @@ export const coursesController = {
         maxPrice: maxPrice ? parseFloat(maxPrice as string) : undefined,
         search: search as string,
         centerId: centerId ? parseInt(centerId as string) : undefined,
+        instructorId: instructorId ? parseInt(instructorId as string) : undefined,
+        status: status as string,
       });
 
       res.json(courses);
@@ -40,6 +52,9 @@ export const coursesController = {
 
   async create(req: AuthRequest, res: Response, next: NextFunction) {
     try {
+      const imageUrl = req.file
+        ? await uploadToCloudinary(req.file, "oyster/courses")
+        : undefined;
       const course = await coursesService.create({
         title: req.body.title,
         description: req.body.description,
@@ -50,7 +65,7 @@ export const coursesController = {
         instructorId: req.body.instructorId
           ? Number(req.body.instructorId)
           : undefined,
-        imageUrl: req.file?.path,
+        imageUrl,
       });
 
       res.status(201).json(course);
@@ -78,7 +93,7 @@ export const coursesController = {
           startDate: new Date(req.body.startDate),
         }),
         ...(req.file && {
-          imageUrl: req.file.path,
+          imageUrl: await uploadToCloudinary(req.file, "oyster/courses"),
         }),
       };
 

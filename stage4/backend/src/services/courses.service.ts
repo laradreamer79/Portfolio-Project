@@ -8,16 +8,32 @@ export const coursesService = {
     search?: string;
     centerId?: number;
     city?: string;
+    instructorId?: number;
+    status?: string;
   }) {
-    const { level, minPrice, maxPrice, search, centerId, city } = filters;
+    const {
+      level,
+      minPrice,
+      maxPrice,
+      search,
+      centerId,
+      city,
+      instructorId,
+      status,
+    } = filters;
 
     return prisma.course.findMany({
       where: {
-        status: "approved",
-        ...(centerId && { centerId }),
+        ...(status !== "all" && { status: (status as any) ?? "approved" }),
+        ...(centerId !== undefined && { centerId }),
+        ...(instructorId !== undefined && { instructorId }),
         ...(level && { level: { contains: level, mode: "insensitive" } }),
-        ...(minPrice && { price: { gte: minPrice } }),
-        ...(maxPrice && { price: { lte: maxPrice } }),
+        ...((minPrice !== undefined || maxPrice !== undefined) && {
+          price: {
+            ...(minPrice !== undefined && { gte: minPrice }),
+            ...(maxPrice !== undefined && { lte: maxPrice }),
+          },
+        }),
         ...(city && { center: { city: { contains: city, mode: "insensitive" } } }),
         ...(search && {
           OR: [

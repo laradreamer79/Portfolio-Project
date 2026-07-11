@@ -5,11 +5,13 @@ export const centersService = {
     city?: string;
     search?: string;
     status?: string;
+    ownerId?: number;
   }) {
-    const { city, search, status } = filters;
+    const { city, search, status, ownerId } = filters;
 
     return prisma.divingCenter.findMany({
       where: {
+        ...(ownerId !== undefined && { ownerId }),
         ...(city && { city: { contains: city, mode: "insensitive" } }),
         ...(search && {
           OR: [
@@ -17,7 +19,7 @@ export const centersService = {
             { description: { contains: search, mode: "insensitive" } },
           ],
         }),
-        status: status === "all" ? undefined : (status as any) ?? "approved",
+        ...(status !== "all" && { status: (status as any) ?? "approved" }),
       },
       include: {
         owner: { select: { id: true, name: true, email: true } },
