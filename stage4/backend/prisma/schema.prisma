@@ -70,6 +70,7 @@ model DivingCenter {
   priceRange    String?
   contactEmail  String?
   contactPhone  String?
+  imageUrl      String?
   status        ApprovalStatus @default(pending)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -93,12 +94,13 @@ model Trip {
   pricePerPerson  Decimal         @db.Decimal(10, 2)
   maxCapacity     Int
   scheduleDate    DateTime
+  imageUrl        String?
   status          ApprovalStatus  @default(pending)
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
-  center   DivingCenter @relation(fields: [centerId], references: [id], onDelete: Cascade)
-  centerId Int
+  center   DivingCenter? @relation(fields: [centerId], references: [id], onDelete: Cascade)
+  centerId Int?
 
   instructor   User? @relation("TripInstructor", fields: [instructorId], references: [id], onDelete: SetNull)
   instructorId Int?
@@ -116,12 +118,13 @@ model Course {
   level       String
   price       Decimal        @db.Decimal(10, 2)
   startDate   DateTime
+  imageUrl    String?
   status      ApprovalStatus @default(pending)
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 
-  center   DivingCenter @relation(fields: [centerId], references: [id], onDelete: Cascade)
-  centerId Int
+  center   DivingCenter? @relation(fields: [centerId], references: [id], onDelete: Cascade)
+  centerId Int?
 
   instructor   User? @relation("CourseInstructor", fields: [instructorId], references: [id], onDelete: SetNull)
   instructorId Int?

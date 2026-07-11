@@ -11,6 +11,7 @@ export async function createReviewController(
   res: Response,
 ) {
   try {
+    // Must be logged in
     if (!req.user) {
       return res.status(401).json({
         message: "Unauthorized",
@@ -22,6 +23,7 @@ export async function createReviewController(
       rating,
       tripId,
       courseId,
+      comment,
     } = req.body;
 
     // Validation
@@ -50,7 +52,13 @@ export async function createReviewController(
 
     const review = await createReview(
       req.user.id,
-      req.body,
+      {
+        centerId,
+        tripId,
+        courseId,
+        rating,
+        comment,
+      },
     );
 
     return res.status(201).json(review);
@@ -60,11 +68,19 @@ export async function createReviewController(
         ? error.message
         : "Failed to create review";
 
-    if (message.includes("already")) {
-      return res.status(409).json({ message });
+    // Duplicate review
+    if (
+      message ===
+      "You have already reviewed this center"
+    ) {
+      return res.status(409).json({
+        message,
+      });
     }
 
-    return res.status(400).json({ message });
+    return res.status(400).json({
+      message,
+    });
   }
 }
 
@@ -73,7 +89,9 @@ export async function getReviewsController(
   res: Response,
 ) {
   try {
-    const centerId = Number(req.params.centerId);
+    const centerId = Number(
+      req.params.centerId,
+    );
 
     if (Number.isNaN(centerId)) {
       return res.status(400).json({
@@ -81,9 +99,13 @@ export async function getReviewsController(
       });
     }
 
-    const reviews = await getReviews(centerId);
+    const reviews = await getReviews(
+      centerId,
+    );
 
-    return res.status(200).json(reviews);
+    return res.status(200).json(
+      reviews,
+    );
   } catch (error) {
     return res.status(400).json({
       message:

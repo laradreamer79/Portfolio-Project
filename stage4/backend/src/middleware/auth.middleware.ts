@@ -63,3 +63,30 @@ export function authenticate(
   }
 
 }
+
+export function optionalAuthenticate(
+  request: AuthRequest,
+  _response: Response,
+  next: NextFunction,
+) {
+  const authHeader = request.headers.authorization;
+
+  if (!authHeader?.startsWith("Bearer ")) {
+    return next();
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, jwtSecret) as {
+      id: number;
+      role: string;
+    };
+
+    request.user = decoded;
+  } catch {
+    request.user = undefined;
+  }
+
+  return next();
+}
