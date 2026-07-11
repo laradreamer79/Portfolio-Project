@@ -11,7 +11,6 @@ export async function createReviewController(
   res: Response,
 ) {
   try {
-    // Must be logged in
     if (!req.user) {
       return res.status(401).json({
         message: "Unauthorized",
@@ -20,39 +19,33 @@ export async function createReviewController(
 
     const {
       centerId,
-      rating,
       tripId,
       courseId,
+      rating,
       comment,
     } = req.body;
 
-    // Validation
-
+    // Must review exactly one item
     const reviewTargets =
-  Number(!!centerId) +
-  Number(!!tripId) +
-  Number(!!courseId);
+      Number(!!centerId) +
+      Number(!!tripId) +
+      Number(!!courseId);
 
-if (reviewTargets !== 1) {
-  return res.status(400).json({
-    message:
-      "Provide exactly one of centerId, tripId, or courseId.",
-  });
-}
-
-if (
-  typeof rating !== "number" ||
-  rating < 1 ||
-  rating > 5
-) { 
+    if (reviewTargets !== 1) {
       return res.status(400).json({
-        message: "Rating must be between 1 and 5",
+        message:
+          "Provide exactly one of centerId, tripId, or courseId.",
       });
     }
 
-    if (tripId && courseId) {
+    // Rating validation
+    if (
+      typeof rating !== "number" ||
+      rating < 1 ||
+      rating > 5
+    ) {
       return res.status(400).json({
-        message: "Choose either a trip or a course.",
+        message: "Rating must be between 1 and 5",
       });
     }
 
@@ -74,11 +67,10 @@ if (
         ? error.message
         : "Failed to create review";
 
-    // Duplicate review
     if (
-  message ===
-  "You have already submitted your review"
-) {
+      message ===
+      "You have already reviewed this item"
+    ) {
       return res.status(409).json({
         message,
       });
@@ -95,9 +87,7 @@ export async function getReviewsController(
   res: Response,
 ) {
   try {
-    const centerId = Number(
-      req.params.centerId,
-    );
+    const centerId = Number(req.params.centerId);
 
     if (Number.isNaN(centerId)) {
       return res.status(400).json({
@@ -105,13 +95,9 @@ export async function getReviewsController(
       });
     }
 
-    const reviews = await getReviews(
-      centerId,
-    );
+    const reviews = await getReviews(centerId);
 
-    return res.status(200).json(
-      reviews,
-    );
+    return res.status(200).json(reviews);
   } catch (error) {
     return res.status(400).json({
       message:
