@@ -1,0 +1,194 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  user
+  instructor
+  diving_center
+  admin
+}
+
+enum DifficultyLevel {
+  beginner
+  intermediate
+  advanced
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  cancelled
+}
+
+enum ApprovalStatus {
+  pending
+  approved
+  rejected
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(user)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  ownedCenters      DivingCenter[]     @relation("CenterOwner")
+  taughtTrips       Trip[]             @relation("TripInstructor")
+  taughtCourses     Course[]           @relation("CourseInstructor")
+  bookings          Booking[]
+  reviews           Review[]
+  instructorProfile InstructorProfile?
+}
+
+model InstructorProfile {
+  id            Int            @id @default(autoincrement())
+  licenseNumber String         @unique
+  status        ApprovalStatus @default(pending)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int  @unique
+}
+
+model DivingCenter {
+  id            Int            @id @default(autoincrement())
+  name          String
+  city          String
+  address       String?
+  licenseNumber String         @unique
+  description   String?
+  priceRange    String?
+  contactEmail  String?
+  contactPhone  String?
+  imageUrl      String?
+  status        ApprovalStatus @default(pending)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  owner   User @relation("CenterOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId Int
+
+  trips   Trip[]
+  courses Course[]
+  reviews Review[]
+
+  @@index([city])
+}
+
+model Trip {
+  id              Int             @id @default(autoincrement())
+  title           String
+  description     String?
+  durationHours   Int
+  difficultyLevel DifficultyLevel
+  pricePerPerson  Decimal         @db.Decimal(10, 2)
+  maxCapacity     Int
+  scheduleDate    DateTime
+  imageUrl        String?
+  status          ApprovalStatus  @default(pending)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  center   DivingCenter? @relation(fields: [centerId], references: [id], onDelete: Cascade)
+  centerId Int?
+
+  instructor   User? @relation("TripInstructor", fields: [instructorId], references: [id], onDelete: SetNull)
+  instructorId Int?
+
+  bookings Booking[]
+  reviews  Review[]
+
+  @@index([scheduleDate])
+}
+
+model Course {
+  id          Int            @id @default(autoincrement())
+  title       String
+  description String?
+  level       String
+  price       Decimal        @db.Decimal(10, 2)
+  startDate   DateTime
+  imageUrl    String?
+  status      ApprovalStatus @default(pending)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  center   DivingCenter? @relation(fields: [centerId], references: [id], onDelete: Cascade)
+  centerId Int?
+
+  instructor   User? @relation("CourseInstructor", fields: [instructorId], references: [id], onDelete: SetNull)
+  instructorId Int?
+
+  bookings Booking[]
+  reviews  Review[]
+
+  @@index([startDate])
+}
+
+model Booking {
+  id             Int           @id @default(autoincrement())
+  numberOfPeople Int
+  totalPrice     Decimal       @db.Decimal(10, 2)
+  status         BookingStatus @default(pending)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+
+  trip   Trip? @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  tripId Int?
+
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId Int?
+
+  payment Payment?
+
+  @@index([userId])
+}
+
+model Payment {
+  id               Int      @id @default(autoincrement())
+  amount           Decimal  @db.Decimal(10, 2)
+  status           String
+  paymentMethod    String
+  moyasarPaymentId String?  @unique
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  bookingId Int     @unique
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+
+  center   DivingCenter @relation(fields: [centerId], references: [id], onDelete: Cascade)
+  centerId Int
+
+  trip   Trip? @relation(fields: [tripId], references: [id], onDelete: SetNull)
+  tripId Int?
+
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  courseId Int?
+
+  @@unique([userId, tripId])
+  @@unique([userId, courseId])
+}
