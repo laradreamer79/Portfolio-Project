@@ -28,17 +28,23 @@ export async function createReviewController(
 
     // Validation
 
-    if (!centerId) {
-      return res.status(400).json({
-        message: "centerId is required",
-      });
-    }
+    const reviewTargets =
+  Number(!!centerId) +
+  Number(!!tripId) +
+  Number(!!courseId);
 
-    if (
-      typeof rating !== "number" ||
-      rating < 1 ||
-      rating > 5
-    ) {
+if (reviewTargets !== 1) {
+  return res.status(400).json({
+    message:
+      "Provide exactly one of centerId, tripId, or courseId.",
+  });
+}
+
+if (
+  typeof rating !== "number" ||
+  rating < 1 ||
+  rating > 5
+) { 
       return res.status(400).json({
         message: "Rating must be between 1 and 5",
       });
@@ -70,9 +76,9 @@ export async function createReviewController(
 
     // Duplicate review
     if (
-      message ===
-      "You have already reviewed this center"
-    ) {
+  message ===
+  "You have already submitted your review"
+) {
       return res.status(409).json({
         message,
       });
