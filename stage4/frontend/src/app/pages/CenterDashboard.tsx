@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CENTERS, TRIPS } from "../data";
+import { CENTERS, TRIPS, type Trip } from "../data";
 import { Plus, Star, Users, TrendingUp, CheckCircle, Clock, X, Edit3, Trash2, Eye } from "lucide-react";
+import { createCourse, createTrip } from "../lib/catalogService";
+import { useAuth } from "../hooks/useAuth";
 
 const CENTER = CENTERS[0];
 const MY_TRIPS = TRIPS.filter((t) => t.centerId === CENTER.id);
@@ -15,15 +17,121 @@ const BOOKINGS = [
 
 type PostForm = { title: string; type: string; level: string; price: string; duration: string; depth: string; date: string; slots: string; description: string };
 
+const EMPTY_FORM: PostForm = {
+  title: "",
+  type: "trip",
+  level: "Open Water",
+  price: "",
+  duration: "Full Day",
+  depth: "",
+  date: "",
+  slots: "",
+  description: "",
+};
+
 export function CenterDashboard() {
   const navigate = useNavigate();
+  const { token } = useAuth();
   const [activeTab, setActiveTab] = useState<"overview" | "bookings" | "trips" | "profile">("overview");
   const [showPostModal, setShowPostModal] = useState(false);
   const [bookings, setBookings] = useState(BOOKINGS);
-  const [form, setForm] = useState<PostForm>({ title: "", type: "trip", level: "Open Water", price: "", duration: "Full Day", depth: "", date: "", slots: "", description: "" });
+  const [listings, setListings] = useState<Trip[]>(MY_TRIPS);
+  const [form, setForm] = useState<PostForm>(EMPTY_FORM);
   const [postDone, setPostDone] = useState(false);
+  const [postError, setPostError] = useState<string | null>(null);
+  const [isPosting, setIsPosting] = useState(false);
 
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const closePostModal = () => {
+    setShowPostModal(false);
+    setPostDone(false);
+    setPostError(null);
+    setIsPosting(false);
+  };
+
+  const durationHours = (duration: string) => {
+    switch (duration) {
+      case "Half Day":
+        return 4;
+      case "Evening":
+        return 3;
+      case "Multi-Day":
+        return 24;
+      case "Full Day":
+      default:
+        return 8;
+    }
+  };
+
+  const difficultyLevel = (level: string) => {
+    if (level === "Advanced") return "advanced";
+    if (level === "Intermediate") return "intermediate";
+    return "beginner";
+  };
+
+  const handlePostSubmit = async () => {
+    if (!form.title || !form.price) return;
+
+    if (!token) {
+      setPostError("You need to sign in again before posting.");
+      return;
+    }
+
+    setIsPosting(true);
+    setPostError(null);
+
+    try {
+      const price = Number(form.price);
+      const slots = form.slots ? Number(form.slots) : 8;
+      const date = form.date || new Date().toISOString().slice(0, 10);
+
+      if (Number.isNaN(price) || price < 0) {
+        throw new Error("Enter a valid price.");
+      }
+
+      if (Number.isNaN(slots) || slots <= 0) {
+        throw new Error("Enter a valid number of spots.");
+      }
+
+      const createdListing =
+        form.type === "course"
+          ? await createCourse(
+              {
+                title: form.title,
+                description: form.description || undefined,
+                level: form.level,
+                price,
+                startDate: date,
+              },
+              token,
+            )
+          : await createTrip(
+              {
+                title: form.title,
+                description: form.description || undefined,
+                durationHours: durationHours(form.duration),
+                difficultyLevel: difficultyLevel(form.level),
+                pricePerPerson: price,
+                maxCapacity: slots,
+                scheduleDate: date,
+              },
+              token,
+            );
+
+      setListings((current) => [createdListing, ...current]);
+      setForm(EMPTY_FORM);
+      setPostDone(true);
+    } catch (err) {
+      setPostError(
+        err instanceof Error
+          ? err.message
+          : "Unable to publish this listing. Please try again.",
+      );
+    } finally {
+      setIsPosting(false);
+    }
+  };
 
   const revenue = bookings.filter((b) => b.status === "confirmed").reduce((sum, b) => sum + b.total, 0);
   const pending = bookings.filter((b) => b.status === "pending").length;
@@ -132,7 +240,7 @@ export function CenterDashboard() {
                 <button onClick={() => setActiveTab("trips")} className="text-sm text-teal-600 hover:text-teal-800">Manage →</button>
               </div>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {MY_TRIPS.map((trip) => (
+                {listings.slice(0, 4).map((trip) => (
                   <div key={trip.id} className="bg-white rounded-2xl border border-slate-100 p-4 flex gap-3">
                     <div className="w-16 h-14 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
                       <img src={trip.img} alt={trip.title} className="w-full h-full object-cover" />
@@ -203,7 +311,7 @@ export function CenterDashboard() {
               </button>
             </div>
             <div className="space-y-3">
-              {MY_TRIPS.map((trip) => (
+              {listings.map((trip) => (
                 <div key={trip.id} className="bg-white rounded-2xl border border-slate-100 p-4 flex gap-4 items-center">
                   <div className="w-20 h-16 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
                     <img src={trip.img} alt={trip.title} className="w-full h-full object-cover" />
@@ -258,11 +366,11 @@ export function CenterDashboard() {
       {/* Post Trip Modal */}
       {showPostModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => { setShowPostModal(false); setPostDone(false); }} />
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closePostModal} />
           <div className="relative bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="sticky top-0 bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between rounded-t-2xl">
               <h3 className="font-display text-xl font-bold text-slate-900 tracking-wide">Post Trip / Course</h3>
-              <button onClick={() => { setShowPostModal(false); setPostDone(false); }} className="text-slate-400 hover:text-slate-600 transition-colors"><X className="w-5 h-5" /></button>
+              <button onClick={closePostModal} className="text-slate-400 hover:text-slate-600 transition-colors"><X className="w-5 h-5" /></button>
             </div>
             {postDone ? (
               <div className="p-8 text-center space-y-4">
@@ -273,7 +381,7 @@ export function CenterDashboard() {
                 <p className="text-slate-400 text-sm">
                   Your {form.type === "course" ? "course" : "trip"} is live and accepting bookings.
                 </p>
-                <button onClick={() => { setShowPostModal(false); setPostDone(false); setActiveTab("trips"); }} className="w-full bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors">View My Listings</button>
+                <button onClick={() => { closePostModal(); setActiveTab("trips"); }} className="w-full bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors">View My Listings</button>
               </div>
             ) : (
               <div className="p-6 space-y-4">
@@ -321,9 +429,18 @@ export function CenterDashboard() {
                   <label className="text-sm font-medium text-slate-600 block mb-1.5">Description</label>
                   <textarea rows={3} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 resize-none" placeholder="Describe the dive site, conditions, and what participants will experience..." value={form.description} onChange={set("description")} />
                 </div>
-                <button onClick={() => form.title && form.price && setPostDone(true)} disabled={!form.title || !form.price} className="w-full bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-                  {form.type === "course" ? "Publish Course" : "Publish Trip"}
+                <button onClick={handlePostSubmit} disabled={!form.title || !form.price || isPosting} className="w-full bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                  {isPosting
+                    ? "Publishing..."
+                    : form.type === "course"
+                      ? "Publish Course"
+                      : "Publish Trip"}
                 </button>
+                {postError && (
+                  <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {postError}
+                  </div>
+                )}
               </div>
             )}
           </div>
