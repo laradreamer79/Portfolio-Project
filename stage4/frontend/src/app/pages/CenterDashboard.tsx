@@ -40,6 +40,7 @@ export function CenterDashboard() {
   const [postDone, setPostDone] = useState(false);
   const [postError, setPostError] = useState<string | null>(null);
   const [isPosting, setIsPosting] = useState(false);
+  const [image, setImage] = useState<File | null>(null);
 
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
@@ -48,6 +49,7 @@ export function CenterDashboard() {
     setPostDone(false);
     setPostError(null);
     setIsPosting(false);
+    setImage(null);
   };
 
   const durationHours = (duration: string) => {
@@ -70,8 +72,17 @@ export function CenterDashboard() {
     return "beginner";
   };
 
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setImage(event.target.files?.[0] ?? null);
+  };
+
   const handlePostSubmit = async () => {
     if (!form.title || !form.price) return;
+
+    if (!image) {
+      setPostError("Upload an image before publishing.");
+      return;
+    }
 
     if (!token) {
       setPostError("You need to sign in again before posting.");
@@ -103,6 +114,7 @@ export function CenterDashboard() {
                 level: form.level,
                 price,
                 startDate: date,
+                image,
               },
               token,
             )
@@ -115,12 +127,14 @@ export function CenterDashboard() {
                 pricePerPerson: price,
                 maxCapacity: slots,
                 scheduleDate: date,
+                image,
               },
               token,
             );
 
       setListings((current) => [createdListing, ...current]);
       setForm(EMPTY_FORM);
+      setImage(null);
       setPostDone(true);
     } catch (err) {
       setPostError(
@@ -429,7 +443,26 @@ export function CenterDashboard() {
                   <label className="text-sm font-medium text-slate-600 block mb-1.5">Description</label>
                   <textarea rows={3} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 resize-none" placeholder="Describe the dive site, conditions, and what participants will experience..." value={form.description} onChange={set("description")} />
                 </div>
-                <button onClick={handlePostSubmit} disabled={!form.title || !form.price || isPosting} className="w-full bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                <div>
+                  <label className="text-sm font-medium text-slate-600 block mb-1.5">Image *</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-teal-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-teal-700 hover:file:bg-teal-100"
+                  />
+                  {image && (
+                    <p className="mt-1.5 text-xs text-slate-400">
+                      Selected: {image.name}
+                    </p>
+                  )}
+                  {!image && (
+                    <p className="mt-1.5 text-xs text-slate-400">
+                      Required for publishing.
+                    </p>
+                  )}
+                </div>
+                <button onClick={handlePostSubmit} disabled={!form.title || !form.price || !image || isPosting} className="w-full bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
                   {isPosting
                     ? "Publishing..."
                     : form.type === "course"

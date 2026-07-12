@@ -92,6 +92,7 @@ export type CreateTripPayload = {
   pricePerPerson: number;
   maxCapacity: number;
   scheduleDate: string;
+  image: File;
 };
 
 export type CreateCoursePayload = {
@@ -100,6 +101,7 @@ export type CreateCoursePayload = {
   level: string;
   price: number;
   startDate: string;
+  image: File;
 };
 
 function queryString(filters: CatalogFilters) {
@@ -292,9 +294,10 @@ export async function getCourseById(id: number) {
 }
 
 export async function createTrip(payload: CreateTripPayload, token: string) {
+  const { image, ...data } = payload;
   const trip = await apiRequest<ApiTrip>("/trips", {
     method: "POST",
-    body: payload,
+    body: toCatalogFormData(data, image),
     token,
   });
 
@@ -305,11 +308,28 @@ export async function createCourse(
   payload: CreateCoursePayload,
   token: string,
 ) {
+  const { image, ...data } = payload;
   const course = await apiRequest<ApiCourse>("/courses", {
     method: "POST",
-    body: payload,
+    body: toCatalogFormData(data, image),
     token,
   });
 
   return toCourse(course);
+}
+
+function toCatalogFormData(
+  data: Record<string, string | number | undefined>,
+  image: File,
+) {
+  const formData = new FormData();
+
+  Object.entries(data).forEach(([key, value]) => {
+    if (value !== undefined) {
+      formData.append(key, String(value));
+    }
+  });
+
+  formData.append("image", image);
+  return formData;
 }
