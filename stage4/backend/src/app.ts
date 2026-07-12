@@ -12,6 +12,7 @@ import { coursesRouter } from "./routes/courses.routes.js";
 
 import { bookingsRouter } from "./bookings/bookings.routes.js";
 import { reviewsRouter } from "./reviews/reviews.routes.js";
+import { paymentsRouter } from "./payments/payments.routes.js";
 
 export const app = express();
 
@@ -36,6 +37,11 @@ app.use(
 app.use(
   "/api/reviews",
   reviewsRouter
+);
+
+app.use(
+  "/api/payments",
+  paymentsRouter,
 );
 
 app.use(notFound);
