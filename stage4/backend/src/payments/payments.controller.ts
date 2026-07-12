@@ -1,16 +1,24 @@
-import type { Response } from "express";
-import type { AuthRequest } from "../middleware/auth.middleware.js";
+import type {
+  NextFunction,
+  Request,
+  Response,
+} from "express";
+
+import type {
+  AuthRequest,
+} from "../middleware/auth.middleware.js";
 
 import {
   createPayment,
-  getPayment,
   getAllPayments,
+  getPayment,
   handleWebhook,
 } from "./payments.service.js";
 
 export async function createPaymentController(
   req: AuthRequest,
   res: Response,
+  next: NextFunction,
 ) {
   try {
     if (!req.user) {
@@ -19,61 +27,94 @@ export async function createPaymentController(
       });
     }
 
-    const { bookingId, paymentMethod } = req.body;
+    const {
+      bookingId,
+      paymentMethod,
+      sourceToken,
+    } = req.body;
 
-    if (!bookingId) {
+    if (
+      !Number.isInteger(bookingId) ||
+      bookingId < 1
+    ) {
       return res.status(400).json({
-        message: "bookingId is required",
+        message:
+          "bookingId must be a positive integer",
       });
     }
 
-    if (!paymentMethod) {
+    if (
+      typeof paymentMethod !== "string" ||
+      paymentMethod.trim().length === 0
+    ) {
       return res.status(400).json({
         message: "paymentMethod is required",
       });
     }
 
-    const payment = await createPayment({
-      bookingId: Number(bookingId),
+    if (
+      typeof sourceToken !== "string" ||
+      sourceToken.trim().length === 0
+    ) {
+      return res.status(400).json({
+        message:
+          "sourceToken from Moyasar is required",
+      });
+    }
+
+    const result = await createPayment({
+      bookingId,
       userId: req.user.id,
-      paymentMethod,
+      paymentMethod: paymentMethod.trim(),
+      sourceToken: sourceToken.trim(),
     });
 
-    return res.status(201).json(payment);
+    return res.status(201).json(result);
   } catch (error) {
     if (error instanceof Error) {
       switch (error.message) {
-        case "Booking not found":
+        case "BOOKING_NOT_FOUND":
           return res.status(404).json({
-            message: error.message,
-          });
-
-        case "Payment already exists":
-          return res.status(409).json({
-            message: error.message,
+            message: "Booking not found",
           });
 
         case "FORBIDDEN":
           return res.status(403).json({
-            message: "Forbidden",
+            message:
+              "You cannot pay for this booking",
+          });
+
+        case "PAYMENT_ALREADY_EXISTS":
+          return res.status(409).json({
+            message:
+              "A payment already exists for this booking",
           });
 
         default:
+          if (
+            error.message.startsWith(
+              "Moyasar payment failed:",
+            )
+          ) {
+            return res.status(502).json({
+              message: error.message,
+            });
+          }
+
           return res.status(400).json({
             message: error.message,
           });
       }
     }
 
-    return res.status(500).json({
-      message: "Failed to create payment",
-    });
+    next(error);
   }
 }
 
 export async function getPaymentController(
   req: AuthRequest,
   res: Response,
+  next: NextFunction,
 ) {
   try {
     if (!req.user) {
@@ -82,72 +123,92 @@ export async function getPaymentController(
       });
     }
 
+    const paymentId = Number(req.params.id);
+
+    if (
+      !Number.isInteger(paymentId) ||
+      paymentId < 1
+    ) {
+      return res.status(400).json({
+        message:
+          "Payment id must be a positive integer",
+      });
+    }
+
     const payment = await getPayment(
-      Number(req.params.id),
+      paymentId,
       req.user.id,
     );
 
     return res.status(200).json(payment);
   } catch (error) {
     if (error instanceof Error) {
-      switch (error.message) {
-        case "Payment not found":
-          return res.status(404).json({
-            message: error.message,
-          });
+      if (error.message === "PAYMENT_NOT_FOUND") {
+        return res.status(404).json({
+          message: "Payment not found",
+        });
+      }
 
-        case "FORBIDDEN":
-          return res.status(403).json({
-            message: "Forbidden",
-          });
-
-        default:
-          return res.status(400).json({
-            message: error.message,
-          });
+      if (error.message === "FORBIDDEN") {
+        return res.status(403).json({
+          message: "Forbidden",
+        });
       }
     }
 
-    return res.status(500).json({
-      message: "Failed to get payment",
-    });
+    next(error);
   }
 }
 
 export async function getAllPaymentsController(
-  req: AuthRequest,
+  _req: AuthRequest,
   res: Response,
+  next: NextFunction,
 ) {
   try {
     const payments = await getAllPayments();
 
     return res.status(200).json(payments);
   } catch (error) {
-    return res.status(500).json({
-      message:
-        error instanceof Error
-          ? error.message
-          : "Failed to get payments",
-    });
+    next(error);
   }
 }
 
 export async function webhookController(
-  req: AuthRequest,
+  req: Request,
   res: Response,
 ) {
   try {
-    await handleWebhook(req.body);
+    const payment = await handleWebhook(req.body);
 
     return res.status(200).json({
-      success: true,
+      received: true,
+      payment,
     });
   } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === "INVALID_WEBHOOK_SECRET"
+    ) {
+      return res.status(401).json({
+        message: "Invalid webhook secret",
+      });
+    }
+
+    if (
+      error instanceof Error &&
+      error.message === "PAYMENT_NOT_FOUND"
+    ) {
+      return res.status(404).json({
+        message: "Payment not found",
+      });
+    }
+
     return res.status(400).json({
       message:
         error instanceof Error
           ? error.message
-          : "Webhook failed",
+          : "Webhook processing failed",
     });
   }
 }
