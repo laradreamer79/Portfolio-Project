@@ -1,6 +1,8 @@
+```ts
 import axios from "axios";
-import { prisma } from "../prisma/client.js";
+
 import { env } from "../config/env.js";
+import { prisma } from "../prisma/client.js";
 
 type LocalPaymentStatus =
   | "pending"
@@ -20,6 +22,7 @@ interface MoyasarPaymentResponse {
   status: string;
   amount: number;
   currency: string;
+
   source?: {
     type?: string;
     transaction_url?: string | null;
@@ -31,6 +34,7 @@ interface MoyasarWebhookPayload {
   type?: string;
   secret_token?: string;
   live?: boolean;
+
   data?: {
     id?: string;
     status?: string;
@@ -39,31 +43,28 @@ interface MoyasarWebhookPayload {
   };
 }
 
-function requireMoyasarSecretKey(): string {
-  if (!env.moyasarSecretKey) {
-    throw new Error(
-      "MOYASAR_SECRET_KEY is not configured",
-    );
-  }
-
-  return env.moyasarSecretKey;
-}
-
 function getAxiosErrorMessage(
   error: unknown,
 ): string {
   if (axios.isAxiosError(error)) {
-    const responseMessage =
-      error.response?.data?.message ??
-      error.response?.data?.error ??
-      error.response?.data?.errors;
+    const responseData = error.response?.data;
 
-    if (typeof responseMessage === "string") {
-      return responseMessage;
-    }
+    if (
+      responseData &&
+      typeof responseData === "object"
+    ) {
+      const message =
+        responseData.message ??
+        responseData.error ??
+        responseData.errors;
 
-    if (responseMessage) {
-      return JSON.stringify(responseMessage);
+      if (typeof message === "string") {
+        return message;
+      }
+
+      if (message) {
+        return JSON.stringify(message);
+      }
     }
 
     return error.message;
@@ -74,10 +75,10 @@ function getAxiosErrorMessage(
     : "Payment provider request failed";
 }
 
-function mapMoyasarStatus(
+function mapProviderStatus(
   status: string,
 ): LocalPaymentStatus {
-  switch (status) {
+  switch (status.toLowerCase()) {
     case "paid":
     case "captured":
     case "verified":
@@ -88,24 +89,40 @@ function mapMoyasarStatus(
 
     case "failed":
     case "voided":
+    case "canceled":
+    case "cancelled":
       return "failed";
 
     case "initiated":
     case "authorized":
+    case "pending":
     default:
       return "pending";
   }
 }
 
+function requireMoyasarKey(): string {
+  const key =
+    env.moyasarPublishableKey ??
+    env.moyasarSecretKey;
+
+  if (!key) {
+    throw new Error(
+      "Moyasar API key is not configured",
+    );
+  }
+
+  return key;
+}
+
 export async function createPayment(
   data: CreatePaymentInput,
 ) {
-  const secretKey = requireMoyasarSecretKey();
-
   const booking = await prisma.booking.findUnique({
     where: {
       id: data.bookingId,
     },
+
     include: {
       payment: true,
     },
@@ -125,14 +142,82 @@ export async function createPayment(
     );
   }
 
+  if (booking.status === "confirmed") {
+    throw new Error(
+      "This booking is already confirmed",
+    );
+  }
+
   if (booking.payment) {
     throw new Error("PAYMENT_ALREADY_EXISTS");
   }
 
+  if (
+    typeof data.paymentMethod !== "string" ||
+    data.paymentMethod.trim().length === 0
+  ) {
+    throw new Error(
+      "paymentMethod is required",
+    );
+  }
+
   /*
-   * Moyasar expects amounts in the smallest currency
-   * unit. For SAR, that means halalas.
+   * Mock mode:
+   * No external request is sent to Moyasar.
+   * A local pending payment record is created.
    */
+  if (env.paymentProviderMode === "mock") {
+    const mockPaymentId =
+      `mock_${Date.now()}_${booking.id}`;
+
+    const payment = await prisma.payment.create({
+      data: {
+        bookingId: booking.id,
+        amount: booking.totalPrice,
+        status: "pending",
+        paymentMethod:
+          data.paymentMethod.trim(),
+        moyasarPaymentId: mockPaymentId,
+        invoiceUrl: null,
+      },
+
+      include: {
+        booking: {
+          include: {
+            trip: true,
+            course: true,
+          },
+        },
+      },
+    });
+
+    return {
+      payment,
+      providerStatus: "mock_pending",
+      transactionUrl: null,
+      mock: true,
+    };
+  }
+
+  /*
+   * Real Moyasar test mode.
+   */
+  if (
+    typeof data.sourceToken !== "string" ||
+    data.sourceToken.trim().length === 0
+  ) {
+    throw new Error(
+      "sourceToken from Moyasar is required",
+    );
+  }
+
+  const moyasarKey = requireMoyasarKey();
+
+  /*
+   * Moyasar expects the amount in halalas.
+   * 1 SAR = 100 halalas.
+   */
+   
   const amountInHalalas = Math.round(
     Number(booking.totalPrice) * 100,
   );
@@ -141,15 +226,18 @@ export async function createPayment(
     const response =
       await axios.post<MoyasarPaymentResponse>(
         `${env.moyasarBaseUrl}/payments`,
+
         {
           amount: amountInHalalas,
           currency: "SAR",
-          description: `Oyster booking #${booking.id}`,
-          callback_url: env.moyasarCallbackUrl,
+          description:
+            `Oyster booking #${booking.id}`,
+          callback_url:
+            env.moyasarCallbackUrl,
 
           source: {
             type: "token",
-            token: data.sourceToken,
+            token: data.sourceToken.trim(),
             "3ds": true,
           },
 
@@ -158,59 +246,90 @@ export async function createPayment(
             userId: String(booking.userId),
           },
         },
+
         {
           auth: {
-  username: env.moyasarPublishableKey!,
-  password: "",
+            username: moyasarKey,
+            password: "",
           },
+
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
         },
       );
 
-    const moyasarPayment = response.data;
-    const localStatus = mapMoyasarStatus(
-      moyasarPayment.status,
-    );
+    const providerPayment = response.data;
+
+    if (
+      !providerPayment.id ||
+      !providerPayment.status
+    ) {
+      throw new Error(
+        "Invalid response from Moyasar",
+      );
+    }
+
+    const localStatus =
+      mapProviderStatus(
+        providerPayment.status,
+      );
 
     const transactionUrl =
-      moyasarPayment.source?.transaction_url ??
-      null;
+      providerPayment.source
+        ?.transaction_url ?? null;
 
-    const payment = await prisma.payment.create({
-      data: {
-        bookingId: booking.id,
-        amount: booking.totalPrice,
-        status: localStatus,
-        paymentMethod: data.paymentMethod,
-        moyasarPaymentId: moyasarPayment.id,
-        invoiceUrl: transactionUrl,
-      },
-      include: {
-        booking: true,
-      },
-    });
+    const payment =
+      await prisma.$transaction(
+        async (transaction) => {
+          const createdPayment =
+            await transaction.payment.create({
+              data: {
+                bookingId: booking.id,
+                amount: booking.totalPrice,
+                status: localStatus,
+                paymentMethod:
+                  data.paymentMethod.trim(),
+                moyasarPaymentId:
+                  providerPayment.id,
+                invoiceUrl:
+                  transactionUrl,
+              },
 
-    if (localStatus === "paid") {
-      await prisma.booking.update({
-        where: {
-          id: booking.id,
+              include: {
+                booking: true,
+              },
+            });
+
+          if (localStatus === "paid") {
+            await transaction.booking.update({
+              where: {
+                id: booking.id,
+              },
+
+              data: {
+                status: "confirmed",
+              },
+            });
+          }
+
+          return createdPayment;
         },
-        data: {
-          status: "confirmed",
-        },
-      });
-    }
+      );
 
     return {
       payment,
-      moyasarStatus: moyasarPayment.status,
+      providerStatus:
+        providerPayment.status,
       transactionUrl,
+      mock: false,
     };
   } catch (error) {
     throw new Error(
-      `Moyasar payment failed: ${getAxiosErrorMessage(error)}`,
+      `Moyasar payment failed: ${
+        getAxiosErrorMessage(error)
+      }`,
     );
   }
 }
@@ -223,6 +342,7 @@ export async function getPayment(
     where: {
       id: paymentId,
     },
+
     include: {
       booking: {
         include: {
@@ -257,11 +377,13 @@ export async function getAllPayments() {
               role: true,
             },
           },
+
           trip: true,
           course: true,
         },
       },
     },
+
     orderBy: {
       createdAt: "desc",
     },
@@ -281,27 +403,30 @@ export async function handleWebhook(
     payload.secret_token !==
     env.moyasarWebhookSecret
   ) {
-    throw new Error("INVALID_WEBHOOK_SECRET");
+    throw new Error(
+      "INVALID_WEBHOOK_SECRET",
+    );
   }
 
   const eventType = payload.type;
-  const moyasarPayment = payload.data;
+  const providerPayment = payload.data;
 
   if (
     !eventType ||
     !eventType.startsWith("payment_") ||
-    !moyasarPayment?.id ||
-    !moyasarPayment.status
+    !providerPayment?.id ||
+    !providerPayment.status
   ) {
     throw new Error(
-      "Invalid Moyasar webhook payload",
+      "Invalid payment webhook payload",
     );
   }
 
   const existingPayment =
     await prisma.payment.findUnique({
       where: {
-        moyasarPaymentId: moyasarPayment.id,
+        moyasarPaymentId:
+          providerPayment.id,
       },
     });
 
@@ -309,45 +434,54 @@ export async function handleWebhook(
     throw new Error("PAYMENT_NOT_FOUND");
   }
 
-  const localStatus = mapMoyasarStatus(
-    moyasarPayment.status,
+  const localStatus =
+    mapProviderStatus(
+      providerPayment.status,
+    );
+
+  return prisma.$transaction(
+    async (transaction) => {
+      const updatedPayment =
+        await transaction.payment.update({
+          where: {
+            id: existingPayment.id,
+          },
+
+          data: {
+            status: localStatus,
+          },
+
+          include: {
+            booking: true,
+          },
+        });
+
+      if (localStatus === "paid") {
+        await transaction.booking.update({
+          where: {
+            id: existingPayment.bookingId,
+          },
+
+          data: {
+            status: "confirmed",
+          },
+        });
+      }
+
+      if (localStatus === "refunded") {
+        await transaction.booking.update({
+          where: {
+            id: existingPayment.bookingId,
+          },
+
+          data: {
+            status: "cancelled",
+          },
+        });
+      }
+
+      return updatedPayment;
+    },
   );
-
-  return prisma.$transaction(async (tx) => {
-    const payment = await tx.payment.update({
-      where: {
-        id: existingPayment.id,
-      },
-      data: {
-        status: localStatus,
-      },
-    });
-
-    if (localStatus === "paid") {
-      await tx.booking.update({
-        where: {
-          id: existingPayment.bookingId,
-        },
-        data: {
-          status: "confirmed",
-        },
-      });
-    } else if (localStatus === "refunded") {
-      await tx.booking.update({
-        where: {
-          id: existingPayment.bookingId,
-        },
-        data: {
-          status: "cancelled",
-        },
-      });
-    }
-
-    /*
-     * A failed payment leaves the booking pending so
-     * your application can allow another payment attempt
-     * after explicitly replacing or resetting the record.
-     */
-    return payment;
-  });
 }
+```
