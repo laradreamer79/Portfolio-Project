@@ -91,6 +91,7 @@ export function InstructorDashboard() {
   const [postError, setPostError] = useState<string | null>(null);
   const [isPosting, setIsPosting] = useState(false);
   const [form, setForm] = useState<PostForm>(EMPTY_FORM);
+  const [image, setImage] = useState<File | null>(null);
 
   const set =
     (key: keyof PostForm) =>
@@ -107,6 +108,7 @@ export function InstructorDashboard() {
     setPostDone(false);
     setPostError(null);
     setIsPosting(false);
+    setImage(null);
   };
 
   const durationHours = (duration: string) => {
@@ -129,8 +131,17 @@ export function InstructorDashboard() {
     return "beginner";
   };
 
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setImage(event.target.files?.[0] ?? null);
+  };
+
   const handlePostSubmit = async () => {
     if (!form.title || !form.price) return;
+
+    if (!image) {
+      setPostError("Upload an image before publishing.");
+      return;
+    }
 
     if (!token) {
       setPostError("You need to sign in again before posting.");
@@ -162,6 +173,7 @@ export function InstructorDashboard() {
                 level: form.level,
                 price,
                 startDate: date,
+                image,
               },
               token,
             )
@@ -174,12 +186,14 @@ export function InstructorDashboard() {
                 pricePerPerson: price,
                 maxCapacity: slots,
                 scheduleDate: date,
+                image,
               },
               token,
             );
 
       setListings((current) => [createdListing, ...current]);
       setForm(EMPTY_FORM);
+      setImage(null);
       setPostDone(true);
     } catch (err) {
       setPostError(
@@ -696,10 +710,32 @@ export function InstructorDashboard() {
                   />
                 </div>
 
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-slate-600">
+                    Image *
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-teal-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-teal-700 hover:file:bg-teal-100"
+                  />
+                  {image && (
+                    <p className="mt-1.5 text-xs text-slate-400">
+                      Selected: {image.name}
+                    </p>
+                  )}
+                  {!image && (
+                    <p className="mt-1.5 text-xs text-slate-400">
+                      Required for publishing.
+                    </p>
+                  )}
+                </div>
+
                 <button
                   type="button"
                   onClick={handlePostSubmit}
-                  disabled={!form.title || !form.price || isPosting}
+                  disabled={!form.title || !form.price || !image || isPosting}
                   className="w-full rounded-xl bg-teal-500 py-3 font-semibold text-white transition-colors hover:bg-teal-600 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {isPosting
