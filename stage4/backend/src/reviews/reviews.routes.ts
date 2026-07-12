@@ -1,7 +1,9 @@
 import { Router } from "express";
 import {
   createReviewController,
-  getReviewsController,
+  getCenterReviewsController,
+  getCourseReviewsController,
+  getTripReviewsController,
 } from "./reviews.controller.js";
 
 import { authenticate } from "../middleware/auth.middleware.js";
@@ -19,5 +21,15 @@ reviewsRouter.post(
 
 reviewsRouter.get(
   "/center/:centerId",
-  getReviewsController,
+  getCenterReviewsController,
+);
+
+reviewsRouter.get(
+  "/trip/:tripId",
+  getTripReviewsController,
+);
+
+reviewsRouter.get(
+  "/course/:courseId",
+  getCourseReviewsController,
 );

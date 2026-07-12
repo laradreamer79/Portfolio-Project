@@ -3,7 +3,9 @@ import type { AuthRequest } from "../middleware/auth.middleware.js";
 
 import {
   createReview,
-  getReviews,
+  getCenterReviews,
+  getCourseReviews,
+  getTripReviews,
 } from "./reviews.service.js";
 
 export async function createReviewController(
@@ -82,20 +84,34 @@ export async function createReviewController(
   }
 }
 
-export async function getReviewsController(
+function parsePositiveId(
+  value: string | string[] | undefined,
+  name: string,
+) {
+  if (typeof value !== "string") {
+    throw new Error(`Invalid ${name}`);
+  }
+
+  const id = Number(value);
+
+  if (!Number.isInteger(id) || id < 1) {
+    throw new Error(`Invalid ${name}`);
+  }
+
+  return id;
+}
+
+export async function getCenterReviewsController(
   req: Request,
   res: Response,
 ) {
   try {
-    const centerId = Number(req.params.centerId);
+    const centerId = parsePositiveId(
+      req.params.centerId,
+      "centerId",
+    );
 
-    if (Number.isNaN(centerId)) {
-      return res.status(400).json({
-        message: "Invalid centerId",
-      });
-    }
-
-    const reviews = await getReviews(centerId);
+    const reviews = await getCenterReviews(centerId);
 
     return res.status(200).json(reviews);
   } catch (error) {
@@ -103,7 +119,53 @@ export async function getReviewsController(
       message:
         error instanceof Error
           ? error.message
-          : "Failed to get reviews",
+          : "Failed to get center reviews",
+    });
+  }
+}
+
+export async function getTripReviewsController(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const tripId = parsePositiveId(
+      req.params.tripId,
+      "tripId",
+    );
+
+    const reviews = await getTripReviews(tripId);
+
+    return res.status(200).json(reviews);
+  } catch (error) {
+    return res.status(400).json({
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to get trip reviews",
+    });
+  }
+}
+
+export async function getCourseReviewsController(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const courseId = parsePositiveId(
+      req.params.courseId,
+      "courseId",
+    );
+
+    const reviews = await getCourseReviews(courseId);
+
+    return res.status(200).json(reviews);
+  } catch (error) {
+    return res.status(400).json({
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to get course reviews",
     });
   }
 }

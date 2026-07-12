@@ -1,0 +1,1 @@
+ALTER TABLE "Review" ALTER COLUMN "centerId" DROP NOT NULL;

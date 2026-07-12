@@ -72,19 +72,49 @@ export async function createReview(
   });
 }
 
-export async function getReviews(
+const reviewInclude = {
+  user: true,
+  center: true,
+  trip: true,
+  course: true,
+};
+
+export async function getCenterReviews(
   centerId: number,
 ) {
   return prisma.review.findMany({
     where: {
       centerId,
     },
-    include: {
-      user: true,
-      center: true,
-      trip: true,
-      course: true,
+    include: reviewInclude,
+    orderBy: {
+      createdAt: "desc",
     },
+  });
+}
+
+export async function getTripReviews(
+  tripId: number,
+) {
+  return prisma.review.findMany({
+    where: {
+      tripId,
+    },
+    include: reviewInclude,
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
+
+export async function getCourseReviews(
+  courseId: number,
+) {
+  return prisma.review.findMany({
+    where: {
+      courseId,
+    },
+    include: reviewInclude,
     orderBy: {
       createdAt: "desc",
     },
