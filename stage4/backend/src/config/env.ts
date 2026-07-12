@@ -48,4 +48,7 @@ export const env = {
 
   moyasarWebhookSecret:
     getOptionalEnv("MOYASAR_WEBHOOK_SECRET"),
+
+  moyasarPublishableKey:
+  getOptionalEnv("MOYASAR_PUBLISHABLE_KEY"),
 };
