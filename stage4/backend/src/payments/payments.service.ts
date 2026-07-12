@@ -160,8 +160,8 @@ export async function createPayment(
         },
         {
           auth: {
-            username: secretKey,
-            password: "",
+  username: env.moyasarPublishableKey!,
+  password: "",
           },
           headers: {
             "Content-Type": "application/json",
