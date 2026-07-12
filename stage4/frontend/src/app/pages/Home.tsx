@@ -1,8 +1,10 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, CheckCircle, Search, Waves, Award } from "lucide-react";
-import { CENTERS, CITIES, TRIPS } from "../data";
+import { CITIES, type Center, type Trip } from "../data";
 import { CenterCard } from "../components/cards/CenterCard";
 import { ExperienceCard } from "../components/cards/ExperienceCard";
+import { getCenters, getCourses, getTrips } from "../lib/catalogService";
 
 const CITY_IMGS: Record<string, string> = {
   Jeddah: "https://images.unsplash.com/photo-1682687982298-c7514a167088?w=600&h=420&fit=crop&auto=format",
@@ -15,10 +17,48 @@ const CITY_IMGS: Record<string, string> = {
 
 export function Home() {
   const navigate = useNavigate();
-  const featured = CENTERS.filter((c) => c.verified).slice(0, 3);
+  const [centers, setCenters] = useState<Center[]>([]);
+  const [trips, setTrips] = useState<Trip[]>([]);
+  const [courses, setCourses] = useState<Trip[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+
+    setLoading(true);
+    setError(null);
+
+    Promise.all([getCenters(), getTrips(), getCourses()])
+      .then(([centerData, tripData, courseData]) => {
+        if (!active) return;
+        setCenters(centerData);
+        setTrips(tripData);
+        setCourses(courseData);
+      })
+      .catch((err: unknown) => {
+        if (!active) return;
+        setError(err instanceof Error ? err.message : "Unable to load featured catalog data.");
+        setCenters([]);
+        setTrips([]);
+        setCourses([]);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const featured = centers.filter((c) => c.verified).slice(0, 3);
   const cities = CITIES.filter((c) => c !== "All Cities");
-  const featuredTrips = TRIPS.filter((t) => t.type === "trip").slice(0, 3);
-  const featuredCourses = TRIPS.filter((t) => t.type === "course").slice(0, 3);
+  const featuredTrips = trips.slice(0, 3);
+  const featuredCourses = courses.slice(0, 3);
+  const centerCount = centers.length || "—";
+  const cityCount = new Set(centers.map((center) => center.city)).size || cities.length;
+  const listingCount = trips.length + courses.length || "—";
 
   return (
     <div>
@@ -59,7 +99,9 @@ export function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-3">
                   <p className="font-display text-lg font-bold text-white tracking-wide leading-tight">{city}</p>
-                  <p className="text-teal-300 text-xs">{CENTERS.filter((c) => c.city === city).length} centers</p>
+                  <p className="text-teal-300 text-xs">
+                    {centers.filter((c) => c.city === city).length} centers
+                  </p>
                 </div>
               </button>
             ))}
@@ -77,8 +119,18 @@ export function Home() {
             </div>
             <button onClick={() => navigate("/centers")} className="text-sm text-teal-600 font-medium hover:text-teal-700 flex items-center gap-1">View all <ArrowRight className="w-4 h-4" /></button>
           </div>
+          {error && (
+            <div className="mb-5 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {error}
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {featured.map((center) => (
+            {loading && (
+              <div className="col-span-3 text-center py-12 text-slate-400">
+                Loading featured centers...
+              </div>
+            )}
+            {!loading && featured.map((center) => (
               <CenterCard
                 key={center.id}
                 center={center}
@@ -86,6 +138,11 @@ export function Home() {
                 onSelect={(selectedCenter) => navigate(`/centers/${selectedCenter.id}`)}
               />
             ))}
+            {!loading && featured.length === 0 && (
+              <div className="col-span-3 text-center py-12 text-slate-400">
+                No featured centers yet.
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -101,8 +158,13 @@ export function Home() {
             <button onClick={() => navigate("/trips")} className="text-sm text-teal-600 font-medium hover:text-teal-700 flex items-center gap-1">All trips <ArrowRight className="w-4 h-4" /></button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {featuredTrips.map((trip) => {
-              const center = CENTERS.find((c) => c.id === trip.centerId);
+            {loading && (
+              <div className="col-span-3 text-center py-12 text-slate-400">
+                Loading featured trips...
+              </div>
+            )}
+            {!loading && featuredTrips.map((trip) => {
+              const center = centers.find((c) => c.id === trip.centerId);
               return (
                 <ExperienceCard
                   key={trip.id}
@@ -115,6 +177,11 @@ export function Home() {
                 />
               );
             })}
+            {!loading && featuredTrips.length === 0 && (
+              <div className="col-span-3 text-center py-12 text-slate-400">
+                No featured trips yet.
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -130,8 +197,13 @@ export function Home() {
             <button onClick={() => navigate("/courses")} className="text-sm text-purple-600 font-medium hover:text-purple-700 flex items-center gap-1">All courses <ArrowRight className="w-4 h-4" /></button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {featuredCourses.map((course) => {
-              const center = CENTERS.find((c) => c.id === course.centerId);
+            {loading && (
+              <div className="col-span-3 text-center py-12 text-slate-400">
+                Loading featured courses...
+              </div>
+            )}
+            {!loading && featuredCourses.map((course) => {
+              const center = centers.find((c) => c.id === course.centerId);
               return (
                 <ExperienceCard
                   key={course.id}
@@ -144,6 +216,11 @@ export function Home() {
                 />
               );
             })}
+            {!loading && featuredCourses.length === 0 && (
+              <div className="col-span-3 text-center py-12 text-slate-400">
+                No featured courses yet.
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -185,9 +262,9 @@ export function Home() {
             <p className="text-white/60 leading-relaxed mb-8 max-w-md">From your first open-water dive to advanced technical expeditions, Oyster connects you with certified dive centers across Saudi Arabia's stunning coastlines.</p>
             <div className="grid grid-cols-2 gap-4 mb-8">
               {[
-                { num: "8", label: "Certified Centers" },
-                { num: "6", label: "Saudi Cities" },
-                { num: "15+", label: "Trips & Courses" },
+                { num: String(centerCount), label: "Certified Centers" },
+                { num: String(cityCount), label: "Saudi Cities" },
+                { num: String(listingCount), label: "Trips & Courses" },
                 { num: "100%", label: "Verified Operators" },
               ].map((s) => (
                 <div key={s.label} className="bg-white/10 backdrop-blur border border-white/10 rounded-xl p-4">
