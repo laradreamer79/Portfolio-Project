@@ -31,7 +31,7 @@ export const router = createBrowserRouter([
       { path: "courses/:id", Component: CourseDetail },
       { path: "about", Component: About },
       {
-        path: "booking/:tripId",
+        path: "booking/:type/:id",
         element: (
           <ProtectedRoute>
             <Booking />

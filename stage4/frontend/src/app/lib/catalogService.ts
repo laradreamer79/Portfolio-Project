@@ -178,6 +178,7 @@ export function toTrip(trip: ApiTrip): Trip {
     duration: `${trip.durationHours} Hours`,
     depth: "Varies",
     date: formatDate(trip.scheduleDate),
+    rawDate: trip.scheduleDate,
     slots: trip.maxCapacity,
     description: trip.description ?? "Dive trip details will be shared by the provider.",
     img: trip.imageUrl ?? fallbackTripImage,
@@ -195,10 +196,32 @@ export function toCourse(course: ApiCourse): Trip {
     duration: "Course",
     depth: "Training",
     date: formatDate(course.startDate),
+    rawDate: course.startDate,
     slots: 12,
     description: course.description ?? "Course details will be shared by the provider.",
     img: course.imageUrl ?? fallbackCourseImage,
   };
+}
+
+/** True when the trip/course's scheduled date has already passed. */
+export function isPastExperience(experience: Pick<Trip, "rawDate">): boolean {
+  if (!experience.rawDate) return false;
+  const scheduled = new Date(experience.rawDate);
+  if (Number.isNaN(scheduled.getTime())) return false;
+  const endOfScheduledDay = new Date(scheduled);
+  endOfScheduledDay.setHours(23, 59, 59, 999);
+  return endOfScheduledDay.getTime() < Date.now();
+}
+
+/**
+ * Fetches a trip or course by id without knowing the type upfront.
+ * Tries the trips endpoint first, then falls back to courses.
+ */
+export async function getExperienceById(
+  type: "trip" | "course",
+  id: number,
+) {
+  return type === "course" ? getCourseById(id) : getTripById(id);
 }
 
 export function toReview(review: ApiReview): Review {

@@ -29,6 +29,8 @@ export type Trip = {
   duration: string;
   depth: string;
   date: string;
+  /** ISO date string (scheduleDate for trips, startDate for courses) used for past-date checks. */
+  rawDate?: string;
   slots: number;
   description: string;
   img: string;

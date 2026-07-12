@@ -5,11 +5,15 @@ import {
   ChevronLeft, Star, MapPin, Clock, Waves, Users, Calendar, 
   Shield, CheckCircle, AlertCircle, Phone, Mail 
 } from "lucide-react";
-import { getTripById } from "../lib/catalogService";
+import { getTripById, toReview } from "../lib/catalogService";
+import { submitReview } from "../lib/reviewsService";
+import { ReviewForm } from "../components/ReviewForm";
+import { useAuth } from "../hooks/useAuth";
 
 export function TripDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { token } = useAuth();
   const [trip, setTrip] = useState<Trip | null>(null);
   const [center, setCenter] = useState<Center | undefined>();
   const [tripReviews, setTripReviews] = useState<Review[]>([]);
@@ -279,6 +283,15 @@ export function TripDetail() {
                   <p className="text-slate-400 text-sm mt-1">Be the first to share your experience!</p>
                 </div>
               )}
+
+              <ReviewForm
+                label={trip.title}
+                onSubmit={async (rating, comment) => {
+                  if (!token) return;
+                  const created = await submitReview({ tripId: trip.id, rating, comment }, token);
+                  setTripReviews((prev) => [toReview(created), ...prev]);
+                }}
+              />
             </div>
 
             {/* Similar Trips */}
@@ -332,7 +345,7 @@ export function TripDetail() {
               </div>
 
               <button 
-                onClick={() => navigate(`/booking/${trip.id}`)}
+                onClick={() => navigate(`/booking/trip/${trip.id}`)}
                 className="w-full bg-teal-500 text-white font-semibold py-3.5 rounded-xl hover:bg-teal-600 transition-colors"
               >
                 Book Now
