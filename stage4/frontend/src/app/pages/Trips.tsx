@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Waves, Search } from "lucide-react";
-import { TRIPS, CENTERS, CITIES } from "../data";
+import { CITIES, type Center, type Trip } from "../data";
 import { ExperienceCard } from "../components/cards/ExperienceCard";
+import { getCenters, getTrips } from "../lib/catalogService";
 
 const LEVELS = ["All Levels", "Beginner", "Open Water", "Intermediate", "Advanced"];
 
@@ -11,14 +12,50 @@ export function Trips() {
   const [city, setCity] = useState("All Cities");
   const [level, setLevel] = useState("All Levels");
   const [query, setQuery] = useState("");
+  const [trips, setTrips] = useState<Trip[]>([]);
+  const [centers, setCenters] = useState<Center[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filtered = TRIPS.filter((t) => {
-    const center = CENTERS.find((c) => c.id === t.centerId);
-    const matchCity = city === "All Cities" || center?.city === city;
-    const matchLevel = level === "All Levels" || t.level === level;
-    const matchQuery = !query || t.title.toLowerCase().includes(query.toLowerCase()) || center?.name.toLowerCase().includes(query.toLowerCase());
-    return t.type === "trip" && matchCity && matchLevel && matchQuery;
-  });
+  useEffect(() => {
+    let active = true;
+
+    setLoading(true);
+    setError(null);
+
+    Promise.all([
+      getTrips({
+        city,
+        search: query,
+        difficulty:
+          level === "All Levels" || level === "Open Water"
+            ? undefined
+            : level.toLowerCase(),
+      }),
+      getCenters(),
+    ])
+      .then(([tripData, centerData]) => {
+        if (!active) return;
+        setTrips(tripData);
+        setCenters(centerData);
+      })
+      .catch((err: unknown) => {
+        if (!active) return;
+        setError(
+          err instanceof Error ? err.message : "Unable to load dive trips.",
+        );
+        setTrips([]);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [city, level, query]);
+
+  const filtered = trips.filter((t) => t.type === "trip");
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -50,11 +87,19 @@ export function Trips() {
           {level !== "All Levels" && <span className="bg-teal-100 text-teal-700 text-xs px-3 py-1 rounded-full flex items-center gap-1">{level} <button onClick={() => setLevel("All Levels")} className="ml-1 hover:text-teal-900">×</button></span>}
         </div>
 
-        <p className="text-sm text-slate-500 mb-6"><span className="font-semibold text-slate-900">{filtered.length}</span> results</p>
+        {error && (
+          <div className="mb-5 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
+        <p className="text-sm text-slate-500 mb-6">
+          {loading ? "Loading trips..." : <><span className="font-semibold text-slate-900">{filtered.length}</span> results</>}
+        </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filtered.map((trip) => {
-            const center = CENTERS.find((c) => c.id === trip.centerId);
+          {!loading && filtered.map((trip) => {
+            const center = centers.find((c) => c.id === trip.centerId);
             return (
               <ExperienceCard
                 key={trip.id}
@@ -66,7 +111,12 @@ export function Trips() {
               />
             );
           })}
-          {filtered.length === 0 && (
+          {loading && (
+            <div className="col-span-3 text-center py-20 text-slate-400">
+              Loading dive trips...
+            </div>
+          )}
+          {!loading && filtered.length === 0 && (
             <div className="col-span-3 text-center py-20 text-slate-400">
               <Waves className="w-10 h-10 mx-auto mb-3 opacity-30" />
               No trips match your filters.

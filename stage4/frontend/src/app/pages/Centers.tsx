@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { MapPin, Search, SlidersHorizontal } from "lucide-react";
-import { CENTERS, CITIES } from "../data";
+import { CITIES, type Center } from "../data";
 import { CenterCard } from "../components/cards/CenterCard";
+import { getCenters } from "../lib/catalogService";
 
 export function Centers() {
   const navigate = useNavigate();
@@ -11,18 +12,51 @@ export function Centers() {
   const [query, setQuery] = useState("");
   const [minRating, setMinRating] = useState(0);
   const [verifiedOnly, setVerifiedOnly] = useState(false);
+  const [centers, setCenters] = useState<Center[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const c = params.get("city");
     if (c) setCity(c);
   }, [params]);
 
-  const filtered = CENTERS.filter((c) => {
-    const matchCity = city === "All Cities" || c.city === city;
-    const matchQuery = !query || c.name.toLowerCase().includes(query.toLowerCase()) || c.city.toLowerCase().includes(query.toLowerCase());
+  useEffect(() => {
+    let active = true;
+
+    setLoading(true);
+    setError(null);
+
+    getCenters({
+      city,
+      search: query,
+    })
+      .then((data) => {
+        if (active) setCenters(data);
+      })
+      .catch((err: unknown) => {
+        if (active) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : "Unable to load diving centers.",
+          );
+          setCenters([]);
+        }
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [city, query]);
+
+  const filtered = centers.filter((c) => {
     const matchRating = c.rating >= minRating;
     const matchVerified = !verifiedOnly || c.verified;
-    return matchCity && matchQuery && matchRating && matchVerified;
+    return matchRating && matchVerified;
   });
 
   return (
@@ -65,7 +99,7 @@ export function Centers() {
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${city === c ? "bg-teal-50 text-teal-700 border border-teal-200" : "text-slate-600 hover:bg-slate-100"}`}>
                 <span className="flex items-center justify-between">
                   {c}
-                  {c !== "All Cities" && <span className="text-xs text-slate-400">{CENTERS.filter((x) => x.city === c).length}</span>}
+                  {c !== "All Cities" && <span className="text-xs text-slate-400">{centers.filter((x) => x.city === c).length}</span>}
                 </span>
               </button>
             ))}
@@ -87,20 +121,37 @@ export function Centers() {
             ))}
           </div>
 
+          {error && (
+            <div className="mb-5 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {error}
+            </div>
+          )}
+
           <p className="text-sm text-slate-500 mb-5">
-            <span className="font-semibold text-slate-900">{filtered.length}</span> centers found
-            {city !== "All Cities" && <span> in <span className="text-teal-600 font-medium">{city}</span></span>}
+            {loading ? (
+              "Loading centers..."
+            ) : (
+              <>
+                <span className="font-semibold text-slate-900">{filtered.length}</span> centers found
+                {city !== "All Cities" && <span> in <span className="text-teal-600 font-medium">{city}</span></span>}
+              </>
+            )}
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-            {filtered.map((center) => (
+            {!loading && filtered.map((center) => (
               <CenterCard
                 key={center.id}
                 center={center}
                 onSelect={(selectedCenter) => navigate(`/centers/${selectedCenter.id}`)}
               />
             ))}
-            {filtered.length === 0 && (
+            {loading && (
+              <div className="col-span-3 text-center py-20 text-slate-400">
+                Loading diving centers...
+              </div>
+            )}
+            {!loading && filtered.length === 0 && (
               <div className="col-span-3 text-center py-20 text-slate-400">
                 <MapPin className="w-10 h-10 mx-auto mb-3 opacity-30" />
                 No centers found for your filters.
