@@ -84,6 +84,24 @@ type CatalogFilters = {
   level?: string;
 };
 
+export type CreateTripPayload = {
+  title: string;
+  description?: string;
+  durationHours: number;
+  difficultyLevel: "beginner" | "intermediate" | "advanced";
+  pricePerPerson: number;
+  maxCapacity: number;
+  scheduleDate: string;
+};
+
+export type CreateCoursePayload = {
+  title: string;
+  description?: string;
+  level: string;
+  price: number;
+  startDate: string;
+};
+
 function queryString(filters: CatalogFilters) {
   const params = new URLSearchParams();
 
@@ -271,4 +289,27 @@ export async function getCourseById(id: number) {
       : undefined,
     reviews: course.reviews?.map(toReview) ?? [],
   };
+}
+
+export async function createTrip(payload: CreateTripPayload, token: string) {
+  const trip = await apiRequest<ApiTrip>("/trips", {
+    method: "POST",
+    body: payload,
+    token,
+  });
+
+  return toTrip(trip);
+}
+
+export async function createCourse(
+  payload: CreateCoursePayload,
+  token: string,
+) {
+  const course = await apiRequest<ApiCourse>("/courses", {
+    method: "POST",
+    body: payload,
+    token,
+  });
+
+  return toCourse(course);
 }

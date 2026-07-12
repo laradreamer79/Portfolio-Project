@@ -12,7 +12,9 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { TRIPS } from "../data";
+import { TRIPS, type Trip } from "../data";
+import { createCourse, createTrip } from "../lib/catalogService";
+import { useAuth } from "../hooks/useAuth";
 
 const MY_LISTINGS = TRIPS.slice(0, 4);
 
@@ -64,25 +66,31 @@ type PostForm = {
   description: string;
 };
 
+const EMPTY_FORM: PostForm = {
+  title: "",
+  type: "trip",
+  level: "Open Water",
+  price: "",
+  duration: "Full Day",
+  depth: "",
+  date: "",
+  slots: "",
+  description: "",
+};
+
 export function InstructorDashboard() {
   const navigate = useNavigate();
+  const { token } = useAuth();
   const [activeTab, setActiveTab] = useState<
     "overview" | "bookings" | "listings" | "profile"
   >("overview");
   const [showPostModal, setShowPostModal] = useState(false);
   const [bookings, setBookings] = useState(BOOKINGS);
+  const [listings, setListings] = useState<Trip[]>(MY_LISTINGS);
   const [postDone, setPostDone] = useState(false);
-  const [form, setForm] = useState<PostForm>({
-    title: "",
-    type: "trip",
-    level: "Open Water",
-    price: "",
-    duration: "Full Day",
-    depth: "",
-    date: "",
-    slots: "",
-    description: "",
-  });
+  const [postError, setPostError] = useState<string | null>(null);
+  const [isPosting, setIsPosting] = useState(false);
+  const [form, setForm] = useState<PostForm>(EMPTY_FORM);
 
   const set =
     (key: keyof PostForm) =>
@@ -97,6 +105,91 @@ export function InstructorDashboard() {
   const closePostModal = () => {
     setShowPostModal(false);
     setPostDone(false);
+    setPostError(null);
+    setIsPosting(false);
+  };
+
+  const durationHours = (duration: string) => {
+    switch (duration) {
+      case "Half Day":
+        return 4;
+      case "Evening":
+        return 3;
+      case "Multi-Day":
+        return 24;
+      case "Full Day":
+      default:
+        return 8;
+    }
+  };
+
+  const difficultyLevel = (level: string) => {
+    if (level === "Advanced") return "advanced";
+    if (level === "Intermediate") return "intermediate";
+    return "beginner";
+  };
+
+  const handlePostSubmit = async () => {
+    if (!form.title || !form.price) return;
+
+    if (!token) {
+      setPostError("You need to sign in again before posting.");
+      return;
+    }
+
+    setIsPosting(true);
+    setPostError(null);
+
+    try {
+      const price = Number(form.price);
+      const slots = form.slots ? Number(form.slots) : 4;
+      const date = form.date || new Date().toISOString().slice(0, 10);
+
+      if (Number.isNaN(price) || price < 0) {
+        throw new Error("Enter a valid price.");
+      }
+
+      if (Number.isNaN(slots) || slots <= 0) {
+        throw new Error("Enter a valid number of spots.");
+      }
+
+      const createdListing =
+        form.type === "course"
+          ? await createCourse(
+              {
+                title: form.title,
+                description: form.description || undefined,
+                level: form.level,
+                price,
+                startDate: date,
+              },
+              token,
+            )
+          : await createTrip(
+              {
+                title: form.title,
+                description: form.description || undefined,
+                durationHours: durationHours(form.duration),
+                difficultyLevel: difficultyLevel(form.level),
+                pricePerPerson: price,
+                maxCapacity: slots,
+                scheduleDate: date,
+              },
+              token,
+            );
+
+      setListings((current) => [createdListing, ...current]);
+      setForm(EMPTY_FORM);
+      setPostDone(true);
+    } catch (err) {
+      setPostError(
+        err instanceof Error
+          ? err.message
+          : "Unable to publish this listing. Please try again.",
+      );
+    } finally {
+      setIsPosting(false);
+    }
   };
 
   const revenue = bookings
@@ -248,7 +341,7 @@ export function InstructorDashboard() {
                 </button>
               </div>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {MY_LISTINGS.map((trip) => (
+                {listings.slice(0, 4).map((trip) => (
                   <div
                     key={trip.id}
                     className="flex gap-3 rounded-2xl border border-slate-100 bg-white p-4"
@@ -324,7 +417,7 @@ export function InstructorDashboard() {
               </button>
             </div>
             <div className="space-y-3">
-              {MY_LISTINGS.map((trip) => (
+              {listings.map((trip) => (
                 <div
                   key={trip.id}
                   className="flex items-center gap-4 rounded-2xl border border-slate-100 bg-white p-4"
@@ -605,12 +698,21 @@ export function InstructorDashboard() {
 
                 <button
                   type="button"
-                  onClick={() => form.title && form.price && setPostDone(true)}
-                  disabled={!form.title || !form.price}
+                  onClick={handlePostSubmit}
+                  disabled={!form.title || !form.price || isPosting}
                   className="w-full rounded-xl bg-teal-500 py-3 font-semibold text-white transition-colors hover:bg-teal-600 disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  {form.type === "course" ? "Publish Course" : "Publish Trip"}
+                  {isPosting
+                    ? "Publishing..."
+                    : form.type === "course"
+                      ? "Publish Course"
+                      : "Publish Trip"}
                 </button>
+                {postError && (
+                  <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {postError}
+                  </div>
+                )}
               </div>
             )}
           </div>
