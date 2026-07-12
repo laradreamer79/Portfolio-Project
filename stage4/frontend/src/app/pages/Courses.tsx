@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, GraduationCap } from "lucide-react";
-import { TRIPS, CENTERS, CITIES } from "../data";
+import { CITIES, type Center, type Trip } from "../data";
 import { ExperienceCard } from "../components/cards/ExperienceCard";
+import { getCenters, getCourses } from "../lib/catalogService";
 
 const LEVELS = ["All Levels", "Beginner", "Open Water", "Intermediate", "Advanced"];
 
@@ -11,14 +12,47 @@ export function Courses() {
   const [city, setCity] = useState("All Cities");
   const [level, setLevel] = useState("All Levels");
   const [query, setQuery] = useState("");
+  const [courses, setCourses] = useState<Trip[]>([]);
+  const [centers, setCenters] = useState<Center[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filtered = TRIPS.filter((t) => {
-    const center = CENTERS.find((c) => c.id === t.centerId);
-    const matchCity = city === "All Cities" || center?.city === city;
-    const matchLevel = level === "All Levels" || t.level === level;
-    const matchQuery = !query || t.title.toLowerCase().includes(query.toLowerCase()) || center?.name.toLowerCase().includes(query.toLowerCase());
-    return t.type === "course" && matchCity && matchLevel && matchQuery;
-  });
+  useEffect(() => {
+    let active = true;
+
+    setLoading(true);
+    setError(null);
+
+    Promise.all([
+      getCourses({
+        city,
+        search: query,
+        level: level === "All Levels" ? undefined : level,
+      }),
+      getCenters(),
+    ])
+      .then(([courseData, centerData]) => {
+        if (!active) return;
+        setCourses(courseData);
+        setCenters(centerData);
+      })
+      .catch((err: unknown) => {
+        if (!active) return;
+        setError(
+          err instanceof Error ? err.message : "Unable to load courses.",
+        );
+        setCourses([]);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [city, level, query]);
+
+  const filtered = courses.filter((course) => course.type === "course");
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -51,9 +85,21 @@ export function Courses() {
           {level !== "All Levels" && <span className="bg-purple-100 text-purple-700 text-xs px-3 py-1 rounded-full flex items-center gap-1">{level} <button onClick={() => setLevel("All Levels")} className="ml-1 hover:text-purple-900">×</button></span>}
         </div>
 
-        <p className="text-sm text-slate-500 mb-6"><span className="font-semibold text-slate-900">{filtered.length}</span> courses available</p>
+        {error && (
+          <div className="mb-5 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
+          </div>
+        )}
 
-        {filtered.length === 0 ? (
+        <p className="text-sm text-slate-500 mb-6">
+          {loading ? "Loading courses..." : <><span className="font-semibold text-slate-900">{filtered.length}</span> courses available</>}
+        </p>
+
+        {loading ? (
+          <div className="text-center py-20 text-slate-400">
+            Loading courses...
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="text-center py-20 text-slate-400">
             <GraduationCap className="w-10 h-10 mx-auto mb-3 opacity-30" />
             No courses match your filters.
@@ -61,7 +107,7 @@ export function Courses() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {filtered.map((course) => {
-              const center = CENTERS.find((c) => c.id === course.centerId);
+              const center = centers.find((c) => c.id === course.centerId);
               return (
                 <ExperienceCard
                   key={course.id}

@@ -21,7 +21,7 @@ export type Center = {
 
 export type Trip = {
   id: number;
-  centerId: number;
+  centerId?: number | null;
   title: string;
   type: "trip" | "course";
   level: string;

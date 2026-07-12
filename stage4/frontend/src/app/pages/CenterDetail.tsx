@@ -1,7 +1,8 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MapPin, Star, Shield, Phone, Mail, Clock, Waves, Users, ArrowRight, ChevronLeft, Calendar } from "lucide-react";
-import { CENTERS, TRIPS, REVIEWS } from "../data";
+import { type Center, type Review, type Trip } from "../data";
+import { getCenterById } from "../lib/catalogService";
 
 function StarRow({ rating }: { rating: number }) {
   return (
@@ -19,12 +20,51 @@ export function CenterDetail() {
   const [activeTab, setActiveTab] = useState<"trips" | "reviews">("trips");
   const [reviewForm, setReviewForm] = useState({ name: "", rating: 5, comment: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [center, setCenter] = useState<Center | null>(null);
+  const [trips, setTrips] = useState<Trip[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const center = CENTERS.find((c) => c.id === Number(id));
+  useEffect(() => {
+    const centerId = Number(id);
+
+    if (!Number.isInteger(centerId)) {
+      setError("Invalid center id.");
+      setLoading(false);
+      return;
+    }
+
+    let active = true;
+    setLoading(true);
+    setError(null);
+
+    getCenterById(centerId)
+      .then((data) => {
+        if (!active) return;
+        setCenter(data.center);
+        setTrips([...data.trips, ...data.courses]);
+        setReviews(data.reviews);
+      })
+      .catch((err: unknown) => {
+        if (!active) return;
+        setError(err instanceof Error ? err.message : "Unable to load center.");
+        setCenter(null);
+        setTrips([]);
+        setReviews([]);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [id]);
+
+  if (loading) return <div className="flex items-center justify-center h-96 text-slate-400">Loading center...</div>;
+  if (error) return <div className="flex items-center justify-center h-96 text-red-500">{error}</div>;
   if (!center) return <div className="flex items-center justify-center h-96 text-slate-400">Center not found.</div>;
-
-  const trips = TRIPS.filter((t) => t.centerId === center.id);
-  const reviews = REVIEWS.filter((r) => r.centerId === center.id);
 
   return (
     <div className="bg-white min-h-screen">
