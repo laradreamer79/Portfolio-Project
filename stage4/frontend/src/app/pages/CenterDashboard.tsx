@@ -1,19 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CENTERS, TRIPS, type Trip } from "../data";
+import type { Center, Trip } from "../data";
 import { Plus, Star, Users, TrendingUp, CheckCircle, Clock, X, Edit3, Trash2, Eye } from "lucide-react";
-import { createCourse, createTrip } from "../lib/catalogService";
+import { createCourse, createTrip, getCenters, getCourses, getTrips } from "../lib/catalogService";
 import { useAuth } from "../hooks/useAuth";
 
-const CENTER = CENTERS[0];
-const MY_TRIPS = TRIPS.filter((t) => t.centerId === CENTER.id);
-
-const BOOKINGS = [
-  { id: "OYS-A8X2K1", trip: "Abu Madafi Reef Day Trip", customer: "Mohammed Al-Rashid", email: "m.rashid@email.com", phone: "+966 50 111 2233", divers: 2, total: 640, date: "Jul 15, 2026", status: "confirmed" },
-  { id: "OYS-B3Y9L4", trip: "Jeddah Night Dive", customer: "Sarah Thompson", email: "sarah.t@email.com", phone: "+966 55 444 5566", divers: 1, total: 280, date: "Jul 18, 2026", status: "pending" },
-  { id: "OYS-C7Z0M5", trip: "PADI Open Water Course", customer: "Khalid bin Faisal", email: "khalid.f@email.com", phone: "+966 56 777 8899", divers: 1, total: 1800, date: "Jul 20, 2026", status: "confirmed" },
-  { id: "OYS-D1W6N8", trip: "Abu Madafi Reef Day Trip", customer: "Nora Al-Qahtani", email: "nora.q@email.com", phone: "+966 54 222 3344", divers: 3, total: 960, date: "Jul 22, 2026", status: "pending" },
-];
+type BookingRow = {
+  id: string;
+  trip: string;
+  customer: string;
+  email: string;
+  phone: string;
+  divers: number;
+  total: number;
+  date: string;
+  status: string;
+};
 
 type PostForm = { title: string; type: string; level: string; price: string; duration: string; depth: string; date: string; slots: string; description: string };
 
@@ -31,16 +33,48 @@ const EMPTY_FORM: PostForm = {
 
 export function CenterDashboard() {
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [activeTab, setActiveTab] = useState<"overview" | "bookings" | "trips" | "profile">("overview");
   const [showPostModal, setShowPostModal] = useState(false);
-  const [bookings, setBookings] = useState(BOOKINGS);
-  const [listings, setListings] = useState<Trip[]>(MY_TRIPS);
+  const [center, setCenter] = useState<Center | null>(null);
+  const [bookings, setBookings] = useState<BookingRow[]>([]);
+  const [listings, setListings] = useState<Trip[]>([]);
   const [form, setForm] = useState<PostForm>(EMPTY_FORM);
   const [postDone, setPostDone] = useState(false);
   const [postError, setPostError] = useState<string | null>(null);
   const [isPosting, setIsPosting] = useState(false);
   const [image, setImage] = useState<File | null>(null);
+
+  useEffect(() => {
+    if (!token || !user) return;
+
+    let active = true;
+
+    getCenters({ status: "all", ownerId: user.id }, token)
+      .then((centers) => {
+        if (!active) return;
+        setCenter(centers[0] ?? null);
+      })
+      .catch(() => {
+        if (active) setCenter(null);
+      });
+
+    Promise.all([
+      getTrips({ status: "all" }, token),
+      getCourses({ status: "all" }, token),
+    ])
+      .then(([trips, courses]) => {
+        if (!active) return;
+        setListings([...trips, ...courses]);
+      })
+      .catch(() => {
+        if (active) setListings([]);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [token, user]);
 
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
@@ -157,8 +191,8 @@ export function CenterDashboard() {
         <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
           <div>
             <p className="text-teal-600 text-sm font-medium tracking-widest uppercase mb-1">Center Portal</p>
-            <h1 className="font-display text-3xl font-bold text-slate-900 tracking-wide">{CENTER.name}</h1>
-            <p className="text-slate-400 text-sm mt-0.5">{CENTER.city} · Since {CENTER.since}</p>
+            <h1 className="font-display text-3xl font-bold text-slate-900 tracking-wide">{center?.name ?? "Diving Center Dashboard"}</h1>
+            <p className="text-slate-400 text-sm mt-0.5">{center ? `${center.city} · Since ${center.since}` : "Connect your center profile to manage listings"}</p>
           </div>
           <button onClick={() => setShowPostModal(true)} className="bg-teal-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-teal-600 transition-colors flex items-center gap-2 text-sm">
             <Plus className="w-4 h-4" /> Post Trip / Course
@@ -187,7 +221,7 @@ export function CenterDashboard() {
                 { label: "Monthly Revenue", value: `SAR ${revenue.toLocaleString()}`, icon: <TrendingUp className="w-5 h-5" />, color: "teal" },
                 { label: "Total Bookings", value: bookings.length, icon: <Users className="w-5 h-5" />, color: "blue" },
                 { label: "Pending Requests", value: pending, icon: <Clock className="w-5 h-5" />, color: "amber" },
-                { label: "Rating", value: `${CENTER.rating} / 5`, icon: <Star className="w-5 h-5" />, color: "purple" },
+                { label: "Rating", value: center ? `${center.rating} / 5` : "N/A", icon: <Star className="w-5 h-5" />, color: "purple" },
               ].map((s) => (
                 <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-5">
                   <div className={`w-9 h-9 rounded-xl mb-3 flex items-center justify-center ${
@@ -355,12 +389,12 @@ export function CenterDashboard() {
             <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide">CENTER PROFILE</h2>
             <div className="bg-white rounded-2xl border border-slate-100 p-6 space-y-4">
               {[
-                { label: "Center Name", value: CENTER.name },
-                { label: "City", value: CENTER.city },
-                { label: "Phone", value: CENTER.phone },
-                { label: "Email", value: CENTER.email },
-                { label: "Address", value: CENTER.address },
-                { label: "Price Range", value: CENTER.priceRange },
+                { label: "Center Name", value: center?.name ?? "" },
+                { label: "City", value: center?.city ?? "" },
+                { label: "Phone", value: center?.phone ?? "" },
+                { label: "Email", value: center?.email ?? "" },
+                { label: "Address", value: center?.address ?? "" },
+                { label: "Price Range", value: center?.priceRange ?? "" },
               ].map((f) => (
                 <div key={f.label}>
                   <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest block mb-1">{f.label}</label>
@@ -369,7 +403,7 @@ export function CenterDashboard() {
               ))}
               <div>
                 <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest block mb-1">Description</label>
-                <textarea rows={4} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-teal-400 transition-colors resize-none" defaultValue={CENTER.longDescription} />
+                <textarea rows={4} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-teal-400 transition-colors resize-none" defaultValue={center?.longDescription ?? ""} />
               </div>
               <button className="bg-teal-500 text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-teal-600 transition-colors text-sm">Save Changes</button>
             </div>

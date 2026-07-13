@@ -1,11 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { CENTERS, TRIPS, type Center, type Review, type Trip } from "../data";
+import { type Center, type Review, type Trip } from "../data";
 import { 
   ChevronLeft, Star, MapPin, Clock, Waves, Users, Calendar, 
   Shield, CheckCircle, AlertCircle, Phone, Mail 
 } from "lucide-react";
-import { getTripById } from "../lib/catalogService";
+import { getTripById, getTrips } from "../lib/catalogService";
 import { useAuth } from "../hooks/useAuth";
 
 export function TripDetail() {
@@ -15,6 +15,7 @@ export function TripDetail() {
   const [trip, setTrip] = useState<Trip | null>(null);
   const [center, setCenter] = useState<Center | undefined>();
   const [tripReviews, setTripReviews] = useState<Review[]>([]);
+  const [similarTrips, setSimilarTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,6 +38,10 @@ export function TripDetail() {
         setTrip(data.trip);
         setCenter(data.center);
         setTripReviews(data.reviews);
+        return getTrips(data.center?.city ? { city: data.center.city } : {}, token).then((trips) => {
+          if (!active) return;
+          setSimilarTrips(trips.filter((candidate) => candidate.id !== data.trip.id).slice(0, 3));
+        });
       })
       .catch((err: unknown) => {
         if (!active) return;
@@ -44,6 +49,7 @@ export function TripDetail() {
         setTrip(null);
         setCenter(undefined);
         setTripReviews([]);
+        setSimilarTrips([]);
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -100,13 +106,6 @@ export function TripDetail() {
     "Camera (optional)",
     "Valid ID",
   ];
-
-  const similarTrips = TRIPS.filter(
-    (t) =>
-      t.id !== trip.id &&
-      (t.centerId === trip.centerId ||
-        (center && CENTERS.find((candidate) => candidate.id === t.centerId)?.city === center.city))
-  ).slice(0, 3);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -291,7 +290,6 @@ export function TripDetail() {
                 </h2>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {similarTrips.map((t) => {
-                    const tCenter = CENTERS.find((c) => c.id === t.centerId);
                     return (
                       <button
                         key={t.id}
@@ -308,7 +306,7 @@ export function TripDetail() {
                             {t.type}
                           </span>
                           <h3 className="font-semibold text-slate-900 mt-2 line-clamp-2">{t.title}</h3>
-                          <p className="text-xs text-slate-400 mt-1">{tCenter?.name}</p>
+                          <p className="text-xs text-slate-400 mt-1">{center?.city ?? "Oyster listing"}</p>
                           <div className="flex items-center justify-between mt-3">
                             <span className="text-teal-600 font-bold">SAR {t.price}</span>
                             <span className="text-xs text-slate-400">{t.duration}</span>

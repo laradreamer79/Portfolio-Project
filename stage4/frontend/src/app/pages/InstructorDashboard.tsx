@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   CheckCircle,
@@ -12,47 +12,21 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { TRIPS, type Trip } from "../data";
-import { createCourse, createTrip } from "../lib/catalogService";
+import type { Trip } from "../data";
+import { createCourse, createTrip, getCourses, getTrips } from "../lib/catalogService";
 import { useAuth } from "../hooks/useAuth";
 
-const MY_LISTINGS = TRIPS.slice(0, 4);
-
-const BOOKINGS = [
-  {
-    id: "OYS-I1A8X2",
-    trip: "PADI Open Water Course",
-    customer: "Khalid bin Faisal",
-    email: "khalid.f@email.com",
-    phone: "+966 56 777 8899",
-    divers: 1,
-    total: 1800,
-    date: "Jul 20, 2026",
-    status: "confirmed",
-  },
-  {
-    id: "OYS-I2B3Y9",
-    trip: "Abu Madafi Reef Day Trip",
-    customer: "Nora Al-Qahtani",
-    email: "nora.q@email.com",
-    phone: "+966 54 222 3344",
-    divers: 3,
-    total: 960,
-    date: "Jul 22, 2026",
-    status: "pending",
-  },
-  {
-    id: "OYS-I3C7Z0",
-    trip: "Advanced Open Water",
-    customer: "Sarah Thompson",
-    email: "sarah.t@email.com",
-    phone: "+966 55 444 5566",
-    divers: 2,
-    total: 2400,
-    date: "Jul 28, 2026",
-    status: "confirmed",
-  },
-];
+type BookingRow = {
+  id: string;
+  trip: string;
+  customer: string;
+  email: string;
+  phone: string;
+  divers: number;
+  total: number;
+  date: string;
+  status: string;
+};
 
 type PostForm = {
   title: string;
@@ -85,13 +59,35 @@ export function InstructorDashboard() {
     "overview" | "bookings" | "listings" | "profile"
   >("overview");
   const [showPostModal, setShowPostModal] = useState(false);
-  const [bookings, setBookings] = useState(BOOKINGS);
-  const [listings, setListings] = useState<Trip[]>(MY_LISTINGS);
+  const [bookings, setBookings] = useState<BookingRow[]>([]);
+  const [listings, setListings] = useState<Trip[]>([]);
   const [postDone, setPostDone] = useState(false);
   const [postError, setPostError] = useState<string | null>(null);
   const [isPosting, setIsPosting] = useState(false);
   const [form, setForm] = useState<PostForm>(EMPTY_FORM);
   const [image, setImage] = useState<File | null>(null);
+
+  useEffect(() => {
+    if (!token) return;
+
+    let active = true;
+
+    Promise.all([
+      getTrips({ status: "all" }, token),
+      getCourses({ status: "all" }, token),
+    ])
+      .then(([trips, courses]) => {
+        if (!active) return;
+        setListings([...trips, ...courses]);
+      })
+      .catch(() => {
+        if (active) setListings([]);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [token]);
 
   const set =
     (key: keyof PostForm) =>
@@ -757,8 +753,6 @@ export function InstructorDashboard() {
     </div>
   );
 }
-
-type BookingRow = (typeof BOOKINGS)[number];
 
 function BookingsTable({
   bookings,
