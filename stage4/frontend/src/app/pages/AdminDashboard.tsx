@@ -1,40 +1,66 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CENTERS, REVIEWS } from "../data";
+import type { Center } from "../data";
+import { getCenters } from "../lib/catalogService";
+import { getAllBookings, type BookingCard } from "../lib/bookingService";
+import { useAuth } from "../hooks/useAuth";
 import {
   Building2, Waves, Star, TrendingUp, CheckCircle,
   X, Search, Shield, ShieldOff, Eye, ChevronRight, AlertCircle,
 } from "lucide-react";
 
-type CenterRow = (typeof CENTERS)[0] & { status: "active" | "pending" | "suspended" };
+type CenterRow = Center & { status: "active" | "pending" | "suspended" };
 
-const INITIAL_CENTERS: CenterRow[] = CENTERS.map((c, i) => ({
-  ...c,
-  status: i === 4 ? "pending" : i === 7 ? "suspended" : "active",
-}));
-
-const ALL_BOOKINGS = [
-  { id: "OYS-A8X2K1", center: "Red Sea Divers Jeddah", trip: "Abu Madafi Reef Day Trip", customer: "Mohammed Al-Rashid", divers: 2, total: 640, date: "Jul 15, 2026", city: "Jeddah" },
-  { id: "OYS-B3Y9L4", center: "Aqua Arabia Diving", trip: "Jeddah Night Dive", customer: "Sarah Thompson", divers: 1, total: 280, date: "Jul 18, 2026", city: "Jeddah" },
-  { id: "OYS-C7Z0M5", center: "Red Sea Divers Jeddah", trip: "PADI Open Water Course", customer: "Khalid bin Faisal", divers: 1, total: 1800, date: "Jul 20, 2026", city: "Jeddah" },
-  { id: "OYS-D1W6N8", center: "Yanbu Dive Club", trip: "Seven Sisters Reef", customer: "Nora Al-Qahtani", divers: 3, total: 1350, date: "Jul 22, 2026", city: "Yanbu" },
-  { id: "OYS-E5R3P2", center: "NEOM Blue Diving", trip: "Whale Shark Safari", customer: "James Wilson", divers: 2, total: 2400, date: "Aug 5, 2026", city: "NEOM" },
-  { id: "OYS-F9T4Q7", center: "Gulf Divers Dammam", trip: "Pearl Diving Experience", customer: "Fatima Al-Zahra", divers: 4, total: 1400, date: "Jul 17, 2026", city: "Dammam" },
-];
-
-const ALL_REVIEWS = [
-  ...REVIEWS,
-  { id: 7, centerId: 4, user: "Test Account", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop&auto=format", rating: 1, date: "Jun 2026", comment: "SPAM SPAM BUY NOW CHEAP RATES!!! fake review planted here" },
-];
+type ReviewRow = {
+  id: number;
+  centerId: number;
+  user: string;
+  avatar: string;
+  rating: number;
+  date: string;
+  comment: string;
+};
 
 export function AdminDashboard() {
   const navigate = useNavigate();
+  const { token } = useAuth();
   const [activeTab, setActiveTab] = useState<"overview" | "centers" | "bookings" | "reviews">("overview");
-  const [centers, setCenters] = useState<CenterRow[]>(INITIAL_CENTERS);
-  const [reviews, setReviews] = useState(ALL_REVIEWS);
+  const [centers, setCenters] = useState<CenterRow[]>([]);
+  const [bookings, setBookings] = useState<BookingCard[]>([]);
+  const [reviews, setReviews] = useState<ReviewRow[]>([]);
   const [centerQuery, setCenterQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [toast, setToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!token) return;
+
+    let active = true;
+
+    getCenters({ status: "all" }, token)
+      .then((data) => {
+        if (!active) return;
+        setCenters(data.map((center) => ({
+          ...center,
+          status: center.verified ? "active" : "pending",
+        })));
+      })
+      .catch(() => {
+        if (active) setCenters([]);
+      });
+
+    getAllBookings(token)
+      .then((data) => {
+        if (active) setBookings(data);
+      })
+      .catch(() => {
+        if (active) setBookings([]);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [token]);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
@@ -57,7 +83,7 @@ export function AdminDashboard() {
     return matchQ && matchS;
   });
 
-  const totalRevenue = ALL_BOOKINGS.reduce((s, b) => s + b.total, 0);
+  const totalRevenue = bookings.reduce((s, b) => s + b.total, 0);
   const pendingCount = centers.filter((c) => c.status === "pending").length;
 
   const TABS = [
@@ -109,7 +135,7 @@ export function AdminDashboard() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
               {[
                 { label: "Total Centers", value: centers.length, sub: `${centers.filter((c) => c.status === "active").length} active`, icon: <Building2 className="w-5 h-5" />, color: "teal" },
-                { label: "Total Bookings", value: ALL_BOOKINGS.length, sub: "This month", icon: <Waves className="w-5 h-5" />, color: "blue" },
+                { label: "Total Bookings", value: bookings.length, sub: "This month", icon: <Waves className="w-5 h-5" />, color: "blue" },
                 { label: "Platform Revenue", value: `SAR ${(totalRevenue * 0.08).toLocaleString()}`, sub: "8% commission", icon: <TrendingUp className="w-5 h-5" />, color: "emerald" },
                 { label: "Pending Approval", value: pendingCount, sub: "Require review", icon: <AlertCircle className="w-5 h-5" />, color: pendingCount > 0 ? "amber" : "slate" },
               ].map((s) => (
@@ -180,11 +206,11 @@ export function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
-                    {ALL_BOOKINGS.slice(0, 5).map((b) => (
+                    {bookings.slice(0, 5).map((b) => (
                       <tr key={b.id} className="hover:bg-slate-50 transition-colors">
-                        <td className="px-4 py-3 font-mono text-xs text-teal-600">{b.id}</td>
-                        <td className="px-4 py-3 text-slate-700 max-w-[160px] truncate">{b.center}</td>
-                        <td className="px-4 py-3 text-slate-600 max-w-[160px] truncate">{b.trip}</td>
+                        <td className="px-4 py-3 font-mono text-xs text-teal-600">{b.reference}</td>
+                        <td className="px-4 py-3 text-slate-700 max-w-[160px] truncate">{b.centerName}</td>
+                        <td className="px-4 py-3 text-slate-600 max-w-[160px] truncate">{b.title}</td>
                         <td className="px-4 py-3 text-slate-600">{b.customer}</td>
                         <td className="px-4 py-3 text-slate-500">{b.divers}</td>
                         <td className="px-4 py-3 font-semibold text-slate-800">SAR {b.total.toLocaleString()}</td>
@@ -303,12 +329,12 @@ export function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
-                  {ALL_BOOKINGS.map((b) => (
+                  {bookings.map((b) => (
                     <tr key={b.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-4 py-3.5 font-mono text-xs text-teal-600">{b.id}</td>
-                      <td className="px-4 py-3.5 font-medium text-slate-800 max-w-[140px] truncate">{b.center}</td>
+                      <td className="px-4 py-3.5 font-mono text-xs text-teal-600">{b.reference}</td>
+                      <td className="px-4 py-3.5 font-medium text-slate-800 max-w-[140px] truncate">{b.centerName}</td>
                       <td className="px-4 py-3.5 text-slate-500 text-xs">{b.city}</td>
-                      <td className="px-4 py-3.5 text-slate-600 max-w-[150px] truncate">{b.trip}</td>
+                      <td className="px-4 py-3.5 text-slate-600 max-w-[150px] truncate">{b.title}</td>
                       <td className="px-4 py-3.5 text-slate-700">{b.customer}</td>
                       <td className="px-4 py-3.5 text-slate-500">{b.divers}</td>
                       <td className="px-4 py-3.5 font-semibold text-slate-800">SAR {b.total.toLocaleString()}</td>
@@ -334,7 +360,7 @@ export function AdminDashboard() {
             <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide mb-6">ALL REVIEWS</h2>
             <div className="space-y-4">
               {reviews.map((r) => {
-                const center = CENTERS.find((c) => c.id === r.centerId);
+                const center = centers.find((c) => c.id === r.centerId);
                 const isSpam = r.rating <= 2;
                 return (
                   <div key={r.id} className={`bg-white rounded-2xl border p-5 flex gap-4 ${isSpam ? "border-red-200 bg-red-50" : "border-slate-100"}`}>

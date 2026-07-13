@@ -1,11 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { TRIPS, CENTERS, type Center, type Review, type Trip } from "../data";
+import { type Center, type Review, type Trip } from "../data";
 import { 
   ChevronLeft, Star, MapPin, Clock, Waves, Users, Calendar, 
   Shield, CheckCircle, AlertCircle, Phone, Mail, Award, BookOpen, GraduationCap
 } from "lucide-react";
-import { getCourseById } from "../lib/catalogService";
+import { getCourseById, getCourses } from "../lib/catalogService";
 import { useAuth } from "../hooks/useAuth";
 
 export function CourseDetail() {
@@ -15,6 +15,7 @@ export function CourseDetail() {
   const [course, setCourse] = useState<Trip | null>(null);
   const [center, setCenter] = useState<Center | undefined>();
   const [courseReviews, setCourseReviews] = useState<Review[]>([]);
+  const [similarCourses, setSimilarCourses] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,6 +38,14 @@ export function CourseDetail() {
         setCourse(data.course);
         setCenter(data.center);
         setCourseReviews(data.reviews);
+        return getCourses(data.center?.city ? { city: data.center.city } : {}, token).then((courses) => {
+          if (!active) return;
+          setSimilarCourses(
+            courses
+              .filter((candidate) => candidate.id !== data.course.id)
+              .slice(0, 3),
+          );
+        });
       })
       .catch((err: unknown) => {
         if (!active) return;
@@ -44,6 +53,7 @@ export function CourseDetail() {
         setCourse(null);
         setCenter(undefined);
         setCourseReviews([]);
+        setSimilarCourses([]);
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -100,10 +110,6 @@ export function CourseDetail() {
     : course.level === "Intermediate"
     ? ["PADI Open Water certification (or equivalent)", "Minimum age 12 years", "Recent diving experience recommended"]
     : ["PADI Advanced Open Water certification", "Minimum 20+ logged dives", "Excellent buoyancy control"];
-
-  const similarCourses = TRIPS.filter(
-    (t) => t.id !== course.id && t.type === "course" && (t.centerId === course.centerId || t.level === course.level)
-  ).slice(0, 3);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -306,7 +312,6 @@ export function CourseDetail() {
                 </h2>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {similarCourses.map((c) => {
-                    const cCenter = CENTERS.find((ct) => ct.id === c.centerId);
                     return (
                       <button
                         key={c.id}
@@ -321,7 +326,7 @@ export function CourseDetail() {
                           <div className="flex items-center justify-between text-xs text-slate-500">
                             <span className="flex items-center gap-1">
                               <MapPin className="w-3 h-3" />
-                              {cCenter?.city}
+                              {center?.city ?? "Oyster listing"}
                             </span>
                             <span className="font-bold text-purple-600 text-sm">SAR {c.price}</span>
                           </div>
