@@ -36,7 +36,7 @@ export const env = {
   port: getPort(process.env.PORT),
 
   paymentProviderMode:
-  process.env.PAYMENT_PROVIDER_MODE ?? 
+    process.env.PAYMENT_PROVIDER_MODE ??
     "moyasar",
 
   moyasarSecretKey:
@@ -54,5 +54,5 @@ export const env = {
     getOptionalEnv("MOYASAR_WEBHOOK_SECRET"),
 
   moyasarPublishableKey:
-  getOptionalEnv("MOYASAR_PUBLISHABLE_KEY"),
+    getOptionalEnv("MOYASAR_PUBLISHABLE_KEY"),
 };

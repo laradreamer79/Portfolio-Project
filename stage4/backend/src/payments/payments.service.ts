@@ -1,5 +1,3 @@
-import axios from "axios";
-
 import { env } from "../config/env.js";
 import { prisma } from "../prisma/client.js";
 
@@ -13,7 +11,7 @@ interface CreatePaymentInput {
   bookingId: number;
   userId: number;
   paymentMethod: string;
-  sourceToken: string;
+  sourceToken?: string;
 }
 
 interface MoyasarPaymentResponse {
@@ -40,38 +38,6 @@ interface MoyasarWebhookPayload {
     amount?: number;
     currency?: string;
   };
-}
-
-function getAxiosErrorMessage(
-  error: unknown,
-): string {
-  if (axios.isAxiosError(error)) {
-    const responseData = error.response?.data;
-
-    if (
-      responseData &&
-      typeof responseData === "object"
-    ) {
-      const message =
-        responseData.message ??
-        responseData.error ??
-        responseData.errors;
-
-      if (typeof message === "string") {
-        return message;
-      }
-
-      if (message) {
-        return JSON.stringify(message);
-      }
-    }
-
-    return error.message;
-  }
-
-  return error instanceof Error
-    ? error.message
-    : "Payment provider request failed";
 }
 
 function mapProviderStatus(
@@ -101,17 +67,46 @@ function mapProviderStatus(
 }
 
 function requireMoyasarKey(): string {
-  const key =
-    env.moyasarPublishableKey ??
-    env.moyasarSecretKey;
+  const key = env.moyasarSecretKey;
 
   if (!key) {
     throw new Error(
-      "Moyasar API key is not configured",
+      "Moyasar secret key is not configured",
     );
   }
 
   return key;
+}
+
+async function parseMoyasarError(
+  response: Response,
+): Promise<string> {
+  const responseData = await response
+    .json()
+    .catch(() => null);
+
+  if (
+    responseData &&
+    typeof responseData === "object"
+  ) {
+    const data = responseData as {
+      message?: unknown;
+      error?: unknown;
+      errors?: unknown;
+    };
+    const message =
+      data.message ?? data.error ?? data.errors;
+
+    if (typeof message === "string") {
+      return message;
+    }
+
+    if (message) {
+      return JSON.stringify(message);
+    }
+  }
+
+  return `Moyasar returned ${response.status}`;
 }
 
 export async function createPayment(
@@ -216,17 +211,20 @@ export async function createPayment(
    * Moyasar expects the amount in halalas.
    * 1 SAR = 100 halalas.
    */
-   
   const amountInHalalas = Math.round(
     Number(booking.totalPrice) * 100,
   );
 
   try {
     const response =
-      await axios.post<MoyasarPaymentResponse>(
-        `${env.moyasarBaseUrl}/payments`,
-
-        {
+      await fetch(`${env.moyasarBaseUrl}/payments`, {
+        method: "POST",
+        headers: {
+          Authorization:
+            `Basic ${Buffer.from(`${moyasarKey}:`).toString("base64")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           amount: amountInHalalas,
           currency: "SAR",
           description:
@@ -244,22 +242,17 @@ export async function createPayment(
             bookingId: String(booking.id),
             userId: String(booking.userId),
           },
-        },
+        }),
+      });
 
-        {
-          auth: {
-            username: moyasarKey,
-            password: "",
-          },
-
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-        },
+    if (!response.ok) {
+      throw new Error(
+        await parseMoyasarError(response),
       );
+    }
 
-    const providerPayment = response.data;
+    const providerPayment =
+      await response.json() as MoyasarPaymentResponse;
 
     if (
       !providerPayment.id ||
@@ -327,7 +320,9 @@ export async function createPayment(
   } catch (error) {
     throw new Error(
       `Moyasar payment failed: ${
-        getAxiosErrorMessage(error)
+        error instanceof Error
+          ? error.message
+          : "Payment provider request failed"
       }`,
     );
   }

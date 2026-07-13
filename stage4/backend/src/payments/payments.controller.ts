@@ -52,21 +52,14 @@ export async function createPaymentController(
       });
     }
 
-    if (
-      typeof sourceToken !== "string" ||
-      sourceToken.trim().length === 0
-    ) {
-      return res.status(400).json({
-        message:
-          "sourceToken from Moyasar is required",
-      });
-    }
-
     const result = await createPayment({
       bookingId,
       userId: req.user.id,
       paymentMethod: paymentMethod.trim(),
-      sourceToken: sourceToken.trim(),
+      sourceToken:
+        typeof sourceToken === "string"
+          ? sourceToken.trim()
+          : undefined,
     });
 
     return res.status(201).json(result);
