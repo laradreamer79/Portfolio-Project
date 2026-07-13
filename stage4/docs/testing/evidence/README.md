@@ -1,30 +1,35 @@
 # Testing Evidence
 
-Store evidence by sprint:
+This folder stores text-based testing evidence for Stage 4.
+
+Screenshots are not required for this documentation task. Evidence should be written as notes that describe the request, action, result, and status.
+
+## Evidence Format
+
+Use this format:
 
 ```text
-evidence/
-├── sprint-01/
-├── sprint-02/
-├── sprint-03/
-└── sprint-04/
+Test:
+Date:
+Tester:
+Environment:
+Steps:
+Expected:
+Actual:
+Status:
+Notes:
 ```
 
-Accepted evidence includes:
+## Evidence Index
 
-- Terminal screenshots showing commands and results.
-- Postman request and response screenshots.
-- Test runner reports.
-- Browser screenshots or short demo recordings.
-- GitHub Actions and Pull Request check links.
-- Production health and smoke-test results.
+| Evidence | Sprint | Description |
+| --- | --- | --- |
+| [Sprint 4 Evidence Notes](./sprint-04/notes.md) | Sprint 4 | Catalog visibility, ownership, validation, and Postman notes |
 
-Use descriptive names:
+## Accepted Evidence Types
 
-```text
-sprint-02-prisma-migration-pass.png
-sprint-02-login-200.png
-sprint-02-invalid-login-401.png
-```
-
-Do not include passwords, JWTs, database URLs, API keys, or other secrets.
+- Postman request names and status codes.
+- Manual browser test notes.
+- Prisma Studio confirmation notes.
+- Command output summaries such as `npm run build` or `npm run typecheck`.
+- Error messages and resolution notes.
