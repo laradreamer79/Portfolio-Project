@@ -1,12 +1,5 @@
-import { CENTERS, type Center, type Review, type Trip } from "../data";
+import type { Center, Review, Trip } from "../data";
 import { apiRequest } from "./apiClient";
-
-const fallbackCenterImage =
-  "https://images.unsplash.com/photo-1682687982298-c7514a167088?w=700&h=480&fit=crop&auto=format";
-const fallbackTripImage =
-  "https://images.unsplash.com/photo-1682687982360-3fbab65f9d50?w=500&h=340&fit=crop&auto=format";
-const fallbackCourseImage =
-  "https://images.unsplash.com/photo-1682687981630-cefe9cd73072?w=500&h=340&fit=crop&auto=format";
 
 type ApiCount = {
   trips?: number;
@@ -82,6 +75,8 @@ type CatalogFilters = {
   search?: string;
   difficulty?: string;
   level?: string;
+  status?: string;
+  ownerId?: number;
 };
 
 export type CreateTripPayload = {
@@ -109,7 +104,7 @@ function queryString(filters: CatalogFilters) {
 
   Object.entries(filters).forEach(([key, value]) => {
     if (value && value !== "All Cities" && value !== "All Levels") {
-      params.set(key, value);
+      params.set(key, String(value));
     }
   });
 
@@ -134,36 +129,26 @@ function formatLevel(value: string) {
     .join(" ");
 }
 
-function fallbackCenter(center: ApiCenter) {
-  return CENTERS.find(
-    (candidate) =>
-      candidate.id === center.id ||
-      candidate.name.toLowerCase() === center.name.toLowerCase(),
-  );
-}
-
 export function toCenter(center: ApiCenter): Center {
-  const fallback = fallbackCenter(center);
-
   return {
     id: center.id,
     name: center.name,
     city: center.city,
     description:
-      center.description ?? fallback?.description ?? "Explore diving experiences from this center.",
+      center.description ?? "Explore diving experiences from this center.",
     longDescription:
-      center.description ?? fallback?.longDescription ?? "Explore diving experiences, courses, and trips from this diving provider.",
-    priceRange: center.priceRange ?? fallback?.priceRange ?? "Contact for pricing",
-    rating: fallback?.rating ?? 4.8,
-    reviews: center._count?.reviews ?? fallback?.reviews ?? 0,
-    phone: center.contactPhone ?? fallback?.phone ?? "Not provided",
-    email: center.contactEmail ?? fallback?.email ?? "Not provided",
-    address: center.address ?? fallback?.address ?? center.city,
-    img: center.imageUrl ?? fallback?.img ?? fallbackCenterImage,
-    gallery: center.imageUrl ? [center.imageUrl] : fallback?.gallery ?? [],
-    verified: center.status === "approved" || (fallback?.verified ?? true),
-    since: center.createdAt ? new Date(center.createdAt).getFullYear() : fallback?.since ?? 2026,
-    specialties: fallback?.specialties ?? ["Diving", "Trips", "Courses"],
+      center.description ?? "Explore diving experiences, courses, and trips from this diving provider.",
+    priceRange: center.priceRange ?? "Contact for pricing",
+    rating: 0,
+    reviews: center._count?.reviews ?? 0,
+    phone: center.contactPhone ?? "Not provided",
+    email: center.contactEmail ?? "Not provided",
+    address: center.address ?? center.city,
+    img: center.imageUrl ?? "",
+    gallery: center.imageUrl ? [center.imageUrl] : [],
+    verified: center.status === "approved",
+    since: center.createdAt ? new Date(center.createdAt).getFullYear() : 2026,
+    specialties: ["Diving", "Trips", "Courses"],
   };
 }
 
@@ -181,7 +166,7 @@ export function toTrip(trip: ApiTrip): Trip {
     rawDate: trip.scheduleDate,
     slots: trip.maxCapacity,
     description: trip.description ?? "Dive trip details will be shared by the provider.",
-    img: trip.imageUrl ?? fallbackTripImage,
+    img: trip.imageUrl ?? "",
   };
 }
 
@@ -199,7 +184,7 @@ export function toCourse(course: ApiCourse): Trip {
     rawDate: course.startDate,
     slots: 12,
     description: course.description ?? "Course details will be shared by the provider.",
-    img: course.imageUrl ?? fallbackCourseImage,
+    img: course.imageUrl ?? "",
   };
 }
 
@@ -238,36 +223,43 @@ export function toReview(review: ApiReview): Review {
   };
 }
 
-export async function getCenters(filters: CatalogFilters = {}) {
+export async function getCenters(filters: CatalogFilters = {}, token?: string | null) {
   const centers = await apiRequest<ApiCenter[]>(
     `/centers${queryString({
       city: filters.city,
       search: filters.search,
+      status: filters.status,
+      ownerId: filters.ownerId,
     })}`,
+    { token },
   );
 
   return centers.map(toCenter);
 }
 
-export async function getTrips(filters: CatalogFilters = {}) {
+export async function getTrips(filters: CatalogFilters = {}, token?: string | null) {
   const trips = await apiRequest<ApiTrip[]>(
     `/trips${queryString({
       city: filters.city,
       search: filters.search,
       difficulty: filters.difficulty,
+      status: filters.status,
     })}`,
+    { token },
   );
 
   return trips.map(toTrip);
 }
 
-export async function getCourses(filters: CatalogFilters = {}) {
+export async function getCourses(filters: CatalogFilters = {}, token?: string | null) {
   const courses = await apiRequest<ApiCourse[]>(
     `/courses${queryString({
       city: filters.city,
       search: filters.search,
       level: filters.level,
+      status: filters.status,
     })}`,
+    { token },
   );
 
   return courses.map(toCourse);
@@ -283,8 +275,11 @@ export async function getCenterById(id: number) {
   };
 }
 
-export async function getTripById(id: number) {
-  const trip = await apiRequest<ApiTrip & { reviews?: ApiReview[] }>(`/trips/${id}`);
+export async function getTripById(id: number, token?: string | null) {
+  const trip = await apiRequest<ApiTrip & { reviews?: ApiReview[] }>(
+    `/trips/${id}`,
+    { token },
+  );
   return {
     trip: toTrip(trip),
     center: trip.center
@@ -298,9 +293,10 @@ export async function getTripById(id: number) {
   };
 }
 
-export async function getCourseById(id: number) {
+export async function getCourseById(id: number, token?: string | null) {
   const course = await apiRequest<ApiCourse & { reviews?: ApiReview[] }>(
     `/courses/${id}`,
+    { token },
   );
 
   return {

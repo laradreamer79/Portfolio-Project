@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+<<<<<<< HEAD
 import {
   CheckCircle,
   ChevronLeft,
@@ -17,6 +18,13 @@ import { getTripById, getCourseById, isPastExperience } from "../lib/catalogServ
 import { createBooking, type ApiBooking } from "../lib/bookingsService";
 import { ApiError } from "../lib/apiClient";
 import { useAuth } from "../hooks/useAuth";
+=======
+import type { Center, Trip } from "../data";
+import { getCourseById, getTripById } from "../lib/catalogService";
+import { createBooking } from "../lib/bookingService";
+import { useAuth } from "../hooks/useAuth";
+import { CheckCircle, ChevronLeft, CreditCard, Lock, Calendar, Waves, Clock, Users, MapPin } from "lucide-react";
+>>>>>>> origin/develop
 
 type Step = "details" | "payment" | "success";
 type ExperienceType = "trip" | "course";
@@ -29,20 +37,81 @@ export function Booking() {
   const { type, id } = useParams();
   const navigate = useNavigate();
   const { token } = useAuth();
+<<<<<<< HEAD
 
   const [experience, setExperience] = useState<Trip | null>(null);
   const [center, setCenter] = useState<Center | undefined>();
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+=======
+  const [trip, setTrip] = useState<Trip | null>(null);
+  const [center, setCenter] = useState<Center | undefined>();
+  const [loading, setLoading] = useState(true);
+>>>>>>> origin/develop
 
   const [step, setStep] = useState<Step>("details");
   const [divers, setDivers] = useState(1);
   const [form, setForm] = useState({ name: "", email: "", phone: "", notes: "" });
   const [payment, setPayment] = useState({ card: "", expiry: "", cvv: "", holder: "" });
+<<<<<<< HEAD
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [confirmedBooking, setConfirmedBooking] = useState<ApiBooking | null>(null);
+=======
+  const [bookingRef] = useState(`OYS-${Math.random().toString(36).slice(2, 8).toUpperCase()}`);
+  const [isBooking, setIsBooking] = useState(false);
+  const [bookingError, setBookingError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const id = Number(tripId);
+
+    if (!Number.isInteger(id)) {
+      setLoading(false);
+      return;
+    }
+
+    let active = true;
+    setLoading(true);
+
+    getTripById(id, token)
+      .catch(() => getCourseById(id, token))
+      .then((data) => {
+        if (!active) return;
+
+        if ("trip" in data) {
+          setTrip(data.trip);
+          setCenter(data.center);
+        } else {
+          setTrip(data.course);
+          setCenter(data.center);
+        }
+      })
+      .catch(() => {
+        if (!active) return;
+        setTrip(null);
+        setCenter(undefined);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [tripId, token]);
+
+  if (loading) {
+    return <div className="flex items-center justify-center h-96 text-slate-400">Loading booking...</div>;
+  }
+
+  if (!trip) return (
+    <div className="flex flex-col items-center justify-center h-96 gap-4">
+      <p className="text-slate-400">Listing not found.</p>
+      <button onClick={() => navigate("/trips")} className="text-teal-600 text-sm font-medium">← Back to Trips</button>
+    </div>
+  );
+>>>>>>> origin/develop
 
   const experienceType: ExperienceType | undefined = isExperienceType(type) ? type : undefined;
   const experienceId = Number(id);
@@ -111,6 +180,32 @@ export function Booking() {
     setForm((f) => ({ ...f, [k]: e.target.value }));
   const setPay = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setPayment((p) => ({ ...p, [k]: e.target.value }));
+
+  const confirmBooking = async () => {
+    if (!token) {
+      setBookingError("Please sign in before booking.");
+      return;
+    }
+
+    if (!payment.card || !payment.expiry || !payment.cvv || !payment.holder) return;
+
+    setIsBooking(true);
+    setBookingError(null);
+
+    try {
+      await createBooking(
+        trip.type === "course"
+          ? { courseId: trip.id, numberOfPeople: divers }
+          : { tripId: trip.id, numberOfPeople: divers },
+        token,
+      );
+      setStep("success");
+    } catch (err) {
+      setBookingError(err instanceof Error ? err.message : "Unable to create booking.");
+    } finally {
+      setIsBooking(false);
+    }
+  };
 
   const steps = ["details", "payment", "success"];
   const stepIdx = steps.indexOf(step);
@@ -271,6 +366,7 @@ export function Booking() {
                   Demo payment form — no card details are transmitted or charged. Confirming creates a real booking.
                 </div>
                 <div className="flex gap-3">
+<<<<<<< HEAD
                   <button onClick={() => setStep("details")} disabled={isSubmitting} className="flex-1 border border-slate-200 text-slate-500 font-medium py-3 rounded-xl hover:border-slate-300 transition-colors text-sm disabled:opacity-40">← Back</button>
                   <button
                     onClick={handlePay}
@@ -278,8 +374,18 @@ export function Booking() {
                     className="flex-1 bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-sm"
                   >
                     {isSubmitting ? "Processing..." : `Pay SAR ${total.toLocaleString()}`}
+=======
+                  <button onClick={() => setStep("details")} className="flex-1 border border-slate-200 text-slate-500 font-medium py-3 rounded-xl hover:border-slate-300 transition-colors text-sm">← Back</button>
+                  <button onClick={confirmBooking} disabled={!payment.card || !payment.expiry || !payment.cvv || !payment.holder || isBooking} className="flex-1 bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-sm">
+                    {isBooking ? "Creating booking..." : `Pay SAR ${total.toLocaleString()}`}
+>>>>>>> origin/develop
                   </button>
                 </div>
+                {bookingError && (
+                  <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {bookingError}
+                  </div>
+                )}
               </div>
             )}
 
@@ -293,12 +399,20 @@ export function Booking() {
                   <p className="text-slate-400 mt-2">A confirmation has been sent to {form.email}</p>
                 </div>
                 <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100 text-left space-y-2">
+<<<<<<< HEAD
                   <div className="flex justify-between text-sm"><span className="text-slate-400">Booking Reference</span><span className="font-mono font-bold text-teal-600">OYS-{String(confirmedBooking?.id ?? "").padStart(6, "0")}</span></div>
                   <div className="flex justify-between text-sm"><span className="text-slate-400">{trip.type === "course" ? "Course" : "Trip"}</span><span className="text-slate-800 font-medium">{trip.title}</span></div>
                   {center && <div className="flex justify-between text-sm"><span className="text-slate-400">Center</span><span className="text-slate-800">{center.name}</span></div>}
                   <div className="flex justify-between text-sm"><span className="text-slate-400">Divers</span><span className="text-slate-800">{confirmedBooking?.numberOfPeople ?? divers}</span></div>
                   <div className="flex justify-between text-sm"><span className="text-slate-400">Status</span><span className="text-slate-800 capitalize">{confirmedBooking?.status ?? "pending"}</span></div>
                   <div className="flex justify-between text-sm pt-2 border-t border-slate-200"><span className="text-slate-400">Total</span><span className="font-bold text-teal-600 text-lg">SAR {Number(confirmedBooking?.totalPrice ?? total).toLocaleString()}</span></div>
+=======
+                  <div className="flex justify-between text-sm"><span className="text-slate-400">Booking Reference</span><span className="font-mono font-bold text-teal-600">{bookingRef}</span></div>
+                  <div className="flex justify-between text-sm"><span className="text-slate-400">Listing</span><span className="text-slate-800 font-medium">{trip.title}</span></div>
+                  <div className="flex justify-between text-sm"><span className="text-slate-400">Provider</span><span className="text-slate-800">{center?.name ?? "Independent Instructor"}</span></div>
+                  <div className="flex justify-between text-sm"><span className="text-slate-400">Divers</span><span className="text-slate-800">{divers}</span></div>
+                  <div className="flex justify-between text-sm pt-2 border-t border-slate-200"><span className="text-slate-400">Total Paid</span><span className="font-bold text-teal-600 text-lg">SAR {total.toLocaleString()}</span></div>
+>>>>>>> origin/develop
                 </div>
                 <div className="flex gap-3">
                   <button onClick={() => navigate("/")} className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl hover:border-slate-300 transition-colors text-sm">Back to Home</button>
@@ -320,11 +434,17 @@ export function Booking() {
                     {trip.type === "course" ? "Course" : "Trip"}
                   </span>
                   <h3 className="font-display text-xl font-bold text-slate-900 tracking-wide mt-1">{trip.title}</h3>
+<<<<<<< HEAD
                   {center && (
                     <p className="text-slate-400 text-xs flex items-center gap-1 mt-1 mb-4">
                       <MapPin className="w-3 h-3 text-teal-500" />{center.name} · {center.city}
                     </p>
                   )}
+=======
+                  <p className="text-slate-400 text-xs flex items-center gap-1 mt-1 mb-4">
+                    <MapPin className="w-3 h-3 text-teal-500" />{center ? `${center.name} · ${center.city}` : "Independent Instructor"}
+                  </p>
+>>>>>>> origin/develop
                   <div className="space-y-2 text-sm text-slate-600">
                     <div className="flex items-center gap-2"><Clock className="w-3.5 h-3.5 text-slate-300" />{trip.duration}</div>
                     <div className="flex items-center gap-2"><Waves className="w-3.5 h-3.5 text-slate-300" />{trip.depth}</div>

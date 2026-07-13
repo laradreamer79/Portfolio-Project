@@ -32,6 +32,13 @@ enum ApprovalStatus {
   rejected
 }
 
+enum PaymentStatus {
+  pending
+  paid
+  failed
+  refunded
+}
+
 model User {
   id           Int      @id @default(autoincrement())
   name         String
@@ -158,13 +165,14 @@ model Booking {
 }
 
 model Payment {
-  id               Int      @id @default(autoincrement())
-  amount           Decimal  @db.Decimal(10, 2)
-  status           String
+  id               Int            @id @default(autoincrement())
+  amount           Decimal        @db.Decimal(10, 2)
+  status           PaymentStatus  @default(pending)
   paymentMethod    String
-  moyasarPaymentId String?  @unique
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  moyasarPaymentId String?        @unique
+  invoiceUrl       String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 
   booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   bookingId Int     @unique

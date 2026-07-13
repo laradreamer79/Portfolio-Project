@@ -7,6 +7,7 @@ import { Trips } from "./pages/Trips";
 import { TripDetail } from "./pages/TripDetail";
 import { Courses } from "./pages/Courses";
 import { CourseDetail } from "./pages/CourseDetail";
+import { CityCatalog } from "./pages/CityCatalog";
 import { About } from "./pages/About";
 import { Booking } from "./pages/Booking";
 import { Auth } from "./pages/Auth";
@@ -29,6 +30,7 @@ export const router = createBrowserRouter([
       { path: "trips/:id", Component: TripDetail },
       { path: "courses", Component: Courses },
       { path: "courses/:id", Component: CourseDetail },
+      { path: "catalog", Component: CityCatalog },
       { path: "about", Component: About },
       {
         path: "booking/:type/:id",

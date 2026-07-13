@@ -59,6 +59,20 @@ export function Home() {
   const centerCount = centers.length || "—";
   const cityCount = new Set(centers.map((center) => center.city)).size || cities.length;
   const listingCount = trips.length + courses.length || "—";
+  const experienceCountForCity = (city: string) => {
+    const centerIds = new Set(
+      centers
+        .filter((center) => center.city === city)
+        .map((center) => center.id),
+    );
+
+    return [...trips, ...courses].filter(
+      (experience) =>
+        experience.centerId !== undefined &&
+        experience.centerId !== null &&
+        centerIds.has(experience.centerId),
+    ).length;
+  };
 
   return (
     <div>
@@ -90,17 +104,17 @@ export function Home() {
               <p className="text-teal-600 text-sm font-medium tracking-widest uppercase mb-1">Dive destinations</p>
               <h2 className="font-display text-4xl font-bold text-slate-900 tracking-wide">BROWSE BY CITY</h2>
             </div>
-            <button onClick={() => navigate("/centers")} className="text-sm text-teal-600 font-medium hover:text-teal-700 flex items-center gap-1 transition-colors">All centers <ArrowRight className="w-4 h-4" /></button>
+            <button onClick={() => navigate("/catalog")} className="text-sm text-teal-600 font-medium hover:text-teal-700 flex items-center gap-1 transition-colors">All trips & courses <ArrowRight className="w-4 h-4" /></button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {cities.map((city) => (
-              <button key={city} onClick={() => navigate(`/centers?city=${city}`)} className="group relative rounded-2xl overflow-hidden h-40 bg-slate-100 cursor-pointer text-left">
+              <button key={city} onClick={() => navigate(`/catalog?city=${encodeURIComponent(city)}`)} className="group relative rounded-2xl overflow-hidden h-40 bg-slate-100 cursor-pointer text-left">
                 <img src={CITY_IMGS[city]} alt={city} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-3">
                   <p className="font-display text-lg font-bold text-white tracking-wide leading-tight">{city}</p>
                   <p className="text-teal-300 text-xs">
-                    {centers.filter((c) => c.city === city).length} centers
+                    {experienceCountForCity(city)} trips & courses
                   </p>
                 </div>
               </button>
