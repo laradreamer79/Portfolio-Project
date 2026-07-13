@@ -170,6 +170,23 @@ function courseVisibilityWhere(actor: Actor | undefined, status?: string) {
   };
 }
 
+function courseDetailVisibilityWhere(actor: Actor | undefined) {
+  if (!actor) {
+    return { status: "approved" as const };
+  }
+
+  if (actor.role === "admin") {
+    return {};
+  }
+
+  return {
+    OR: [
+      { status: "approved" as const },
+      courseOwnerWhere(actor),
+    ],
+  };
+}
+
 async function assertCourseAccess(id: number, actor: Actor) {
   const course = await prisma.course.findUnique({
     where: { id },
@@ -255,7 +272,7 @@ export const coursesService = {
     return prisma.course.findFirst({
       where: {
         id,
-        ...courseVisibilityWhere(actor),
+        ...courseDetailVisibilityWhere(actor),
       },
       include: {
         center: { select: { id: true, name: true, city: true, contactPhone: true } },
@@ -282,6 +299,7 @@ export const coursesService = {
         centerId,
         instructorId,
         imageUrl: data.imageUrl,
+        status: "approved",
       } as any,
     });
   },

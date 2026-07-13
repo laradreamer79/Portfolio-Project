@@ -172,6 +172,23 @@ function tripVisibilityWhere(actor: Actor | undefined, status?: string) {
   };
 }
 
+function tripDetailVisibilityWhere(actor: Actor | undefined) {
+  if (!actor) {
+    return { status: "approved" as const };
+  }
+
+  if (actor.role === "admin") {
+    return {};
+  }
+
+  return {
+    OR: [
+      { status: "approved" as const },
+      tripOwnerWhere(actor),
+    ],
+  };
+}
+
 async function assertTripAccess(id: number, actor: Actor) {
   const trip = await prisma.trip.findUnique({
     where: { id },
@@ -256,7 +273,7 @@ export const tripsService = {
     return prisma.trip.findFirst({
       where: {
         id,
-        ...tripVisibilityWhere(actor),
+        ...tripDetailVisibilityWhere(actor),
       },
       include: {
         center: { select: { id: true, name: true, city: true, contactPhone: true } },
@@ -285,6 +302,7 @@ export const tripsService = {
         centerId,
         instructorId,
         imageUrl: data.imageUrl,
+        status: "approved",
       } as any,
     });
   },

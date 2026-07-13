@@ -6,10 +6,12 @@ import {
   Shield, CheckCircle, AlertCircle, Phone, Mail 
 } from "lucide-react";
 import { getTripById } from "../lib/catalogService";
+import { useAuth } from "../hooks/useAuth";
 
 export function TripDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { token } = useAuth();
   const [trip, setTrip] = useState<Trip | null>(null);
   const [center, setCenter] = useState<Center | undefined>();
   const [tripReviews, setTripReviews] = useState<Review[]>([]);
@@ -29,7 +31,7 @@ export function TripDetail() {
     setLoading(true);
     setError(null);
 
-    getTripById(tripId)
+    getTripById(tripId, token)
       .then((data) => {
         if (!active) return;
         setTrip(data.trip);
@@ -50,7 +52,7 @@ export function TripDetail() {
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [id, token]);
   
   const avgRating = tripReviews.length > 0 
     ? (tripReviews.reduce((sum, r) => sum + r.rating, 0) / tripReviews.length).toFixed(1)

@@ -6,10 +6,12 @@ import {
   Shield, CheckCircle, AlertCircle, Phone, Mail, Award, BookOpen, GraduationCap
 } from "lucide-react";
 import { getCourseById } from "../lib/catalogService";
+import { useAuth } from "../hooks/useAuth";
 
 export function CourseDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { token } = useAuth();
   const [course, setCourse] = useState<Trip | null>(null);
   const [center, setCenter] = useState<Center | undefined>();
   const [courseReviews, setCourseReviews] = useState<Review[]>([]);
@@ -29,7 +31,7 @@ export function CourseDetail() {
     setLoading(true);
     setError(null);
 
-    getCourseById(courseId)
+    getCourseById(courseId, token)
       .then((data) => {
         if (!active) return;
         setCourse(data.course);
@@ -50,7 +52,7 @@ export function CourseDetail() {
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [id, token]);
   
   const avgRating = courseReviews.length > 0 
     ? (courseReviews.reduce((sum, r) => sum + r.rating, 0) / courseReviews.length).toFixed(1)
