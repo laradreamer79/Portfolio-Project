@@ -5,13 +5,9 @@ import {
   ChevronLeft, Star, MapPin, Clock, Waves, Users, Calendar, 
   Shield, CheckCircle, AlertCircle, Phone, Mail 
 } from "lucide-react";
-<<<<<<< HEAD
-import { getTripById, toReview } from "../lib/catalogService";
+import { getTripById, getTrips, toReview } from "../lib/catalogService";
 import { submitReview } from "../lib/reviewsService";
 import { ReviewForm } from "../components/ReviewForm";
-=======
-import { getTripById, getTrips } from "../lib/catalogService";
->>>>>>> origin/develop
 import { useAuth } from "../hooks/useAuth";
 
 export function TripDetail() {

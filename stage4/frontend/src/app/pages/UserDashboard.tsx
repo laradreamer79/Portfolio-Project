@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { useEffect, useState } from "react";
 import { Calendar, Clock, MapPin, Waves, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -15,28 +14,16 @@ function formatDate(value?: string) {
     new Date(value),
   );
 }
-=======
-import { Calendar, Clock, MapPin, Waves } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { getMyBookings, type BookingCard } from "../lib/bookingService";
-import { useAuth } from "../hooks/useAuth";
->>>>>>> origin/develop
 
 export function UserDashboard() {
   const navigate = useNavigate();
   const { token } = useAuth();
-<<<<<<< HEAD
 
   const [bookings, setBookings] = useState<ApiBooking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cancellingId, setCancellingId] = useState<number | null>(null);
   const [cancelError, setCancelError] = useState<string | null>(null);
-=======
-  const [bookings, setBookings] = useState<BookingCard[]>([]);
-  const [loading, setLoading] = useState(true);
->>>>>>> origin/develop
 
   useEffect(() => {
     if (!token) {
@@ -46,24 +33,16 @@ export function UserDashboard() {
 
     let active = true;
     setLoading(true);
-<<<<<<< HEAD
     setError(null);
-=======
->>>>>>> origin/develop
 
     getMyBookings(token)
       .then((data) => {
         if (active) setBookings(data);
       })
-<<<<<<< HEAD
       .catch((err: unknown) => {
         if (active) {
           setError(err instanceof Error ? err.message : "Unable to load your bookings.");
         }
-=======
-      .catch(() => {
-        if (active) setBookings([]);
->>>>>>> origin/develop
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -73,7 +52,6 @@ export function UserDashboard() {
       active = false;
     };
   }, [token]);
-<<<<<<< HEAD
 
   async function handleCancel(bookingId: number) {
     if (!token || cancellingId) return; // prevent duplicate cancel clicks
@@ -95,8 +73,6 @@ export function UserDashboard() {
 
   const upcoming = bookings.filter((b) => b.status !== "cancelled");
   const cancelled = bookings.filter((b) => b.status === "cancelled");
-=======
->>>>>>> origin/develop
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -110,17 +86,10 @@ export function UserDashboard() {
 
       <div className="mx-auto max-w-7xl px-6 py-8">
         <div className="mb-8 grid gap-4 sm:grid-cols-3">
-<<<<<<< HEAD
           {[
             { label: "Total bookings", value: bookings.length },
             { label: "Active", value: upcoming.length },
             { label: "Cancelled", value: cancelled.length },
-=======
-            {[
-            { label: "Total bookings", value: bookings.length },
-            { label: "Upcoming", value: bookings.filter((booking) => booking.status !== "completed").length },
-            { label: "Completed", value: bookings.filter((booking) => booking.status === "completed").length },
->>>>>>> origin/develop
           ].map((stat) => (
             <div key={stat.label} className="rounded-2xl border border-slate-100 bg-white p-5">
               <p className="text-sm text-slate-400">{stat.label}</p>
@@ -129,7 +98,6 @@ export function UserDashboard() {
           ))}
         </div>
 
-<<<<<<< HEAD
         {error && (
           <div className="mb-5 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
             {error}
@@ -193,34 +161,8 @@ export function UserDashboard() {
                       >
                         {booking.status}
                       </span>
-=======
-        {loading ? (
-          <div className="rounded-2xl border border-slate-100 bg-white p-8 text-center text-slate-400">
-            Loading bookings...
-          </div>
-        ) : bookings.length === 0 ? (
-          <div className="rounded-2xl border border-slate-100 bg-white p-8 text-center">
-            <p className="text-slate-500">No bookings yet.</p>
-            <p className="mt-2 text-sm text-slate-400">
-              Book a trip or course and it will appear here.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {bookings.map((booking) => (
-              <article key={booking.id} className="overflow-hidden rounded-2xl border border-slate-100 bg-white md:flex">
-                {booking.img && (
-                  <img src={booking.img} alt={booking.title} className="h-48 w-full object-cover md:h-auto md:w-64" />
-                )}
-                <div className="flex flex-1 flex-col p-5">
-                  <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <p className="text-xs font-medium uppercase tracking-wider text-slate-400">{booking.reference}</p>
-                      <h2 className="font-display text-2xl font-bold tracking-wide text-slate-900">{booking.title}</h2>
->>>>>>> origin/develop
                     </div>
 
-<<<<<<< HEAD
                     <div className="mb-5 flex flex-wrap gap-4 text-sm text-slate-500">
                       {center && (
                         <span className="flex items-center gap-1">
@@ -251,7 +193,7 @@ export function UserDashboard() {
                       <div className="flex gap-2">
                         <button
                           type="button"
-                          onClick={() => navigate(isCourse ? `/courses/${item.id}` : `/trips/${item.id}`)}
+                          onClick={() => navigate(`/bookings/${booking.id}`)}
                           className="rounded-xl bg-teal-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-teal-600"
                         >
                           View details
@@ -274,32 +216,6 @@ export function UserDashboard() {
               );
             })}
         </div>
-=======
-                  <div className="mb-5 flex flex-wrap gap-4 text-sm text-slate-500">
-                    <span className="flex items-center gap-1"><MapPin className="h-4 w-4 text-teal-500" />{booking.centerName} · {booking.city}</span>
-                    <span className="flex items-center gap-1"><Calendar className="h-4 w-4 text-slate-300" />{booking.date}</span>
-                    <span className="flex items-center gap-1"><Clock className="h-4 w-4 text-slate-300" />{booking.duration}</span>
-                    <span className="flex items-center gap-1"><Waves className="h-4 w-4 text-slate-300" />{booking.divers} diver{booking.divers > 1 ? "s" : ""}</span>
-                  </div>
-
-                  <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-4">
-                    <p className="font-semibold text-slate-800">SAR {booking.total.toLocaleString()}</p>
-                    {booking.listingId > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => navigate(booking.listingType === "course" ? `/courses/${booking.listingId}` : `/trips/${booking.listingId}`)}
-                        className="rounded-xl bg-teal-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-teal-600"
-                      >
-                        View details
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
->>>>>>> origin/develop
       </div>
     </div>
   );

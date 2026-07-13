@@ -5,13 +5,9 @@ import {
   ChevronLeft, Star, MapPin, Clock, Waves, Users, Calendar, 
   Shield, CheckCircle, AlertCircle, Phone, Mail, Award, BookOpen, GraduationCap
 } from "lucide-react";
-<<<<<<< HEAD
-import { getCourseById, toReview } from "../lib/catalogService";
+import { getCourseById, getCourses, toReview } from "../lib/catalogService";
 import { submitReview } from "../lib/reviewsService";
 import { ReviewForm } from "../components/ReviewForm";
-=======
-import { getCourseById, getCourses } from "../lib/catalogService";
->>>>>>> origin/develop
 import { useAuth } from "../hooks/useAuth";
 
 export function CourseDetail() {

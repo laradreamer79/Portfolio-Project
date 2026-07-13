@@ -10,6 +10,7 @@ import { CourseDetail } from "./pages/CourseDetail";
 import { CityCatalog } from "./pages/CityCatalog";
 import { About } from "./pages/About";
 import { Booking } from "./pages/Booking";
+import { BookingDetail } from "./pages/BookingDetail";
 import { Auth } from "./pages/Auth";
 import { AdminDashboard } from "./pages/AdminDashboard";
 import { CenterDashboard } from "./pages/CenterDashboard";
@@ -37,6 +38,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Booking />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "bookings/:id",
+        element: (
+          <ProtectedRoute>
+            <BookingDetail />
           </ProtectedRoute>
         ),
       },
