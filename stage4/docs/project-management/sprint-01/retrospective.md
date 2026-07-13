@@ -26,4 +26,3 @@
 | Require build and lint evidence in every frontend PR | Project Manager | Sprint 2 | In Progress |
 | Define API response contracts before integration | Frontend and Backend owners | Sprint 2 | In Progress |
 | Require one approving review before merge | Team | Sprint 2 | In Progress |
-

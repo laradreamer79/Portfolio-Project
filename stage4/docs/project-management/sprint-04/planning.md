@@ -32,4 +32,3 @@ Register → Login → Browse → Book → Pay → View Dashboard
 - Production environment and rollback steps are documented.
 - Testing evidence is linked.
 - Final Sprint Review and Retrospective are completed.
-

@@ -15,4 +15,3 @@
 
 - Authentication regression tests: [Add result]
 - Open defects: [Add issues]
-

@@ -35,4 +35,3 @@ Configure the database and complete the Oyster authentication flow.
 ## Feedback
 
 - [Add instructor, stakeholder, or team feedback]
-

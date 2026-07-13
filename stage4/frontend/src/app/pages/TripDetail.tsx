@@ -1,22 +1,72 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { TRIPS, CENTERS, REVIEWS } from "../data";
+import { useEffect, useState } from "react";
+import { CENTERS, TRIPS, type Center, type Review, type Trip } from "../data";
 import { 
   ChevronLeft, Star, MapPin, Clock, Waves, Users, Calendar, 
   Shield, CheckCircle, AlertCircle, Phone, Mail 
 } from "lucide-react";
+import { getTripById } from "../lib/catalogService";
+import { useAuth } from "../hooks/useAuth";
 
 export function TripDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const trip = TRIPS.find((t) => t.id === Number(id));
-  const center = trip ? CENTERS.find((c) => c.id === trip.centerId) : null;
-  const tripReviews = REVIEWS.filter((r) => r.tripId === Number(id));
+  const { token } = useAuth();
+  const [trip, setTrip] = useState<Trip | null>(null);
+  const [center, setCenter] = useState<Center | undefined>();
+  const [tripReviews, setTripReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const tripId = Number(id);
+
+    if (!Number.isInteger(tripId)) {
+      setError("Invalid trip id.");
+      setLoading(false);
+      return;
+    }
+
+    let active = true;
+    setLoading(true);
+    setError(null);
+
+    getTripById(tripId, token)
+      .then((data) => {
+        if (!active) return;
+        setTrip(data.trip);
+        setCenter(data.center);
+        setTripReviews(data.reviews);
+      })
+      .catch((err: unknown) => {
+        if (!active) return;
+        setError(err instanceof Error ? err.message : "Unable to load trip.");
+        setTrip(null);
+        setCenter(undefined);
+        setTripReviews([]);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [id, token]);
   
   const avgRating = tripReviews.length > 0 
     ? (tripReviews.reduce((sum, r) => sum + r.rating, 0) / tripReviews.length).toFixed(1)
     : "N/A";
 
-  if (!trip || !center) {
+  if (loading) {
+    return <div className="flex items-center justify-center h-96 text-slate-400">Loading trip...</div>;
+  }
+
+  if (error) {
+    return <div className="flex items-center justify-center h-96 text-red-500">{error}</div>;
+  }
+
+  if (!trip) {
     return (
       <div className="flex flex-col items-center justify-center h-96 gap-4">
         <p className="text-slate-400">Trip not found.</p>
@@ -55,7 +105,7 @@ export function TripDetail() {
     (t) =>
       t.id !== trip.id &&
       (t.centerId === trip.centerId ||
-        CENTERS.find((candidate) => candidate.id === t.centerId)?.city === center.city)
+        (center && CENTERS.find((candidate) => candidate.id === t.centerId)?.city === center.city))
   ).slice(0, 3);
 
   return (
@@ -90,11 +140,11 @@ export function TripDetail() {
             </h1>
             <div className="flex flex-wrap items-center gap-4 text-white/90">
               <button 
-                onClick={() => navigate(`/centers/${center.id}`)}
+                onClick={() => center && navigate(`/centers/${center.id}`)}
                 className="flex items-center gap-2 hover:text-white transition-colors"
               >
                 <MapPin className="w-4 h-4" />
-                {center.name} · {center.city}
+                {center ? `${center.name} · ${center.city}` : "Independent Instructor"}
               </button>
               {tripReviews.length > 0 && (
                 <div className="flex items-center gap-1.5">
@@ -293,48 +343,52 @@ export function TripDetail() {
               <div className="border-t border-slate-100 pt-5 space-y-3">
                 <h3 className="font-semibold text-slate-900 text-sm">Provided by</h3>
                 <button 
-                  onClick={() => navigate(`/centers/${center.id}`)}
+                  onClick={() => center && navigate(`/centers/${center.id}`)}
                   className="flex items-center gap-3 w-full hover:bg-slate-50 rounded-xl p-2 -m-2 transition-colors"
                 >
                   <img 
-                    src={center.img} 
-                    alt={center.name} 
+                    src={center?.img ?? trip.img} 
+                    alt={center?.name ?? "Independent Instructor"} 
                     className="w-12 h-12 rounded-xl object-cover border border-slate-100"
                   />
                   <div className="flex-1 text-left min-w-0">
-                    <p className="font-semibold text-slate-900 text-sm truncate">{center.name}</p>
+                    <p className="font-semibold text-slate-900 text-sm truncate">{center?.name ?? "Independent Instructor"}</p>
                     <div className="flex items-center gap-1.5 mt-0.5">
-                      {center.verified && (
+                      {center?.verified && (
                         <Shield className="w-3 h-3 text-teal-500" />
                       )}
-                      <span className="text-xs text-slate-400">{center.city}</span>
+                      <span className="text-xs text-slate-400">{center?.city ?? "Instructor-owned listing"}</span>
                     </div>
                   </div>
                 </button>
 
-                <div className="flex items-center gap-1.5 text-sm">
-                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  <span className="font-semibold text-slate-900">{center.rating}</span>
-                  <span className="text-slate-400">({center.reviews} reviews)</span>
-                </div>
+                {center && (
+                  <div className="flex items-center gap-1.5 text-sm">
+                    <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    <span className="font-semibold text-slate-900">{center.rating}</span>
+                    <span className="text-slate-400">({center.reviews} reviews)</span>
+                  </div>
+                )}
               </div>
 
-              <div className="border-t border-slate-100 pt-5 space-y-2.5">
-                <a 
-                  href={`tel:${center.phone}`}
-                  className="flex items-center gap-3 text-slate-600 hover:text-teal-600 transition-colors text-sm"
-                >
-                  <Phone className="w-4 h-4" />
-                  {center.phone}
-                </a>
-                <a 
-                  href={`mailto:${center.email}`}
-                  className="flex items-center gap-3 text-slate-600 hover:text-teal-600 transition-colors text-sm"
-                >
-                  <Mail className="w-4 h-4" />
-                  {center.email}
-                </a>
-              </div>
+              {center && (
+                <div className="border-t border-slate-100 pt-5 space-y-2.5">
+                  <a 
+                    href={`tel:${center.phone}`}
+                    className="flex items-center gap-3 text-slate-600 hover:text-teal-600 transition-colors text-sm"
+                  >
+                    <Phone className="w-4 h-4" />
+                    {center.phone}
+                  </a>
+                  <a 
+                    href={`mailto:${center.email}`}
+                    className="flex items-center gap-3 text-slate-600 hover:text-teal-600 transition-colors text-sm"
+                  >
+                    <Mail className="w-4 h-4" />
+                    {center.email}
+                  </a>
+                </div>
+              )}
 
               <div className="bg-teal-50 border border-teal-100 rounded-xl p-4 text-xs text-teal-800 leading-relaxed">
                 <strong>Free cancellation</strong> up to 48 hours before the trip. Full refund guaranteed.

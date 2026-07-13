@@ -17,4 +17,3 @@ Sprint 1 tested the frontend UI, routing, TypeScript compilation, and linting. B
 - Authentication was UI-only.
 - Data came from frontend mock data.
 - Booking, payment, and dashboard actions were not connected to APIs.
-

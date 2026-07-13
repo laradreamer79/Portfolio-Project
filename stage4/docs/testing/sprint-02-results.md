@@ -24,4 +24,3 @@
 | Wrong role | Returns `403` | [Add result] | [Pass / Fail] | [Add evidence] |
 | Frontend role redirect | Opens correct dashboard | [Add result] | [Pass / Fail] | [Add browser evidence] |
 | Logout | Clears authentication | [Add result] | [Pass / Fail] | [Add evidence] |
-

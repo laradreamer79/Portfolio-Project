@@ -30,4 +30,3 @@ token =
 ```
 
 Do not commit an exported environment containing real credentials or tokens.
-

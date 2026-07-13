@@ -19,4 +19,3 @@
 | Action | Owner | Due Sprint | Status |
 |---|---|---|---|
 | [Add action] | [Owner] | Sprint 3 | Planned |
-

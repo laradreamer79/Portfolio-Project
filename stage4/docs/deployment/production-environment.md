@@ -65,4 +65,3 @@ FRONTEND_URL
 2. Redeploy the stable application version.
 3. Do not roll back a database migration until its data impact is reviewed.
 4. Run the production smoke tests again.
-

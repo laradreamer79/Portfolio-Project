@@ -19,4 +19,3 @@
 - Playwright end-to-end tests: [Add result]
 - Critical defects open: [Add count]
 - High priority defects open: [Add count]
-

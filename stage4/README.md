@@ -1,5 +1,11 @@
 # Stage 4
 
+## Team Guide
+
+For setup, development and database commands, testing criteria, Git workflow,
+and critical notes, see the
+[Team How-To Guide](docs/team-how-to-guide.md).
+
 ## Sprint Status
 
 | Sprint | Goal | Status |

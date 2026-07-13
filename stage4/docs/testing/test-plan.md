@@ -40,4 +40,3 @@
 - [ ] No secrets are committed.
 - [ ] Documentation is updated.
 - [ ] At least one approving review is recorded.
-

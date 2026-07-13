@@ -1,22 +1,72 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { TRIPS, CENTERS, REVIEWS } from "../data";
+import { useEffect, useState } from "react";
+import { TRIPS, CENTERS, type Center, type Review, type Trip } from "../data";
 import { 
   ChevronLeft, Star, MapPin, Clock, Waves, Users, Calendar, 
   Shield, CheckCircle, AlertCircle, Phone, Mail, Award, BookOpen, GraduationCap
 } from "lucide-react";
+import { getCourseById } from "../lib/catalogService";
+import { useAuth } from "../hooks/useAuth";
 
 export function CourseDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const course = TRIPS.find((t) => t.id === Number(id) && t.type === "course");
-  const center = course ? CENTERS.find((c) => c.id === course.centerId) : null;
-  const courseReviews = REVIEWS.filter((r) => r.tripId === Number(id));
+  const { token } = useAuth();
+  const [course, setCourse] = useState<Trip | null>(null);
+  const [center, setCenter] = useState<Center | undefined>();
+  const [courseReviews, setCourseReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const courseId = Number(id);
+
+    if (!Number.isInteger(courseId)) {
+      setError("Invalid course id.");
+      setLoading(false);
+      return;
+    }
+
+    let active = true;
+    setLoading(true);
+    setError(null);
+
+    getCourseById(courseId, token)
+      .then((data) => {
+        if (!active) return;
+        setCourse(data.course);
+        setCenter(data.center);
+        setCourseReviews(data.reviews);
+      })
+      .catch((err: unknown) => {
+        if (!active) return;
+        setError(err instanceof Error ? err.message : "Unable to load course.");
+        setCourse(null);
+        setCenter(undefined);
+        setCourseReviews([]);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [id, token]);
   
   const avgRating = courseReviews.length > 0 
     ? (courseReviews.reduce((sum, r) => sum + r.rating, 0) / courseReviews.length).toFixed(1)
     : "N/A";
 
-  if (!course || !center) {
+  if (loading) {
+    return <div className="flex items-center justify-center h-96 text-slate-400">Loading course...</div>;
+  }
+
+  if (error) {
+    return <div className="flex items-center justify-center h-96 text-red-500">{error}</div>;
+  }
+
+  if (!course) {
     return (
       <div className="flex flex-col items-center justify-center h-96 gap-4">
         <p className="text-slate-400">Course not found.</p>
@@ -85,12 +135,12 @@ export function CourseDetail() {
               {course.title}
             </h1>
             <div className="flex flex-wrap items-center gap-4 text-white/90">
-              <button 
-                onClick={() => navigate(`/centers/${center.id}`)}
+              <button
+                onClick={() => center && navigate(`/centers/${center.id}`)}
                 className="flex items-center gap-2 hover:text-white transition-colors"
               >
                 <MapPin className="w-4 h-4" />
-                {center.name} · {center.city}
+                {center ? `${center.name} · ${center.city}` : "Independent Instructor"}
               </button>
               {courseReviews.length > 0 && (
                 <div className="flex items-center gap-1.5">
@@ -325,23 +375,25 @@ export function CourseDetail() {
                 You won't be charged yet
               </p>
 
-              <div className="space-y-3 pt-6 border-t border-slate-100">
-                <h3 className="font-semibold text-slate-900 text-sm mb-3">Contact Center</h3>
-                <a 
-                  href={`tel:${center.phone}`}
-                  className="flex items-center gap-2 text-sm text-slate-600 hover:text-purple-600 transition-colors"
-                >
-                  <Phone className="w-4 h-4" />
-                  {center.phone}
-                </a>
-                <a 
-                  href={`mailto:${center.email}`}
-                  className="flex items-center gap-2 text-sm text-slate-600 hover:text-purple-600 transition-colors"
-                >
-                  <Mail className="w-4 h-4" />
-                  {center.email}
-                </a>
-              </div>
+              {center && (
+                <div className="space-y-3 pt-6 border-t border-slate-100">
+                  <h3 className="font-semibold text-slate-900 text-sm mb-3">Contact Center</h3>
+                  <a
+                    href={`tel:${center.phone}`}
+                    className="flex items-center gap-2 text-sm text-slate-600 hover:text-purple-600 transition-colors"
+                  >
+                    <Phone className="w-4 h-4" />
+                    {center.phone}
+                  </a>
+                  <a
+                    href={`mailto:${center.email}`}
+                    className="flex items-center gap-2 text-sm text-slate-600 hover:text-purple-600 transition-colors"
+                  >
+                    <Mail className="w-4 h-4" />
+                    {center.email}
+                  </a>
+                </div>
+              )}
 
               <div className="bg-purple-50 border border-purple-100 rounded-xl p-4 text-xs text-purple-800 leading-relaxed mt-6">
                 <strong>Free cancellation</strong> up to 7 days before course start. Full refund guaranteed.

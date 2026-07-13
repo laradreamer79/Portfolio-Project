@@ -61,4 +61,3 @@ Open → Assigned → In Progress → Pull Request → Verified → Closed
 | Issue | Priority | Owner | Sprint | Status | Fix PR |
 |---|---|---|---|---|---|
 | [Add issue] | [Priority] | [Owner] | [Sprint] | [Status] | [Add link] |
-

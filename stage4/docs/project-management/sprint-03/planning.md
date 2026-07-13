@@ -35,4 +35,3 @@
 - Booking availability is enforced by the backend.
 - Dashboards display real data.
 - Relevant automated and Postman tests pass.
-

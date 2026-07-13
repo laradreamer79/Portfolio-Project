@@ -28,4 +28,3 @@ sprint-02-invalid-login-401.png
 ```
 
 Do not include passwords, JWTs, database URLs, API keys, or other secrets.
-

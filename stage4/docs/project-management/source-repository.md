@@ -53,4 +53,3 @@ chore(database): configure Prisma
 | [Add link] | Frontend UI pages | Sprint 1 | Merged |
 | [Add link] | Express TypeScript structure | Sprint 2 | Merged |
 | [Add link] | Prisma and User model | Sprint 2 | In Review |
-
