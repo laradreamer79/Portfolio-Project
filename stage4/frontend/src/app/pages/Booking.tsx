@@ -15,6 +15,7 @@ import {
 import type { Center, Trip } from "../data";
 import { getTripById, getCourseById, isPastExperience } from "../lib/catalogService";
 import { createBooking, type ApiBooking } from "../lib/bookingsService";
+import { createPayment, type ApiPayment } from "../lib/paymentsService";
 import { ApiError } from "../lib/apiClient";
 import { useAuth } from "../hooks/useAuth";
 
@@ -43,6 +44,7 @@ export function Booking() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [confirmedBooking, setConfirmedBooking] = useState<ApiBooking | null>(null);
+  const [confirmedPayment, setConfirmedPayment] = useState<ApiPayment | null>(null);
 
   const experienceType: ExperienceType | undefined = isExperienceType(type) ? type : undefined;
   const experienceId = Number(id);
@@ -135,7 +137,29 @@ export function Booking() {
         },
         token,
       );
+
+      const paymentResult = await createPayment(
+        {
+          bookingId: booking.id,
+          paymentMethod: "creditcard",
+        },
+        token,
+      );
+
+      if (paymentResult.transactionUrl) {
+        // Real Moyasar mode: browser must redirect for 3-D Secure verification.
+        // Store the local payment id so PaymentCallback.tsx can look up status
+        // by our own record, since Moyasar's redirect only carries their id.
+        sessionStorage.setItem(
+          "oyster_pending_payment_id",
+          String(paymentResult.payment.id),
+        );
+        window.location.href = paymentResult.transactionUrl;
+        return;
+      }
+
       setConfirmedBooking(booking);
+      setConfirmedPayment(paymentResult.payment);
       setStep("success");
     } catch (err) {
       setSubmitError(
@@ -297,7 +321,7 @@ export function Booking() {
                   <div className="flex justify-between text-sm"><span className="text-slate-400">{trip.type === "course" ? "Course" : "Trip"}</span><span className="text-slate-800 font-medium">{trip.title}</span></div>
                   {center && <div className="flex justify-between text-sm"><span className="text-slate-400">Center</span><span className="text-slate-800">{center.name}</span></div>}
                   <div className="flex justify-between text-sm"><span className="text-slate-400">Divers</span><span className="text-slate-800">{confirmedBooking?.numberOfPeople ?? divers}</span></div>
-                  <div className="flex justify-between text-sm"><span className="text-slate-400">Status</span><span className="text-slate-800 capitalize">{confirmedBooking?.status ?? "pending"}</span></div>
+                  <div className="flex justify-between text-sm"><span className="text-slate-400">Status</span><span className="text-slate-800 capitalize">{confirmedPayment?.status ?? confirmedBooking?.status ?? "pending"}</span></div>
                   <div className="flex justify-between text-sm pt-2 border-t border-slate-200"><span className="text-slate-400">Total</span><span className="font-bold text-teal-600 text-lg">SAR {Number(confirmedBooking?.totalPrice ?? total).toLocaleString()}</span></div>
                 </div>
                 <div className="flex gap-3">

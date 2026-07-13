@@ -10,6 +10,7 @@ import { CourseDetail } from "./pages/CourseDetail";
 import { CityCatalog } from "./pages/CityCatalog";
 import { About } from "./pages/About";
 import { Booking } from "./pages/Booking";
+import { PaymentCallback } from "./pages/PaymentCallback";
 import { BookingDetail } from "./pages/BookingDetail";
 import { Auth } from "./pages/Auth";
 import { AdminDashboard } from "./pages/AdminDashboard";
@@ -50,6 +51,14 @@ export const router = createBrowserRouter([
         ),
       },
       { path: "auth", Component: Auth },
+      {
+        path: "payment/callback",
+        element: (
+          <ProtectedRoute>
+            <PaymentCallback />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: "admin",
         element: (
