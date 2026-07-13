@@ -260,8 +260,11 @@ export async function getCenterById(id: number) {
   };
 }
 
-export async function getTripById(id: number) {
-  const trip = await apiRequest<ApiTrip & { reviews?: ApiReview[] }>(`/trips/${id}`);
+export async function getTripById(id: number, token?: string | null) {
+  const trip = await apiRequest<ApiTrip & { reviews?: ApiReview[] }>(
+    `/trips/${id}`,
+    { token },
+  );
   return {
     trip: toTrip(trip),
     center: trip.center
@@ -275,9 +278,10 @@ export async function getTripById(id: number) {
   };
 }
 
-export async function getCourseById(id: number) {
+export async function getCourseById(id: number, token?: string | null) {
   const course = await apiRequest<ApiCourse & { reviews?: ApiReview[] }>(
     `/courses/${id}`,
+    { token },
   );
 
   return {
