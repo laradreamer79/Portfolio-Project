@@ -1,5 +1,7 @@
 import { apiRequest } from "./apiClient";
 
+export type BookingStatus = "pending" | "confirmed" | "cancelled";
+
 type ApiBookingListing = {
   id: number;
   title: string;
@@ -11,6 +13,7 @@ type ApiBookingListing = {
   scheduleDate?: string;
   startDate?: string;
   imageUrl?: string | null;
+  centerId?: number | null;
   center?: {
     id: number;
     name: string;
@@ -20,11 +23,12 @@ type ApiBookingListing = {
 
 export type ApiBooking = {
   id: number;
+  userId?: number;
   tripId?: number | null;
   courseId?: number | null;
   numberOfPeople: number;
   totalPrice: string | number;
-  status: string;
+  status: BookingStatus | string;
   createdAt?: string;
   trip?: ApiBookingListing | null;
   course?: ApiBookingListing | null;
@@ -50,6 +54,12 @@ export type BookingCard = {
   total: number;
   status: string;
   img: string;
+};
+
+export type CreateBookingPayload = {
+  tripId?: number;
+  courseId?: number;
+  numberOfPeople: number;
 };
 
 function formatDate(value?: string) {
@@ -85,8 +95,7 @@ export function toBookingCard(booking: ApiBooking): BookingCard {
 }
 
 export async function getMyBookings(token: string) {
-  const bookings = await apiRequest<ApiBooking[]>("/bookings/my", { token });
-  return bookings.map(toBookingCard);
+  return apiRequest<ApiBooking[]>("/bookings/my", { token });
 }
 
 export async function getAllBookings(token: string) {
@@ -95,14 +104,19 @@ export async function getAllBookings(token: string) {
 }
 
 export async function createBooking(
-  payload: { tripId?: number; courseId?: number; numberOfPeople: number },
+  payload: CreateBookingPayload,
   token: string,
 ) {
-  const booking = await apiRequest<ApiBooking>("/bookings", {
+  return apiRequest<ApiBooking>("/bookings", {
     method: "POST",
     body: payload,
     token,
   });
+}
 
-  return toBookingCard(booking);
+export function cancelBooking(id: number, token: string) {
+  return apiRequest<ApiBooking>(`/bookings/${id}/cancel`, {
+    method: "PATCH",
+    token,
+  });
 }

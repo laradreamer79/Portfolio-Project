@@ -106,7 +106,7 @@ export function Trips() {
                 experience={trip}
                 center={center}
                 onOpen={(selectedTrip) => navigate(`/trips/${selectedTrip.id}`)}
-                onBook={(selectedTrip) => navigate(`/booking/${selectedTrip.id}`)}
+                onBook={(selectedTrip) => navigate(`/booking/${selectedTrip.type}/${selectedTrip.id}`)}
                 onCenterSelect={(selectedCenter) => navigate(`/centers/${selectedCenter.id}`)}
               />
             );

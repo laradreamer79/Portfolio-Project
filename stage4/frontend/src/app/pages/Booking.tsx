@@ -1,57 +1,83 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import {
+  CheckCircle,
+  ChevronLeft,
+  CreditCard,
+  Lock,
+  Calendar,
+  Waves,
+  Clock,
+  Users,
+  MapPin,
+  AlertTriangle,
+} from "lucide-react";
 import type { Center, Trip } from "../data";
-import { getCourseById, getTripById } from "../lib/catalogService";
-import { createBooking } from "../lib/bookingService";
+import { getTripById, getCourseById, isPastExperience } from "../lib/catalogService";
+import { createBooking, type ApiBooking } from "../lib/bookingService";
+import { ApiError } from "../lib/apiClient";
 import { useAuth } from "../hooks/useAuth";
-import { CheckCircle, ChevronLeft, CreditCard, Lock, Calendar, Waves, Clock, Users, MapPin } from "lucide-react";
 
 type Step = "details" | "payment" | "success";
+type ExperienceType = "trip" | "course";
+
+function isExperienceType(value: string | undefined): value is ExperienceType {
+  return value === "trip" || value === "course";
+}
 
 export function Booking() {
-  const { tripId } = useParams();
+  const { type, id } = useParams();
   const navigate = useNavigate();
   const { token } = useAuth();
-  const [trip, setTrip] = useState<Trip | null>(null);
+
+  const [experience, setExperience] = useState<Trip | null>(null);
   const [center, setCenter] = useState<Center | undefined>();
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const [step, setStep] = useState<Step>("details");
   const [divers, setDivers] = useState(1);
-  const [form, setForm] = useState({ name: "", email: "", phone: "", date: "", notes: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", notes: "" });
   const [payment, setPayment] = useState({ card: "", expiry: "", cvv: "", holder: "" });
-  const [bookingRef] = useState(`OYS-${Math.random().toString(36).slice(2, 8).toUpperCase()}`);
-  const [isBooking, setIsBooking] = useState(false);
-  const [bookingError, setBookingError] = useState<string | null>(null);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [confirmedBooking, setConfirmedBooking] = useState<ApiBooking | null>(null);
+
+  const experienceType: ExperienceType | undefined = isExperienceType(type) ? type : undefined;
+  const experienceId = Number(id);
 
   useEffect(() => {
-    const id = Number(tripId);
-
-    if (!Number.isInteger(id)) {
+    if (!experienceType || !Number.isInteger(experienceId)) {
+      setLoadError("This booking link is invalid.");
       setLoading(false);
       return;
     }
 
     let active = true;
     setLoading(true);
+    setLoadError(null);
 
-    getTripById(id, token)
-      .catch(() => getCourseById(id, token))
+    const request =
+      experienceType === "course" ? getCourseById(experienceId) : getTripById(experienceId);
+
+    request
       .then((data) => {
         if (!active) return;
-
-        if ("trip" in data) {
-          setTrip(data.trip);
+        if (experienceType === "course" && "course" in data) {
+          setExperience(data.course);
           setCenter(data.center);
-        } else {
-          setTrip(data.course);
+        } else if (experienceType === "trip" && "trip" in data) {
+          setExperience(data.trip);
           setCenter(data.center);
         }
       })
-      .catch(() => {
+      .catch((err: unknown) => {
         if (!active) return;
-        setTrip(null);
-        setCenter(undefined);
+        setLoadError(
+          err instanceof Error ? err.message : "Unable to load this listing.",
+        );
+        setExperience(null);
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -60,51 +86,67 @@ export function Booking() {
     return () => {
       active = false;
     };
-  }, [tripId, token]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [experienceType, experienceId]);
 
   if (loading) {
-    return <div className="flex items-center justify-center h-96 text-slate-400">Loading booking...</div>;
+    return <div className="flex items-center justify-center h-96 text-slate-400">Loading booking details...</div>;
   }
 
-  if (!trip) return (
-    <div className="flex flex-col items-center justify-center h-96 gap-4">
-      <p className="text-slate-400">Listing not found.</p>
-      <button onClick={() => navigate("/trips")} className="text-teal-600 text-sm font-medium">← Back to Trips</button>
-    </div>
-  );
+  if (loadError || !experience || !experienceType) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96 gap-4">
+        <p className="text-slate-400">{loadError ?? "Listing not found."}</p>
+        <button onClick={() => navigate("/trips")} className="text-teal-600 text-sm font-medium">
+          ← Back to Trips
+        </button>
+      </div>
+    );
+  }
 
+  const trip = experience;
+  const past = isPastExperience(trip);
   const total = trip.price * divers;
-  const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setForm((f) => ({ ...f, [k]: e.target.value }));
-  const setPay = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) => setPayment((p) => ({ ...p, [k]: e.target.value }));
-
-  const confirmBooking = async () => {
-    if (!token) {
-      setBookingError("Please sign in before booking.");
-      return;
-    }
-
-    if (!payment.card || !payment.expiry || !payment.cvv || !payment.holder) return;
-
-    setIsBooking(true);
-    setBookingError(null);
-
-    try {
-      await createBooking(
-        trip.type === "course"
-          ? { courseId: trip.id, numberOfPeople: divers }
-          : { tripId: trip.id, numberOfPeople: divers },
-        token,
-      );
-      setStep("success");
-    } catch (err) {
-      setBookingError(err instanceof Error ? err.message : "Unable to create booking.");
-    } finally {
-      setIsBooking(false);
-    }
-  };
+  const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setForm((f) => ({ ...f, [k]: e.target.value }));
+  const setPay = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setPayment((p) => ({ ...p, [k]: e.target.value }));
 
   const steps = ["details", "payment", "success"];
   const stepIdx = steps.indexOf(step);
+
+  async function handlePay() {
+    if (isSubmitting) return; // guards against duplicate submissions
+    if (!token) {
+      navigate("/auth", { state: { from: `/booking/${experienceType}/${experienceId}` } });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const booking = await createBooking(
+        {
+          ...(experienceType === "course"
+            ? { courseId: experienceId }
+            : { tripId: experienceId }),
+          numberOfPeople: divers,
+        },
+        token,
+      );
+      setConfirmedBooking(booking);
+      setStep("success");
+    } catch (err) {
+      setSubmitError(
+        err instanceof ApiError
+          ? err.message
+          : "Unable to complete this booking. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 py-8">
@@ -114,6 +156,19 @@ export function Booking() {
         </button>
 
         <h1 className="font-display text-4xl font-bold text-slate-900 tracking-wide mb-8">BOOKING REQUEST</h1>
+
+        {past && step !== "success" && (
+          <div className="mb-6 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-800">
+            <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+            <div className="text-sm">
+              <p className="font-semibold">This date has already passed.</p>
+              <p className="mt-1">
+                {trip.type === "course" ? "This course" : "This trip"} was scheduled for {trip.date}, which is in the
+                past, so it can no longer be booked. Please choose an upcoming listing instead.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Progress */}
         {step !== "success" && (
@@ -150,8 +205,8 @@ export function Booking() {
                     <input className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="+966 50 000 0000" value={form.phone} onChange={set("phone")} />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-slate-600 block mb-1.5">Preferred Date</label>
-                    <input type="date" className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-teal-400 transition-colors" value={form.date} onChange={set("date")} />
+                    <label className="text-sm font-medium text-slate-600 block mb-1.5">Scheduled Date</label>
+                    <input disabled className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-500 bg-slate-50" value={trip.date} readOnly />
                   </div>
                 </div>
                 <div>
@@ -167,7 +222,11 @@ export function Booking() {
                   <label className="text-sm font-medium text-slate-600 block mb-1.5">Special Requests / Notes</label>
                   <textarea rows={3} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors resize-none" placeholder="Certification level, equipment needs, accessibility requirements..." value={form.notes} onChange={set("notes")} />
                 </div>
-                <button onClick={() => form.name && form.email && form.phone && setStep("payment")} disabled={!form.name || !form.email || !form.phone} className="w-full bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                <button
+                  onClick={() => form.name && form.email && form.phone && setStep("payment")}
+                  disabled={!form.name || !form.email || !form.phone || past}
+                  className="w-full bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
                   Continue to Payment →
                 </button>
               </div>
@@ -179,6 +238,13 @@ export function Booking() {
                   <Lock className="w-4 h-4 text-teal-600" />
                   <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide">Secure Payment</h2>
                 </div>
+
+                {submitError && (
+                  <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {submitError}
+                  </div>
+                )}
+
                 <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                   <p className="text-xs text-slate-400 font-medium mb-1 uppercase tracking-widest">Card Number</p>
                   <div className="flex items-center gap-3">
@@ -202,19 +268,18 @@ export function Booking() {
                 </div>
                 <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-50 rounded-xl p-3 border border-slate-100">
                   <Lock className="w-3.5 h-3.5" />
-                  Your payment is encrypted and secured. We accept Visa, Mastercard, and Mada.
+                  Demo payment form — no card details are transmitted or charged. Confirming creates a real booking.
                 </div>
                 <div className="flex gap-3">
-                  <button onClick={() => setStep("details")} className="flex-1 border border-slate-200 text-slate-500 font-medium py-3 rounded-xl hover:border-slate-300 transition-colors text-sm">← Back</button>
-                  <button onClick={confirmBooking} disabled={!payment.card || !payment.expiry || !payment.cvv || !payment.holder || isBooking} className="flex-1 bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-sm">
-                    {isBooking ? "Creating booking..." : `Pay SAR ${total.toLocaleString()}`}
+                  <button onClick={() => setStep("details")} disabled={isSubmitting} className="flex-1 border border-slate-200 text-slate-500 font-medium py-3 rounded-xl hover:border-slate-300 transition-colors text-sm disabled:opacity-40">← Back</button>
+                  <button
+                    onClick={handlePay}
+                    disabled={!payment.card || !payment.expiry || !payment.cvv || !payment.holder || isSubmitting || past}
+                    className="flex-1 bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-sm"
+                  >
+                    {isSubmitting ? "Processing..." : `Pay SAR ${total.toLocaleString()}`}
                   </button>
                 </div>
-                {bookingError && (
-                  <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
-                    {bookingError}
-                  </div>
-                )}
               </div>
             )}
 
@@ -228,15 +293,16 @@ export function Booking() {
                   <p className="text-slate-400 mt-2">A confirmation has been sent to {form.email}</p>
                 </div>
                 <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100 text-left space-y-2">
-                  <div className="flex justify-between text-sm"><span className="text-slate-400">Booking Reference</span><span className="font-mono font-bold text-teal-600">{bookingRef}</span></div>
-                  <div className="flex justify-between text-sm"><span className="text-slate-400">Listing</span><span className="text-slate-800 font-medium">{trip.title}</span></div>
-                  <div className="flex justify-between text-sm"><span className="text-slate-400">Provider</span><span className="text-slate-800">{center?.name ?? "Independent Instructor"}</span></div>
-                  <div className="flex justify-between text-sm"><span className="text-slate-400">Divers</span><span className="text-slate-800">{divers}</span></div>
-                  <div className="flex justify-between text-sm pt-2 border-t border-slate-200"><span className="text-slate-400">Total Paid</span><span className="font-bold text-teal-600 text-lg">SAR {total.toLocaleString()}</span></div>
+                  <div className="flex justify-between text-sm"><span className="text-slate-400">Booking Reference</span><span className="font-mono font-bold text-teal-600">OYS-{String(confirmedBooking?.id ?? "").padStart(6, "0")}</span></div>
+                  <div className="flex justify-between text-sm"><span className="text-slate-400">{trip.type === "course" ? "Course" : "Trip"}</span><span className="text-slate-800 font-medium">{trip.title}</span></div>
+                  {center && <div className="flex justify-between text-sm"><span className="text-slate-400">Center</span><span className="text-slate-800">{center.name}</span></div>}
+                  <div className="flex justify-between text-sm"><span className="text-slate-400">Divers</span><span className="text-slate-800">{confirmedBooking?.numberOfPeople ?? divers}</span></div>
+                  <div className="flex justify-between text-sm"><span className="text-slate-400">Status</span><span className="text-slate-800 capitalize">{confirmedBooking?.status ?? "pending"}</span></div>
+                  <div className="flex justify-between text-sm pt-2 border-t border-slate-200"><span className="text-slate-400">Total</span><span className="font-bold text-teal-600 text-lg">SAR {Number(confirmedBooking?.totalPrice ?? total).toLocaleString()}</span></div>
                 </div>
                 <div className="flex gap-3">
                   <button onClick={() => navigate("/")} className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl hover:border-slate-300 transition-colors text-sm">Back to Home</button>
-                  <button onClick={() => navigate("/trips")} className="flex-1 bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors text-sm">Browse More Trips</button>
+                  <button onClick={() => navigate("/dashboard")} className="flex-1 bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors text-sm">View My Bookings</button>
                 </div>
               </div>
             )}
@@ -254,9 +320,11 @@ export function Booking() {
                     {trip.type === "course" ? "Course" : "Trip"}
                   </span>
                   <h3 className="font-display text-xl font-bold text-slate-900 tracking-wide mt-1">{trip.title}</h3>
-                  <p className="text-slate-400 text-xs flex items-center gap-1 mt-1 mb-4">
-                    <MapPin className="w-3 h-3 text-teal-500" />{center ? `${center.name} · ${center.city}` : "Independent Instructor"}
-                  </p>
+                  {center && (
+                    <p className="text-slate-400 text-xs flex items-center gap-1 mt-1 mb-4">
+                      <MapPin className="w-3 h-3 text-teal-500" />{center.name} · {center.city}
+                    </p>
+                  )}
                   <div className="space-y-2 text-sm text-slate-600">
                     <div className="flex items-center gap-2"><Clock className="w-3.5 h-3.5 text-slate-300" />{trip.duration}</div>
                     <div className="flex items-center gap-2"><Waves className="w-3.5 h-3.5 text-slate-300" />{trip.depth}</div>

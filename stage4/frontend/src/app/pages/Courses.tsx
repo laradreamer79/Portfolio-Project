@@ -114,7 +114,7 @@ export function Courses() {
                   experience={course}
                   center={center}
                   onOpen={(selectedCourse) => navigate(`/courses/${selectedCourse.id}`)}
-                  onBook={(selectedCourse) => navigate(`/booking/${selectedCourse.id}`)}
+                  onBook={(selectedCourse) => navigate(`/booking/${selectedCourse.type}/${selectedCourse.id}`)}
                   onCenterSelect={(selectedCenter) => navigate(`/centers/${selectedCenter.id}`)}
                 />
               );
