@@ -2,7 +2,17 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Center, Trip } from "../data";
 import { Plus, Star, Users, TrendingUp, CheckCircle, Clock, X, Edit3, Trash2, Eye } from "lucide-react";
-import { createCourse, createTrip, getCenters, getCourses, getTrips } from "../lib/catalogService";
+import {
+  createCourse,
+  createTrip,
+  deleteCourse,
+  deleteTrip,
+  getCenters,
+  getCourses,
+  getTrips,
+  updateCourse,
+  updateTrip,
+} from "../lib/catalogService";
 import { useAuth } from "../hooks/useAuth";
 
 type BookingRow = {
@@ -44,6 +54,7 @@ export function CenterDashboard() {
   const [postError, setPostError] = useState<string | null>(null);
   const [isPosting, setIsPosting] = useState(false);
   const [image, setImage] = useState<File | null>(null);
+  const [editingListing, setEditingListing] = useState<Trip | null>(null);
 
   useEffect(() => {
     if (!token || !user) return;
@@ -78,12 +89,52 @@ export function CenterDashboard() {
 
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
+  const listingRoute = (listing: Trip) =>
+    listing.type === "course" ? `/courses/${listing.id}` : `/trips/${listing.id}`;
+
+  const durationLabel = (duration: string) => {
+    if (duration.includes("4")) return "Half Day";
+    if (duration.includes("3")) return "Evening";
+    if (duration.includes("24")) return "Multi-Day";
+    return "Full Day";
+  };
+
+  const openCreateModal = () => {
+    setEditingListing(null);
+    setForm(EMPTY_FORM);
+    setImage(null);
+    setPostDone(false);
+    setPostError(null);
+    setShowPostModal(true);
+  };
+
+  const openEditModal = (listing: Trip) => {
+    setEditingListing(listing);
+    setForm({
+      title: listing.title,
+      type: listing.type,
+      level: listing.level,
+      price: String(listing.price),
+      duration: durationLabel(listing.duration),
+      depth: listing.depth === "Training" || listing.depth === "Varies" ? "" : listing.depth,
+      date: listing.rawDate ? listing.rawDate.slice(0, 10) : "",
+      slots: listing.slots ? String(listing.slots) : "",
+      description: listing.description,
+    });
+    setImage(null);
+    setPostDone(false);
+    setPostError(null);
+    setShowPostModal(true);
+  };
+
   const closePostModal = () => {
     setShowPostModal(false);
     setPostDone(false);
     setPostError(null);
     setIsPosting(false);
     setImage(null);
+    setEditingListing(null);
+    setForm(EMPTY_FORM);
   };
 
   const durationHours = (duration: string) => {
@@ -113,7 +164,7 @@ export function CenterDashboard() {
   const handlePostSubmit = async () => {
     if (!form.title || !form.price) return;
 
-    if (!image) {
+    if (!editingListing && !image) {
       setPostError("Upload an image before publishing.");
       return;
     }
@@ -139,6 +190,48 @@ export function CenterDashboard() {
         throw new Error("Enter a valid number of spots.");
       }
 
+      if (editingListing) {
+        const updatedListing =
+          editingListing.type === "course"
+            ? await updateCourse(
+                editingListing.id,
+                {
+                  title: form.title,
+                  description: form.description || undefined,
+                  level: form.level,
+                  price,
+                  startDate: date,
+                  image,
+                },
+                token,
+              )
+            : await updateTrip(
+                editingListing.id,
+                {
+                  title: form.title,
+                  description: form.description || undefined,
+                  durationHours: durationHours(form.duration),
+                  difficultyLevel: difficultyLevel(form.level),
+                  pricePerPerson: price,
+                  maxCapacity: slots,
+                  scheduleDate: date,
+                  image,
+                },
+                token,
+              );
+
+        setListings((current) =>
+          current.map((listing) =>
+            listing.id === editingListing.id && listing.type === editingListing.type
+              ? updatedListing
+              : listing,
+          ),
+        );
+        closePostModal();
+        setActiveTab("trips");
+        return;
+      }
+
       const createdListing =
         form.type === "course"
           ? await createCourse(
@@ -148,7 +241,7 @@ export function CenterDashboard() {
                 level: form.level,
                 price,
                 startDate: date,
-                image,
+                image: image!,
               },
               token,
             )
@@ -161,7 +254,7 @@ export function CenterDashboard() {
                 pricePerPerson: price,
                 maxCapacity: slots,
                 scheduleDate: date,
-                image,
+                image: image!,
               },
               token,
             );
@@ -181,6 +274,36 @@ export function CenterDashboard() {
     }
   };
 
+  const handleDeleteListing = async (listing: Trip) => {
+    if (!token) {
+      setPostError("You need to sign in again before deleting.");
+      return;
+    }
+
+    const confirmed = window.confirm(`Delete "${listing.title}"? This cannot be undone.`);
+    if (!confirmed) return;
+
+    setPostError(null);
+
+    try {
+      if (listing.type === "course") {
+        await deleteCourse(listing.id, token);
+      } else {
+        await deleteTrip(listing.id, token);
+      }
+
+      setListings((current) =>
+        current.filter((item) => item.id !== listing.id || item.type !== listing.type),
+      );
+    } catch (err) {
+      window.alert(
+        err instanceof Error
+          ? err.message
+          : "Unable to delete this listing. Please try again.",
+      );
+    }
+  };
+
   const revenue = bookings.filter((b) => b.status === "confirmed").reduce((sum, b) => sum + b.total, 0);
   const pending = bookings.filter((b) => b.status === "pending").length;
 
@@ -194,7 +317,7 @@ export function CenterDashboard() {
             <h1 className="font-display text-3xl font-bold text-slate-900 tracking-wide">{center?.name ?? "Diving Center Dashboard"}</h1>
             <p className="text-slate-400 text-sm mt-0.5">{center ? `${center.city} · Since ${center.since}` : "Connect your center profile to manage listings"}</p>
           </div>
-          <button onClick={() => setShowPostModal(true)} className="bg-teal-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-teal-600 transition-colors flex items-center gap-2 text-sm">
+          <button onClick={openCreateModal} className="bg-teal-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-teal-600 transition-colors flex items-center gap-2 text-sm">
             <Plus className="w-4 h-4" /> Post Trip / Course
           </button>
         </div>
@@ -354,7 +477,7 @@ export function CenterDashboard() {
           <div>
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide">MY TRIPS & COURSES</h2>
-              <button onClick={() => setShowPostModal(true)} className="bg-teal-500 text-white font-semibold px-4 py-2 rounded-xl hover:bg-teal-600 transition-colors flex items-center gap-1.5 text-sm">
+              <button onClick={openCreateModal} className="bg-teal-500 text-white font-semibold px-4 py-2 rounded-xl hover:bg-teal-600 transition-colors flex items-center gap-1.5 text-sm">
                 <Plus className="w-4 h-4" /> Add Trip / Course
               </button>
             </div>
@@ -373,9 +496,9 @@ export function CenterDashboard() {
                     <p className="text-xs text-slate-400">{trip.slots} spots available</p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <button onClick={() => navigate(`/booking/${trip.type}/${trip.id}`)} className="p-2 text-slate-400 hover:text-teal-600 rounded-lg hover:bg-teal-50 transition-colors"><Eye className="w-4 h-4" /></button>
-                    <button className="p-2 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"><Edit3 className="w-4 h-4" /></button>
-                    <button className="p-2 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"><Trash2 className="w-4 h-4" /></button>
+                    <button onClick={() => navigate(listingRoute(trip))} className="p-2 text-slate-400 hover:text-teal-600 rounded-lg hover:bg-teal-50 transition-colors"><Eye className="w-4 h-4" /></button>
+                    <button onClick={() => openEditModal(trip)} className="p-2 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"><Edit3 className="w-4 h-4" /></button>
+                    <button onClick={() => handleDeleteListing(trip)} className="p-2 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"><Trash2 className="w-4 h-4" /></button>
                   </div>
                 </div>
               ))}
@@ -417,7 +540,9 @@ export function CenterDashboard() {
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closePostModal} />
           <div className="relative bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="sticky top-0 bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between rounded-t-2xl">
-              <h3 className="font-display text-xl font-bold text-slate-900 tracking-wide">Post Trip / Course</h3>
+              <h3 className="font-display text-xl font-bold text-slate-900 tracking-wide">
+                {editingListing ? "Edit Trip / Course" : "Post Trip / Course"}
+              </h3>
               <button onClick={closePostModal} className="text-slate-400 hover:text-slate-600 transition-colors"><X className="w-5 h-5" /></button>
             </div>
             {postDone ? (
@@ -440,9 +565,12 @@ export function CenterDashboard() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Type</label>
-                    <select className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-teal-400 bg-white" value={form.type} onChange={set("type")}>
+                    <select className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-teal-400 bg-white disabled:bg-slate-50 disabled:text-slate-400" value={form.type} onChange={set("type")} disabled={Boolean(editingListing)}>
                       <option value="trip">Trip</option><option value="course">Course</option>
                     </select>
+                    {editingListing && (
+                      <p className="mt-1 text-xs text-slate-400">Type cannot be changed while editing.</p>
+                    )}
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Level</label>
@@ -478,7 +606,9 @@ export function CenterDashboard() {
                   <textarea rows={3} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 resize-none" placeholder="Describe the dive site, conditions, and what participants will experience..." value={form.description} onChange={set("description")} />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-600 block mb-1.5">Image *</label>
+                  <label className="text-sm font-medium text-slate-600 block mb-1.5">
+                    Image {editingListing ? "(optional)" : "*"}
+                  </label>
                   <input
                     type="file"
                     accept="image/*"
@@ -492,16 +622,22 @@ export function CenterDashboard() {
                   )}
                   {!image && (
                     <p className="mt-1.5 text-xs text-slate-400">
-                      Required for publishing.
+                      {editingListing
+                        ? "Leave empty to keep the current image."
+                        : "Required for publishing."}
                     </p>
                   )}
                 </div>
-                <button onClick={handlePostSubmit} disabled={!form.title || !form.price || !image || isPosting} className="w-full bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                <button onClick={handlePostSubmit} disabled={!form.title || !form.price || (!editingListing && !image) || isPosting} className="w-full bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
                   {isPosting
-                    ? "Publishing..."
-                    : form.type === "course"
-                      ? "Publish Course"
-                      : "Publish Trip"}
+                    ? editingListing
+                      ? "Saving..."
+                      : "Publishing..."
+                    : editingListing
+                      ? "Save Changes"
+                      : form.type === "course"
+                        ? "Publish Course"
+                        : "Publish Trip"}
                 </button>
                 {postError && (
                   <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
