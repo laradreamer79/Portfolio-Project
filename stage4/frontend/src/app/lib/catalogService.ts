@@ -90,6 +90,10 @@ export type CreateTripPayload = {
   image: File;
 };
 
+export type UpdateTripPayload = Partial<Omit<CreateTripPayload, "image">> & {
+  image?: File | null;
+};
+
 export type CreateCoursePayload = {
   title: string;
   description?: string;
@@ -97,6 +101,10 @@ export type CreateCoursePayload = {
   price: number;
   startDate: string;
   image: File;
+};
+
+export type UpdateCoursePayload = Partial<Omit<CreateCoursePayload, "image">> & {
+  image?: File | null;
 };
 
 function queryString(filters: CatalogFilters) {
@@ -337,9 +345,53 @@ export async function createCourse(
   return toCourse(course);
 }
 
+export async function updateTrip(
+  id: number,
+  payload: UpdateTripPayload,
+  token: string,
+) {
+  const { image, ...data } = payload;
+  const trip = await apiRequest<ApiTrip>(`/trips/${id}`, {
+    method: "PUT",
+    body: toCatalogFormData(data, image ?? undefined),
+    token,
+  });
+
+  return toTrip(trip);
+}
+
+export async function updateCourse(
+  id: number,
+  payload: UpdateCoursePayload,
+  token: string,
+) {
+  const { image, ...data } = payload;
+  const course = await apiRequest<ApiCourse>(`/courses/${id}`, {
+    method: "PUT",
+    body: toCatalogFormData(data, image ?? undefined),
+    token,
+  });
+
+  return toCourse(course);
+}
+
+export async function deleteTrip(id: number, token: string) {
+  await apiRequest(`/trips/${id}`, {
+    method: "DELETE",
+    token,
+  });
+}
+
+export async function deleteCourse(id: number, token: string) {
+  await apiRequest(`/courses/${id}`, {
+    method: "DELETE",
+    token,
+  });
+}
+
 function toCatalogFormData(
   data: Record<string, string | number | undefined>,
-  image: File,
+  image?: File,
 ) {
   const formData = new FormData();
 
@@ -349,6 +401,9 @@ function toCatalogFormData(
     }
   });
 
-  formData.append("image", image);
+  if (image) {
+    formData.append("image", image);
+  }
+
   return formData;
 }
