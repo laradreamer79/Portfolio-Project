@@ -15,6 +15,7 @@ import {
 import type { Center, Trip } from "../data";
 import { getTripById, getCourseById, isPastExperience } from "../lib/catalogService";
 import { createBooking, type ApiBooking } from "../lib/bookingService";
+import { createPayment, type ApiPayment } from "../lib/paymentsService";
 import { ApiError } from "../lib/apiClient";
 import { useAuth } from "../hooks/useAuth";
 
@@ -43,6 +44,7 @@ export function Booking() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [confirmedBooking, setConfirmedBooking] = useState<ApiBooking | null>(null);
+  const [confirmedPayment, setConfirmedPayment] = useState<ApiPayment | null>(null);
 
   const experienceType: ExperienceType | undefined = isExperienceType(type) ? type : undefined;
   const experienceId = Number(id);
@@ -135,7 +137,26 @@ export function Booking() {
         },
         token,
       );
+
+      const paymentResult = await createPayment(
+        {
+          bookingId: booking.id,
+          paymentMethod: "creditcard",
+        },
+        token,
+      );
+
+      if (paymentResult.transactionUrl) {
+        sessionStorage.setItem(
+          "oyster_pending_payment_id",
+          String(paymentResult.payment.id),
+        );
+        window.location.assign(paymentResult.transactionUrl);
+        return;
+      }
+
       setConfirmedBooking(booking);
+      setConfirmedPayment(paymentResult.payment);
       setStep("success");
     } catch (err) {
       setSubmitError(
@@ -268,7 +289,7 @@ export function Booking() {
                 </div>
                 <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-50 rounded-xl p-3 border border-slate-100">
                   <Lock className="w-3.5 h-3.5" />
-                  Demo payment form — no card details are transmitted or charged. Confirming creates a real booking.
+                  Demo payment form — card details are not sent from this form. Confirming creates a real booking and payment record.
                 </div>
                 <div className="flex gap-3">
                   <button onClick={() => setStep("details")} disabled={isSubmitting} className="flex-1 border border-slate-200 text-slate-500 font-medium py-3 rounded-xl hover:border-slate-300 transition-colors text-sm disabled:opacity-40">← Back</button>
@@ -298,6 +319,7 @@ export function Booking() {
                   {center && <div className="flex justify-between text-sm"><span className="text-slate-400">Center</span><span className="text-slate-800">{center.name}</span></div>}
                   <div className="flex justify-between text-sm"><span className="text-slate-400">Divers</span><span className="text-slate-800">{confirmedBooking?.numberOfPeople ?? divers}</span></div>
                   <div className="flex justify-between text-sm"><span className="text-slate-400">Status</span><span className="text-slate-800 capitalize">{confirmedBooking?.status ?? "pending"}</span></div>
+                  <div className="flex justify-between text-sm"><span className="text-slate-400">Payment</span><span className="text-slate-800 capitalize">{confirmedPayment?.status ?? "pending"}</span></div>
                   <div className="flex justify-between text-sm pt-2 border-t border-slate-200"><span className="text-slate-400">Total</span><span className="font-bold text-teal-600 text-lg">SAR {Number(confirmedBooking?.totalPrice ?? total).toLocaleString()}</span></div>
                 </div>
                 <div className="flex gap-3">

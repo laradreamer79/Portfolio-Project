@@ -11,6 +11,7 @@ import { CityCatalog } from "./pages/CityCatalog";
 import { About } from "./pages/About";
 import { Booking } from "./pages/Booking";
 import { BookingDetail } from "./pages/BookingDetail";
+import { PaymentCallback } from "./pages/PaymentCallback";
 import { Auth } from "./pages/Auth";
 import { AdminDashboard } from "./pages/AdminDashboard";
 import { CenterDashboard } from "./pages/CenterDashboard";
@@ -46,6 +47,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <BookingDetail />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "payments/callback",
+        element: (
+          <ProtectedRoute>
+            <PaymentCallback />
           </ProtectedRoute>
         ),
       },
