@@ -1,42 +1,117 @@
 # Stage 4 Test Plan
 
-## Objectives
+## Objective
 
-- Verify Must Have user flows.
-- Prevent regressions when feature branches are merged.
-- Validate authentication and role authorization.
-- Confirm frontend, backend, database, and payment integration.
+Verify that all implemented Stage 4 features work as expected across frontend pages, backend APIs, authentication, role access, catalog posting, image upload, bookings, reviews, payments, and admin functionality.
 
-## Test Levels
+## Test Environment
 
-| Level | Tool | Owner | Purpose |
-|---|---|---|---|
-| Static checks | TypeScript, lint | Feature owner | Catch type and code-quality problems |
-| Frontend component tests | Vitest, React Testing Library | Frontend owner | Test user-facing component behavior |
-| Backend API tests | Vitest, Supertest | Backend owner | Test Express endpoints and errors |
-| Manual API tests | Postman | Backend owners and reviewer | Verify contracts and collect evidence |
-| End-to-end tests | Playwright | Project Manager / QA | Verify complete browser flows |
-| Acceptance testing | Browser and production environment | Team | Confirm sprint and release criteria |
+| Item | Value |
+| --- | --- |
+| Backend | Express, TypeScript, Prisma, PostgreSQL |
+| Frontend | React, Vite, TypeScript |
+| Base API URL | `http://localhost:3000` |
+| Frontend URL | `http://localhost:5173` |
+| API tool | Postman |
+| Database verification | Prisma Studio |
 
-## Critical Test Flows
+## Test Accounts
 
-1. Register, Login, Refresh, and Logout.
-2. Role-based redirects and protected routes.
-3. Browse centers, trips, and courses.
-4. Create and cancel a booking.
-5. Prevent overbooking.
-6. Complete or reject a payment.
-7. View User and Diving Center dashboard data.
-8. Perform authorized Admin operations.
+| Role | Email | Password |
+| --- | --- | --- |
+| Admin | `admin@example.com` | `123456` |
+| User | `user@example.com` | `123456` |
+| Instructor | `instructor@example.com` | `123456` |
+| Diving center | `divingcenter@example.com` | `123456` |
 
-## Pull Request Quality Gate
+## Required Test Record Fields
 
-- [ ] Acceptance criteria are satisfied.
-- [ ] Typecheck passes.
-- [ ] Build passes.
-- [ ] Lint passes where configured.
-- [ ] Relevant automated tests pass.
-- [ ] Postman evidence is provided for API changes.
-- [ ] No secrets are committed.
-- [ ] Documentation is updated.
-- [ ] At least one approving review is recorded.
+Each documented test should include:
+
+| Field | Description |
+| --- | --- |
+| Test name | Short name for the scenario |
+| Preconditions | Required user, token, data, or server state |
+| Steps | What was executed |
+| Expected result | Correct behavior |
+| Actual result | Observed behavior |
+| Status | Pass, Fail, or Blocked |
+| Evidence | Text note, command output note, Postman request name, or database confirmation |
+| Related issue/PR | Link or identifier when available |
+
+## Coverage Areas
+
+### Authentication
+
+- Register.
+- Login.
+- Logout.
+- Token storage.
+- Invalid credentials.
+- Role-based redirects.
+- Diver/user registration.
+- Instructor registration with license number.
+- Diving center registration with center details.
+
+### Catalog
+
+- Home page real data.
+- Centers page.
+- Trips page.
+- Courses page.
+- Detail pages.
+- Search/filter behavior.
+- Public visibility for approved records only.
+- Owner/admin visibility for allowed non-approved records.
+
+### Posting Trips and Courses
+
+- Instructor dashboard add trip.
+- Instructor dashboard add course.
+- Diving center dashboard add trip.
+- Diving center dashboard add course.
+- Required image upload.
+- Listing appears after posting.
+
+### Image Upload
+
+- Required image validation.
+- Successful Cloudinary upload.
+- Uploaded image appears in catalog/detail pages.
+- Invalid file type rejected.
+- File over 5MB rejected.
+
+### Booking and Review APIs
+
+- Create booking.
+- Prevent invalid booking.
+- Create review.
+- Filter reviews by center/trip/course.
+- Validation errors.
+
+### Payment API
+
+- Mock payment mode.
+- Create payment.
+- Get payment by ID.
+- Admin list payments.
+- Webhook behavior.
+- Missing/invalid payment config errors.
+
+### Admin
+
+- Admin-only access.
+- Non-admin blocked.
+- Centers, reviews, bookings, and payment data where applicable.
+
+## Completion Criteria
+
+Stage 4 testing is complete when:
+
+- Core frontend routes load without blank screens.
+- Authentication and role-specific flows pass.
+- Catalog APIs return expected data and enforce visibility rules.
+- Instructor and diving center posting flows pass.
+- Image upload validation and Cloudinary upload behavior are documented.
+- Booking, review, payment, and admin APIs have pass/fail notes.
+- Evidence notes are recorded under `stage4/docs/testing/evidence`.
