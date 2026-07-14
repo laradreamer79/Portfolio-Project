@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import type { Center, Trip } from "../data";
 import { getTripById, getCourseById, isPastExperience } from "../lib/catalogService";
-import { createBooking, type ApiBooking } from "../lib/bookingsService";
+import { createBooking, type ApiBooking } from "../lib/bookingService";
 import { ApiError } from "../lib/apiClient";
 import { useAuth } from "../hooks/useAuth";
 

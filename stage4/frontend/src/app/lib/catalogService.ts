@@ -99,38 +99,6 @@ export type CreateCoursePayload = {
   image: File;
 };
 
-// ---- Fallback images (used when the backend has no imageUrl for a record) ----
-const FALLBACK_CENTER_IMAGES = [
-  "https://images.unsplash.com/photo-1544552866-d3ed42536cfd?w=800&h=600&fit=crop&auto=format",
-  "https://images.unsplash.com/photo-1546026423-cc4642628d2b?w=800&h=600&fit=crop&auto=format",
-  "https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=800&h=600&fit=crop&auto=format",
-];
-
-const FALLBACK_TRIP_IMAGES = [
-  "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=600&fit=crop&auto=format",
-  "https://images.unsplash.com/photo-1551244072-5d12893278ab?w=800&h=600&fit=crop&auto=format",
-  "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&h=600&fit=crop&auto=format",
-];
-
-const FALLBACK_COURSE_IMAGES = [
-  "https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?w=800&h=600&fit=crop&auto=format",
-  "https://images.unsplash.com/photo-1553969923-bb45169a705d?w=800&h=600&fit=crop&auto=format",
-  "https://images.unsplash.com/photo-1560275619-4662e36fa65c?w=800&h=600&fit=crop&auto=format",
-];
-
-function pickFallback(images: string[], id: number) {
-  const index = Math.abs(id) % images.length;
-  return images[index];
-}
-
-function resolveImage(
-  imageUrl: string | null | undefined,
-  id: number,
-  images: string[],
-) {
-  return imageUrl && imageUrl.trim() !== "" ? imageUrl : pickFallback(images, id);
-}
-
 function queryString(filters: CatalogFilters) {
   const params = new URLSearchParams();
 
@@ -162,7 +130,6 @@ function formatLevel(value: string) {
 }
 
 export function toCenter(center: ApiCenter): Center {
-  const img = resolveImage(center.imageUrl, center.id, FALLBACK_CENTER_IMAGES);
   return {
     id: center.id,
     name: center.name,
@@ -177,8 +144,8 @@ export function toCenter(center: ApiCenter): Center {
     phone: center.contactPhone ?? "Not provided",
     email: center.contactEmail ?? "Not provided",
     address: center.address ?? center.city,
-    img,
-    gallery: [img],
+    img: center.imageUrl ?? "",
+    gallery: center.imageUrl ? [center.imageUrl] : [],
     verified: center.status === "approved",
     since: center.createdAt ? new Date(center.createdAt).getFullYear() : 2026,
     specialties: ["Diving", "Trips", "Courses"],
@@ -199,7 +166,7 @@ export function toTrip(trip: ApiTrip): Trip {
     rawDate: trip.scheduleDate,
     slots: trip.maxCapacity,
     description: trip.description ?? "Dive trip details will be shared by the provider.",
-    img: resolveImage(trip.imageUrl, trip.id, FALLBACK_TRIP_IMAGES),
+    img: trip.imageUrl ?? "",
   };
 }
 
@@ -217,7 +184,7 @@ export function toCourse(course: ApiCourse): Trip {
     rawDate: course.startDate,
     slots: 12,
     description: course.description ?? "Course details will be shared by the provider.",
-    img: resolveImage(course.imageUrl, course.id, FALLBACK_COURSE_IMAGES),
+    img: course.imageUrl ?? "",
   };
 }
 

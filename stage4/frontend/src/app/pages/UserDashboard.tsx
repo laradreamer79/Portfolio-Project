@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Calendar, Clock, MapPin, Waves, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { getMyBookings, cancelBooking, type ApiBooking } from "../lib/bookingsService";
+import { getMyBookings, cancelBooking, type ApiBooking } from "../lib/bookingService";
 import { ApiError } from "../lib/apiClient";
 import { useAuth } from "../hooks/useAuth";
 

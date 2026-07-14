@@ -10,7 +10,7 @@ import {
   Waves,
   X,
 } from "lucide-react";
-import { getMyBookings, cancelBooking, type ApiBooking } from "../lib/bookingsService";
+import { getMyBookings, cancelBooking, type ApiBooking } from "../lib/bookingService";
 import { ApiError } from "../lib/apiClient";
 import { useAuth } from "../hooks/useAuth";
 
