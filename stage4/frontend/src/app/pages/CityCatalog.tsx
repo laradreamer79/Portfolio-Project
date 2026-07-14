@@ -157,7 +157,7 @@ export function CityCatalog() {
                     )
                   }
                   onBook={(selectedExperience) =>
-                    navigate(`/booking/${selectedExperience.id}`)
+                    navigate(`/booking/${selectedExperience.type}/${selectedExperience.id}`)
                   }
                   onCenterSelect={(selectedCenter) =>
                     navigate(`/centers/${selectedCenter.id}`)

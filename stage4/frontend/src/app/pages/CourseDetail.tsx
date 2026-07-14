@@ -5,7 +5,9 @@ import {
   ChevronLeft, Star, MapPin, Clock, Waves, Users, Calendar, 
   Shield, CheckCircle, AlertCircle, Phone, Mail, Award, BookOpen, GraduationCap
 } from "lucide-react";
-import { getCourseById, getCourses } from "../lib/catalogService";
+import { getCourseById, getCourses, toReview } from "../lib/catalogService";
+import { submitReview } from "../lib/reviewsService";
+import { ReviewForm } from "../components/ReviewForm";
 import { useAuth } from "../hooks/useAuth";
 
 export function CourseDetail() {
@@ -302,6 +304,15 @@ export function CourseDetail() {
                   <p className="text-slate-400 text-sm mt-1">Be the first to share your experience!</p>
                 </div>
               )}
+
+              <ReviewForm
+                label={course.title}
+                onSubmit={async (rating, comment) => {
+                  if (!token) return;
+                  const created = await submitReview({ courseId: course.id, rating, comment }, token);
+                  setCourseReviews((prev) => [toReview(created), ...prev]);
+                }}
+              />
             </div>
 
             {/* Similar Courses */}
@@ -370,7 +381,7 @@ export function CourseDetail() {
               </div>
 
               <button
-                onClick={() => navigate(`/booking/${course.id}`)}
+                onClick={() => navigate(`/booking/course/${course.id}`)}
                 className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-4 rounded-xl transition-colors mb-4"
               >
                 Reserve Your Spot

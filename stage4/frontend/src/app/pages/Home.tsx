@@ -186,7 +186,7 @@ export function Home() {
                   center={center}
                   variant="featured"
                   onOpen={(selectedTrip) => navigate(`/trips/${selectedTrip.id}`)}
-                  onBook={(selectedTrip) => navigate(`/booking/${selectedTrip.id}`)}
+                  onBook={(selectedTrip) => navigate(`/booking/${selectedTrip.type}/${selectedTrip.id}`)}
                   onCenterSelect={(selectedCenter) => navigate(`/centers/${selectedCenter.id}`)}
                 />
               );
@@ -225,7 +225,7 @@ export function Home() {
                   center={center}
                   variant="featured"
                   onOpen={(selectedCourse) => navigate(`/courses/${selectedCourse.id}`)}
-                  onBook={(selectedCourse) => navigate(`/booking/${selectedCourse.id}`)}
+                  onBook={(selectedCourse) => navigate(`/booking/${selectedCourse.type}/${selectedCourse.id}`)}
                   onCenterSelect={(selectedCenter) => navigate(`/centers/${selectedCenter.id}`)}
                 />
               );

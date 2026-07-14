@@ -2,7 +2,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { MapPin, Star, Shield, Phone, Mail, Clock, Waves, Users, ArrowRight, ChevronLeft, Calendar } from "lucide-react";
 import { type Center, type Review, type Trip } from "../data";
-import { getCenterById } from "../lib/catalogService";
+import { getCenterById, toReview } from "../lib/catalogService";
+import { submitReview } from "../lib/reviewsService";
+import { ReviewForm } from "../components/ReviewForm";
+import { useAuth } from "../hooks/useAuth";
 
 function StarRow({ rating }: { rating: number }) {
   return (
@@ -17,9 +20,8 @@ function StarRow({ rating }: { rating: number }) {
 export function CenterDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { token } = useAuth();
   const [activeTab, setActiveTab] = useState<"trips" | "reviews">("trips");
-  const [reviewForm, setReviewForm] = useState({ name: "", rating: 5, comment: "" });
-  const [submitted, setSubmitted] = useState(false);
   const [center, setCenter] = useState<Center | null>(null);
   const [trips, setTrips] = useState<Trip[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -161,7 +163,7 @@ export function CenterDetail() {
                         <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />{trip.date}</span>
                       </div>
                     </div>
-                    <button onClick={() => navigate(`/booking/${trip.id}`)}
+                    <button onClick={() => navigate(`/booking/${trip.type}/${trip.id}`)}
                       className="self-center bg-teal-500 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-teal-600 transition-colors flex items-center gap-1 flex-shrink-0">
                       Book <ArrowRight className="w-3.5 h-3.5" />
                     </button>
@@ -190,28 +192,14 @@ export function CenterDetail() {
                 ))}
 
                 {/* Submit review */}
-                <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 mt-6">
-                  <h3 className="font-display text-xl font-bold text-slate-900 tracking-wide mb-4">Leave a Review</h3>
-                  {submitted ? (
-                    <p className="text-teal-600 font-medium text-sm">Thank you for your review!</p>
-                  ) : (
-                    <div className="space-y-3">
-                      <input className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 bg-white" placeholder="Your name" value={reviewForm.name} onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })} />
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-slate-600">Rating:</span>
-                        {[1, 2, 3, 4, 5].map((i) => (
-                          <button key={i} onClick={() => setReviewForm({ ...reviewForm, rating: i })}>
-                            <Star className={`w-5 h-5 transition-colors ${i <= reviewForm.rating ? "fill-amber-400 text-amber-400" : "text-slate-300 hover:text-amber-300"}`} />
-                          </button>
-                        ))}
-                      </div>
-                      <textarea rows={3} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 bg-white resize-none" placeholder="Share your experience..." value={reviewForm.comment} onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })} />
-                      <button onClick={() => reviewForm.name && reviewForm.comment && setSubmitted(true)} disabled={!reviewForm.name || !reviewForm.comment} className="bg-teal-500 text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 text-sm">
-                        Submit Review
-                      </button>
-                    </div>
-                  )}
-                </div>
+                <ReviewForm
+                  label={center.name}
+                  onSubmit={async (rating, comment) => {
+                    if (!token) return;
+                    const created = await submitReview({ centerId: center.id, rating, comment }, token);
+                    setReviews((prev) => [toReview(created), ...prev]);
+                  }}
+                />
               </div>
             )}
           </div>
@@ -239,7 +227,7 @@ export function CenterDetail() {
                 <p>Operating since <span className="font-semibold text-slate-700">{center.since}</span></p>
                 <p>Price range: <span className="font-semibold text-slate-700">{center.priceRange}</span></p>
               </div>
-              <button onClick={() => trips[0] && navigate(`/booking/${trips[0].id}`)} className="w-full mt-5 bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors text-sm">
+              <button onClick={() => trips[0] && navigate(`/booking/${trips[0].type}/${trips[0].id}`)} className="w-full mt-5 bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors text-sm">
                 Book a Trip →
               </button>
             </div>
