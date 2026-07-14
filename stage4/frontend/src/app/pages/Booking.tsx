@@ -29,7 +29,7 @@ function isExperienceType(value: string | undefined): value is ExperienceType {
 export function Booking() {
   const { type, id } = useParams();
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
 
   const [experience, setExperience] = useState<Trip | null>(null);
   const [center, setCenter] = useState<Center | undefined>();
@@ -48,6 +48,16 @@ export function Booking() {
 
   const experienceType: ExperienceType | undefined = isExperienceType(type) ? type : undefined;
   const experienceId = Number(id);
+
+  useEffect(() => {
+    if (!user) return;
+
+    setForm((current) => ({
+      ...current,
+      name: current.name || user.name,
+      email: current.email || user.email,
+    }));
+  }, [user]);
 
   useEffect(() => {
     if (!experienceType || !Number.isInteger(experienceId)) {
