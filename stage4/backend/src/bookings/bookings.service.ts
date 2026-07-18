@@ -126,6 +126,18 @@ export async function cancelBooking(
     data: {
       status: "cancelled",
     },
+    include: {
+    trip: {
+      include: {
+        center: true,
+      },
+    },
+    course: {
+      include: {
+        center: true,
+      },
+    },
+  },
   });
 }
 
