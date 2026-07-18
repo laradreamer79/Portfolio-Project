@@ -6,17 +6,21 @@ const id = z.coerce.number().int().positive();
 const money = z.coerce.number().nonnegative();
 const positiveInt = z.coerce.number().int().positive();
 const date = z.coerce.date();
+const saudiPhone = z
+  .string()
+  .trim()
+  .regex(/^(05\d{8}|\+9665\d{8})$/, "Enter a valid Saudi phone number");
 
 export const centerCreateSchema = z
   .object({
     name: requiredString,
     city: requiredString,
-    address: optionalString,
+    address: requiredString,
     licenseNumber: requiredString,
-    description: optionalString,
+    description: requiredString,
     priceRange: optionalString,
-    contactEmail: z.string().trim().email().optional(),
-    contactPhone: optionalString,
+    contactEmail: z.string().trim().email(),
+    contactPhone: saudiPhone,
   })
   .strict();
 
@@ -28,8 +32,8 @@ export const centerUpdateSchema = centerCreateSchema
 export const tripCreateSchema = z
   .object({
     title: requiredString,
-    description: optionalString,
-    durationHours: positiveInt,
+    description: requiredString,
+    durationHours: positiveInt, 
     difficultyLevel: z.enum(["beginner", "intermediate", "advanced"]),
     pricePerPerson: money,
     maxCapacity: positiveInt,
@@ -44,7 +48,7 @@ export const tripUpdateSchema = tripCreateSchema.partial().strict();
 export const courseCreateSchema = z
   .object({
     title: requiredString,
-    description: optionalString,
+    description: requiredString,
     level: requiredString,
     price: money,
     startDate: date,
