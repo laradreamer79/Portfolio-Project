@@ -24,6 +24,7 @@ import {
   updateTrip,
 } from "../lib/catalogService";
 import { useAuth } from "../hooks/useAuth";
+import { validateImageFile } from "../lib/imageValidation";
 
 type BookingRow = {
   id: string;
@@ -178,7 +179,21 @@ export function InstructorDashboard() {
   };
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setImage(event.target.files?.[0] ?? null);
+    const file = event.target.files?.[0] ?? null;
+
+    if (file) {
+      const validationError = validateImageFile(file);
+
+      if (validationError) {
+        setPostError(validationError);
+        setImage(null);
+        event.target.value = "";
+        return;
+      }
+    }
+
+    setPostError(null);
+    setImage(file);
   };
 
   const handlePostSubmit = async () => {

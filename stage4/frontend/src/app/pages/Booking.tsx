@@ -124,6 +124,14 @@ export function Booking() {
   const setPay = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setPayment((p) => ({ ...p, [k]: e.target.value }));
 
+  // Digits only, capped at 10 characters — no letters/symbols allowed.
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 10);
+    setForm((f) => ({ ...f, phone: digitsOnly }));
+  };
+  const phoneTouched = form.phone.length > 0;
+  const phoneValid = /^\d{10}$/.test(form.phone);
+
   const steps = ["details", "payment", "success"];
   const stepIdx = steps.indexOf(step);
 
@@ -233,7 +241,17 @@ export function Booking() {
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Phone Number *</label>
-                    <input className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="+966 50 000 0000" value={form.phone} onChange={set("phone")} />
+                    <input
+                      className={`w-full border rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-colors ${phoneTouched && !phoneValid ? "border-red-300 focus:border-red-400" : "border-slate-200 focus:border-teal-400"}`}
+                      placeholder="0500000000"
+                      inputMode="numeric"
+                      maxLength={10}
+                      value={form.phone}
+                      onChange={handlePhoneChange}
+                    />
+                    {phoneTouched && !phoneValid && (
+                      <p className="mt-1.5 text-xs text-red-500">Enter a valid 10-digit phone number (numbers only).</p>
+                    )}
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Scheduled Date</label>
@@ -254,8 +272,8 @@ export function Booking() {
                   <textarea rows={3} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors resize-none" placeholder="Certification level, equipment needs, accessibility requirements..." value={form.notes} onChange={set("notes")} />
                 </div>
                 <button
-                  onClick={() => form.name && form.email && form.phone && setStep("payment")}
-                  disabled={!form.name || !form.email || !form.phone || past}
+                  onClick={() => form.name && form.email && phoneValid && setStep("payment")}
+                  disabled={!form.name || !form.email || !phoneValid || past}
                   className="w-full bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   Continue to Payment →
