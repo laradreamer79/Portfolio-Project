@@ -1,5 +1,5 @@
 import { ArrowRight, Calendar, Clock, GraduationCap, MapPin, Users, Waves } from "lucide-react";
-import type { Center, Trip } from "../../data";
+import type { Center, Trip } from "../../../data";
 
 type ExperienceCardProps = {
   experience: Trip;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Center } from "../data";
-import { getCenters } from "../lib/catalogService";
+import { getCenters } from "../features/catalog";
 import { getAllBookings, type BookingCard } from "../lib/bookingService";
 import { useAuth } from "../hooks/useAuth";
 import {
