@@ -1,5 +1,3 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import {
   CheckCircle,
   ChevronLeft,
@@ -12,94 +10,34 @@ import {
   MapPin,
   AlertTriangle,
 } from "lucide-react";
-import type { Center, Trip } from "../data";
-import { getTripById, getCourseById, isPastExperience } from "../lib/catalogService";
-import { createBooking, type ApiBooking } from "../lib/bookingService";
-import { createPayment, type ApiPayment } from "../lib/paymentsService";
-import { ApiError } from "../lib/apiClient";
-import { useAuth } from "../hooks/useAuth";
-
-type Step = "details" | "payment" | "success";
-type ExperienceType = "trip" | "course";
-
-function isExperienceType(value: string | undefined): value is ExperienceType {
-  return value === "trip" || value === "course";
-}
+import { useBookingFlow } from "../features/bookings";
 
 export function Booking() {
-  const { type, id } = useParams();
-  const navigate = useNavigate();
-  const { token, user } = useAuth();
-
-  const [experience, setExperience] = useState<Trip | null>(null);
-  const [center, setCenter] = useState<Center | undefined>();
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
-
-  const [step, setStep] = useState<Step>("details");
-  const [divers, setDivers] = useState(1);
-  const [form, setForm] = useState({ name: "", email: "", phone: "", notes: "" });
-  const [payment, setPayment] = useState({ card: "", expiry: "", cvv: "", holder: "" });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [confirmedBooking, setConfirmedBooking] = useState<ApiBooking | null>(null);
-  const [confirmedPayment, setConfirmedPayment] = useState<ApiPayment | null>(null);
-
-  const experienceType: ExperienceType | undefined = isExperienceType(type) ? type : undefined;
-  const experienceId = Number(id);
-
-  useEffect(() => {
-    if (!user) return;
-
-    setForm((current) => ({
-      ...current,
-      name: current.name || user.name,
-      email: current.email || user.email,
-    }));
-  }, [user]);
-
-  useEffect(() => {
-    if (!experienceType || !Number.isInteger(experienceId)) {
-      setLoadError("This booking link is invalid.");
-      setLoading(false);
-      return;
-    }
-
-    let active = true;
-    setLoading(true);
-    setLoadError(null);
-
-    const request =
-      experienceType === "course" ? getCourseById(experienceId) : getTripById(experienceId);
-
-    request
-      .then((data) => {
-        if (!active) return;
-        if (experienceType === "course" && "course" in data) {
-          setExperience(data.course);
-          setCenter(data.center);
-        } else if (experienceType === "trip" && "trip" in data) {
-          setExperience(data.trip);
-          setCenter(data.center);
-        }
-      })
-      .catch((err: unknown) => {
-        if (!active) return;
-        setLoadError(
-          err instanceof Error ? err.message : "Unable to load this listing.",
-        );
-        setExperience(null);
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [experienceType, experienceId]);
+  const {
+    center,
+    confirmedBooking,
+    confirmedPayment,
+    divers,
+    experience,
+    experienceType,
+    form,
+    handlePay,
+    isSubmitting,
+    loading,
+    loadError,
+    navigate,
+    past,
+    payment,
+    setDivers,
+    setFormField,
+    setPaymentField,
+    setPaymentValue,
+    setStep,
+    step,
+    stepIdx,
+    submitError,
+    total,
+  } = useBookingFlow();
 
   if (loading) {
     return <div className="flex items-center justify-center h-96 text-slate-400">Loading booking details...</div>;
@@ -117,67 +55,6 @@ export function Booking() {
   }
 
   const trip = experience;
-  const past = isPastExperience(trip);
-  const total = trip.price * divers;
-  const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    setForm((f) => ({ ...f, [k]: e.target.value }));
-  const setPay = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setPayment((p) => ({ ...p, [k]: e.target.value }));
-
-  const steps = ["details", "payment", "success"];
-  const stepIdx = steps.indexOf(step);
-
-  async function handlePay() {
-    if (isSubmitting) return; // guards against duplicate submissions
-    if (!token) {
-      navigate("/auth", { state: { from: `/booking/${experienceType}/${experienceId}` } });
-      return;
-    }
-
-    setIsSubmitting(true);
-    setSubmitError(null);
-
-    try {
-      const booking = await createBooking(
-        {
-          ...(experienceType === "course"
-            ? { courseId: experienceId }
-            : { tripId: experienceId }),
-          numberOfPeople: divers,
-        },
-        token,
-      );
-
-      const paymentResult = await createPayment(
-        {
-          bookingId: booking.id,
-          paymentMethod: "creditcard",
-        },
-        token,
-      );
-
-      if (paymentResult.transactionUrl) {
-        sessionStorage.setItem(
-          "oyster_pending_payment_id",
-          String(paymentResult.payment.id),
-        );
-        window.location.assign(paymentResult.transactionUrl);
-        return;
-      }
-
-      setConfirmedBooking(booking);
-      setConfirmedPayment(paymentResult.payment);
-      setStep("success");
-    } catch (err) {
-      setSubmitError(
-        err instanceof ApiError
-          ? err.message
-          : "Unable to complete this booking. Please try again.",
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
 
   return (
     <div className="min-h-screen bg-slate-50 py-8">
@@ -225,15 +102,15 @@ export function Booking() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Full Name *</label>
-                    <input className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="Mohammed Al-Rashid" value={form.name} onChange={set("name")} />
+                    <input className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="Mohammed Al-Rashid" value={form.name} onChange={setFormField("name")} />
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Email Address *</label>
-                    <input className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="your@email.com" value={form.email} onChange={set("email")} />
+                    <input className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="your@email.com" value={form.email} onChange={setFormField("email")} />
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Phone Number *</label>
-                    <input className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="+966 50 000 0000" value={form.phone} onChange={set("phone")} />
+                    <input className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="+966 50 000 0000" value={form.phone} onChange={setFormField("phone")} />
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Scheduled Date</label>
@@ -251,7 +128,7 @@ export function Booking() {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-600 block mb-1.5">Special Requests / Notes</label>
-                  <textarea rows={3} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors resize-none" placeholder="Certification level, equipment needs, accessibility requirements..." value={form.notes} onChange={set("notes")} />
+                  <textarea rows={3} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors resize-none" placeholder="Certification level, equipment needs, accessibility requirements..." value={form.notes} onChange={setFormField("notes")} />
                 </div>
                 <button
                   onClick={() => form.name && form.email && form.phone && setStep("payment")}
@@ -280,22 +157,22 @@ export function Booking() {
                   <p className="text-xs text-slate-400 font-medium mb-1 uppercase tracking-widest">Card Number</p>
                   <div className="flex items-center gap-3">
                     <CreditCard className="w-5 h-5 text-slate-400" />
-                    <input className="flex-1 text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="4242 4242 4242 4242" maxLength={19} value={payment.card} onChange={(e) => { const v = e.target.value.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim(); setPay("card")({ ...e, target: { ...e.target, value: v } }); }} />
+                    <input className="flex-1 text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="4242 4242 4242 4242" maxLength={19} value={payment.card} onChange={(e) => { const v = e.target.value.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim(); setPaymentValue("card", v); }} />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                     <p className="text-xs text-slate-400 font-medium mb-1 uppercase tracking-widest">Expiry Date</p>
-                    <input className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="MM / YY" value={payment.expiry} onChange={setPay("expiry")} />
+                    <input className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="MM / YY" value={payment.expiry} onChange={setPaymentField("expiry")} />
                   </div>
                   <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                     <p className="text-xs text-slate-400 font-medium mb-1 uppercase tracking-widest">CVV</p>
-                    <input className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="•••" maxLength={4} type="password" value={payment.cvv} onChange={setPay("cvv")} />
+                    <input className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="•••" maxLength={4} type="password" value={payment.cvv} onChange={setPaymentField("cvv")} />
                   </div>
                 </div>
                 <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                   <p className="text-xs text-slate-400 font-medium mb-1 uppercase tracking-widest">Cardholder Name</p>
-                  <input className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent" placeholder="Name as on card" value={payment.holder} onChange={setPay("holder")} />
+                  <input className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent" placeholder="Name as on card" value={payment.holder} onChange={setPaymentField("holder")} />
                 </div>
                 <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-50 rounded-xl p-3 border border-slate-100">
                   <Lock className="w-3.5 h-3.5" />
