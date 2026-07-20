@@ -1,5 +1,5 @@
-import type { Center, Review, Trip } from "../data";
-import { apiRequest } from "./apiClient";
+import type { Center, Review, Trip } from "../../data";
+import { apiRequest } from "../../lib/apiClient";
 
 type ApiCount = {
   trips?: number;

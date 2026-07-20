@@ -1,63 +1,25 @@
-import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { MapPin, Search, SlidersHorizontal } from "lucide-react";
-import { CITIES, type Center } from "../data";
-import { CenterCard } from "../components/cards/CenterCard";
-import { getCenters } from "../lib/catalogService";
+import { CITIES } from "../data";
+import { CenterCard, useCentersCatalog } from "../features/catalog";
 
 export function Centers() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const [city, setCity] = useState(params.get("city") || "All Cities");
-  const [query, setQuery] = useState("");
-  const [minRating, setMinRating] = useState(0);
-  const [verifiedOnly, setVerifiedOnly] = useState(false);
-  const [centers, setCenters] = useState<Center[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const c = params.get("city");
-    if (c) setCity(c);
-  }, [params]);
-
-  useEffect(() => {
-    let active = true;
-
-    setLoading(true);
-    setError(null);
-
-    getCenters({
-      city,
-      search: query,
-    })
-      .then((data) => {
-        if (active) setCenters(data);
-      })
-      .catch((err: unknown) => {
-        if (active) {
-          setError(
-            err instanceof Error
-              ? err.message
-              : "Unable to load diving centers.",
-          );
-          setCenters([]);
-        }
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [city, query]);
-
-  const filtered = centers.filter((c) => {
-    const matchRating = c.rating >= minRating;
-    const matchVerified = !verifiedOnly || c.verified;
-    return matchRating && matchVerified;
-  });
+  const {
+    centers,
+    city,
+    error,
+    filteredCenters: filtered,
+    loading,
+    minRating,
+    query,
+    setCity,
+    setMinRating,
+    setQuery,
+    setVerifiedOnly,
+    verifiedOnly,
+  } = useCentersCatalog(params.get("city") || "All Cities");
 
   return (
     <div className="min-h-screen bg-slate-50">

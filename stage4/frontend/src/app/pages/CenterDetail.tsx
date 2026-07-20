@@ -1,8 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MapPin, Star, Shield, Phone, Mail, Clock, Waves, Users, ArrowRight, ChevronLeft, Calendar } from "lucide-react";
-import { type Center, type Review, type Trip } from "../data";
-import { getCenterById, toReview } from "../lib/catalogService";
+import { toReview, useCenterDetail } from "../features/catalog";
 import { submitReview } from "../lib/reviewsService";
 import { ReviewForm } from "../components/ReviewForm";
 import { useAuth } from "../hooks/useAuth";
@@ -22,47 +21,14 @@ export function CenterDetail() {
   const navigate = useNavigate();
   const { token } = useAuth();
   const [activeTab, setActiveTab] = useState<"trips" | "reviews">("trips");
-  const [center, setCenter] = useState<Center | null>(null);
-  const [trips, setTrips] = useState<Trip[]>([]);
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const centerId = Number(id);
-
-    if (!Number.isInteger(centerId)) {
-      setError("Invalid center id.");
-      setLoading(false);
-      return;
-    }
-
-    let active = true;
-    setLoading(true);
-    setError(null);
-
-    getCenterById(centerId)
-      .then((data) => {
-        if (!active) return;
-        setCenter(data.center);
-        setTrips([...data.trips, ...data.courses]);
-        setReviews(data.reviews);
-      })
-      .catch((err: unknown) => {
-        if (!active) return;
-        setError(err instanceof Error ? err.message : "Unable to load center.");
-        setCenter(null);
-        setTrips([]);
-        setReviews([]);
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [id]);
+  const {
+    addReview,
+    center,
+    error,
+    experiences: trips,
+    loading,
+    reviews,
+  } = useCenterDetail(id);
 
   if (loading) return <div className="flex items-center justify-center h-96 text-slate-400">Loading center...</div>;
   if (error) return <div className="flex items-center justify-center h-96 text-red-500">{error}</div>;
@@ -197,7 +163,7 @@ export function CenterDetail() {
                   onSubmit={async (rating, comment) => {
                     if (!token) return;
                     const created = await submitReview({ centerId: center.id, rating, comment }, token);
-                    setReviews((prev) => [toReview(created), ...prev]);
+                    addReview(toReview(created));
                   }}
                 />
               </div>

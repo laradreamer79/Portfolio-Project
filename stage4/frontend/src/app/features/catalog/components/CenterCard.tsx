@@ -1,5 +1,5 @@
 import { ChevronRight, MapPin, Shield, Star } from "lucide-react";
-import type { Center } from "../../data";
+import type { Center } from "../../../data";
 
 type CenterCardProps = {
   center: Center;
