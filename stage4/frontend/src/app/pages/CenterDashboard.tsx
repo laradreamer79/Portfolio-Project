@@ -12,7 +12,7 @@ import {
   getTrips,
   updateCourse,
   updateTrip,
-} from "../lib/catalogService";
+} from "../features/catalog";
 import { useAuth } from "../hooks/useAuth";
 
 type BookingRow = {
