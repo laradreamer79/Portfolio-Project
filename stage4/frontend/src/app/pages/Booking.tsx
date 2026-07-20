@@ -132,6 +132,19 @@ export function Booking() {
   const phoneTouched = form.phone.length > 0;
   const phoneValid = /^\d{10}$/.test(form.phone);
 
+  // Letters and spaces only — no numbers or symbols.
+  const handleHolderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const lettersOnly = e.target.value.replace(/[^\p{L}\s]/gu, "");
+    setPayment((p) => ({ ...p, holder: lettersOnly }));
+  };
+
+  // Auto-formats as MM-YY: digits only, dash inserted automatically after 2 digits.
+  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, "").slice(0, 4);
+    const formatted = digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits;
+    setPayment((p) => ({ ...p, expiry: formatted }));
+  };
+
   const steps = ["details", "payment", "success"];
   const stepIdx = steps.indexOf(step);
 
@@ -304,7 +317,7 @@ export function Booking() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                     <p className="text-xs text-slate-400 font-medium mb-1 uppercase tracking-widest">Expiry Date</p>
-                    <input className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="MM / YY" value={payment.expiry} onChange={setPay("expiry")} />
+                    <input className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="MM/YY" inputMode="numeric" maxLength={5} value={payment.expiry} onChange={handleExpiryChange} />
                   </div>
                   <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                     <p className="text-xs text-slate-400 font-medium mb-1 uppercase tracking-widest">CVV</p>
@@ -313,7 +326,7 @@ export function Booking() {
                 </div>
                 <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                   <p className="text-xs text-slate-400 font-medium mb-1 uppercase tracking-widest">Cardholder Name</p>
-                  <input className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent" placeholder="Name as on card" value={payment.holder} onChange={setPay("holder")} />
+                  <input className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent" placeholder="Name as on card" value={payment.holder} onChange={handleHolderChange} />
                 </div>
                 <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-50 rounded-xl p-3 border border-slate-100">
                   <Lock className="w-3.5 h-3.5" />
