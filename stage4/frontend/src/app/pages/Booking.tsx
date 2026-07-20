@@ -124,6 +124,27 @@ export function Booking() {
   const setPay = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setPayment((p) => ({ ...p, [k]: e.target.value }));
 
+  // Digits only, capped at 10 characters — no letters/symbols allowed.
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 10);
+    setForm((f) => ({ ...f, phone: digitsOnly }));
+  };
+  const phoneTouched = form.phone.length > 0;
+  const phoneValid = /^\d{10}$/.test(form.phone);
+
+  // Letters and spaces only — no numbers or symbols.
+  const handleHolderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const lettersOnly = e.target.value.replace(/[^\p{L}\s]/gu, "");
+    setPayment((p) => ({ ...p, holder: lettersOnly }));
+  };
+
+  // Auto-formats as MM-YY: digits only, dash inserted automatically after 2 digits.
+  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, "").slice(0, 4);
+    const formatted = digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits;
+    setPayment((p) => ({ ...p, expiry: formatted }));
+  };
+
   const steps = ["details", "payment", "success"];
   const stepIdx = steps.indexOf(step);
 
@@ -233,7 +254,17 @@ export function Booking() {
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Phone Number *</label>
-                    <input className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="+966 50 000 0000" value={form.phone} onChange={set("phone")} />
+                    <input
+                      className={`w-full border rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-colors ${phoneTouched && !phoneValid ? "border-red-300 focus:border-red-400" : "border-slate-200 focus:border-teal-400"}`}
+                      placeholder="0500000000"
+                      inputMode="numeric"
+                      maxLength={10}
+                      value={form.phone}
+                      onChange={handlePhoneChange}
+                    />
+                    {phoneTouched && !phoneValid && (
+                      <p className="mt-1.5 text-xs text-red-500">Enter a valid 10-digit phone number (numbers only).</p>
+                    )}
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Scheduled Date</label>
@@ -254,8 +285,8 @@ export function Booking() {
                   <textarea rows={3} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors resize-none" placeholder="Certification level, equipment needs, accessibility requirements..." value={form.notes} onChange={set("notes")} />
                 </div>
                 <button
-                  onClick={() => form.name && form.email && form.phone && setStep("payment")}
-                  disabled={!form.name || !form.email || !form.phone || past}
+                  onClick={() => form.name && form.email && phoneValid && setStep("payment")}
+                  disabled={!form.name || !form.email || !phoneValid || past}
                   className="w-full bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   Continue to Payment →
@@ -286,7 +317,7 @@ export function Booking() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                     <p className="text-xs text-slate-400 font-medium mb-1 uppercase tracking-widest">Expiry Date</p>
-                    <input className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="MM / YY" value={payment.expiry} onChange={setPay("expiry")} />
+                    <input className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="MM/YY" inputMode="numeric" maxLength={5} value={payment.expiry} onChange={handleExpiryChange} />
                   </div>
                   <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                     <p className="text-xs text-slate-400 font-medium mb-1 uppercase tracking-widest">CVV</p>
@@ -295,7 +326,7 @@ export function Booking() {
                 </div>
                 <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                   <p className="text-xs text-slate-400 font-medium mb-1 uppercase tracking-widest">Cardholder Name</p>
-                  <input className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent" placeholder="Name as on card" value={payment.holder} onChange={setPay("holder")} />
+                  <input className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent" placeholder="Name as on card" value={payment.holder} onChange={handleHolderChange} />
                 </div>
                 <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-50 rounded-xl p-3 border border-slate-100">
                   <Lock className="w-3.5 h-3.5" />
