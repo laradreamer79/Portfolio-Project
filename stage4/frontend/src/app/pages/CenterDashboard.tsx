@@ -20,7 +20,7 @@ export function CenterDashboard() {
     handleImageChange,
     handlePostSubmit,
     handleProfileImageChange,
-    handleProfileImageSubmit,
+    handleProfileSubmit,
     image,
     isPosting,
     isSavingProfile,
@@ -242,7 +242,7 @@ export function CenterDashboard() {
         {activeTab === "profile" && (
           <div className="max-w-2xl space-y-6">
             <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide">CENTER PROFILE</h2>
-            <div className="bg-white rounded-2xl border border-slate-100 p-6 space-y-4">
+            <form key={center?.id ?? "empty"} onSubmit={handleProfileSubmit} className="bg-white rounded-2xl border border-slate-100 p-6 space-y-4">
               <div>
                 <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest block mb-2">Center Image</label>
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -258,6 +258,7 @@ export function CenterDashboard() {
                   </div>
                   <div className="flex-1 space-y-3">
                     <input
+                      key={center?.img || "no-center-image"}
                       type="file"
                       accept="image/jpeg,image/png,image/webp"
                       onChange={handleProfileImageChange}
@@ -267,14 +268,6 @@ export function CenterDashboard() {
                     {profileImage && (
                       <p className="text-xs font-medium text-slate-600">Selected: {profileImage.name}</p>
                     )}
-                    <button
-                      type="button"
-                      onClick={handleProfileImageSubmit}
-                      disabled={!profileImage || isSavingProfile}
-                      className="rounded-xl bg-teal-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-teal-600 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      {isSavingProfile ? "Uploading..." : "Upload Center Image"}
-                    </button>
                   </div>
                 </div>
                 {profileError && (
@@ -285,25 +278,33 @@ export function CenterDashboard() {
                 )}
               </div>
               <div className="border-t border-slate-100" />
-              {[
-                { label: "Center Name", value: center?.name ?? "" },
-                { label: "City", value: center?.city ?? "" },
-                { label: "Phone", value: center?.phone ?? "" },
-                { label: "Email", value: center?.email ?? "" },
-                { label: "Address", value: center?.address ?? "" },
-                { label: "Price Range", value: center?.priceRange ?? "" },
-              ].map((f) => (
-                <div key={f.label}>
-                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest block mb-1">{f.label}</label>
-                  <input className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-teal-400 transition-colors" defaultValue={f.value} />
+              {([
+                { key: "name", label: "Center Name", type: "text", value: center?.name ?? "" },
+                { key: "city", label: "City", type: "text", value: center?.city ?? "" },
+                { key: "contactPhone", label: "Phone", type: "tel", value: center?.phone === "Not provided" ? "" : center?.phone ?? "" },
+                { key: "contactEmail", label: "Email", type: "email", value: center?.email === "Not provided" ? "" : center?.email ?? "" },
+                { key: "address", label: "Address", type: "text", value: center?.address === center?.city ? "" : center?.address ?? "" },
+                { key: "priceRange", label: "Price Range", type: "text", value: center?.priceRange === "Contact for pricing" ? "" : center?.priceRange ?? "" },
+              ] as const).map((field) => (
+                <div key={field.key}>
+                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest block mb-1">{field.label}</label>
+                  <input
+                    type={field.type}
+                    name={field.key}
+                    required={field.key === "name" || field.key === "city"}
+                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-teal-400 transition-colors"
+                    defaultValue={field.value}
+                  />
                 </div>
               ))}
               <div>
                 <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest block mb-1">Description</label>
-                <textarea rows={4} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-teal-400 transition-colors resize-none" defaultValue={center?.longDescription ?? ""} />
+                <textarea name="description" rows={4} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-teal-400 transition-colors resize-none" defaultValue={center?.description === "Explore diving experiences from this center." ? "" : center?.description ?? ""} />
               </div>
-              <button className="bg-teal-500 text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-teal-600 transition-colors text-sm">Save Changes</button>
-            </div>
+              <button type="submit" disabled={isSavingProfile} className="bg-teal-500 text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-teal-600 transition-colors text-sm disabled:cursor-not-allowed disabled:opacity-40">
+                {isSavingProfile ? "Saving..." : "Save Changes"}
+              </button>
+            </form>
           </div>
         )}
       </div>

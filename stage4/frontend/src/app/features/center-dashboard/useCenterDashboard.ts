@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState, type ChangeEvent } from "react";
+import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import type { Center } from "../../data";
-import { getCenters, updateCenter } from "../catalog";
+import { getCenters, updateCenter, type UpdateCenterPayload } from "../catalog";
 import { useListingManagement } from "../listing-management";
 
 const ALLOWED_IMAGE_TYPES = new Set([
@@ -112,16 +112,22 @@ export function useCenterDashboard({
     setProfileImage(file);
   }
 
-  async function handleProfileImageSubmit() {
+  async function handleProfileSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
     if (!token || !center) {
       setProfileError("Unable to find your center profile. Sign in again.");
       return;
     }
 
-    if (!profileImage) {
-      setProfileError("Select a center image before uploading.");
-      return;
-    }
+    const payload = Object.fromEntries(
+      Array.from(new FormData(event.currentTarget), ([key, value]) => [
+        key,
+        String(value).trim() || undefined,
+      ]),
+    ) as UpdateCenterPayload;
+
+    if (profileImage) payload.image = profileImage;
 
     setIsSavingProfile(true);
     setProfileError(null);
@@ -130,17 +136,17 @@ export function useCenterDashboard({
     try {
       const updatedCenter = await updateCenter(
         center.id,
-        { image: profileImage },
+        payload,
         token,
       );
       setCenter(updatedCenter);
       setProfileImage(null);
-      setProfileSuccess("Center image updated successfully.");
+      setProfileSuccess("Center profile updated successfully.");
     } catch (error) {
       setProfileError(
         error instanceof Error
           ? error.message
-          : "Unable to update the center image.",
+          : "Unable to update the center profile.",
       );
     } finally {
       setIsSavingProfile(false);
@@ -167,7 +173,7 @@ export function useCenterDashboard({
     confirmBooking,
     declineBooking,
     handleProfileImageChange,
-    handleProfileImageSubmit,
+    handleProfileSubmit,
     isSavingProfile,
     pending,
     profileError,
