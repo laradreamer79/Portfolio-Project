@@ -114,7 +114,6 @@ export function useCenterDashboard({
 
   async function handleProfileSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
     if (!token || !center) {
       setProfileError("Unable to find your center profile. Sign in again.");
       return;
