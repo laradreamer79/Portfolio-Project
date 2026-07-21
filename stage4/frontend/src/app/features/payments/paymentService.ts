@@ -1,4 +1,4 @@
-import { apiRequest } from "./apiClient";
+import { apiRequest } from "../../lib/apiClient";
 
 export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
 
@@ -34,10 +34,7 @@ export type CreatePaymentResult = {
   mock: boolean;
 };
 
-export function createPayment(
-  payload: CreatePaymentPayload,
-  token: string,
-) {
+export function createPayment(payload: CreatePaymentPayload, token: string) {
   return apiRequest<CreatePaymentResult>("/payments", {
     method: "POST",
     body: payload,

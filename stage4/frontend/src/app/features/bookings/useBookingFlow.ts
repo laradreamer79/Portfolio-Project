@@ -7,7 +7,7 @@ import {
   getTripById,
   isPastExperience,
 } from "../catalog";
-import { createPayment, type ApiPayment } from "../../lib/paymentsService";
+import { createPayment, type ApiPayment } from "../payments";
 import { useAuth } from "../../hooks/useAuth";
 import { createBooking, type ApiBooking } from "./bookingService";
 
