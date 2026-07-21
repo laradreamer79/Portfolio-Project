@@ -4,6 +4,7 @@ const requiredString = z.string().trim().min(1);
 const id = z.coerce.number().int().positive();
 const money = z.coerce.number().nonnegative();
 const date = z.coerce.date();
+
 export const courseCreateSchema = z
   .object({
     title: requiredString,
