@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   CheckCircle,
@@ -12,324 +11,41 @@ import {
   Users,
   X,
 } from "lucide-react";
-import type { Trip } from "../data";
 import {
-  createCourse,
-  createTrip,
-  deleteCourse,
-  deleteTrip,
-  getCourses,
-  getTrips,
-  updateCourse,
-  updateTrip,
-} from "../features/catalog";
+  InstructorBookingsTable,
+  useInstructorDashboard,
+} from "../features/instructor-dashboard";
+import { listingRoute } from "../features/listing-management";
 import { useAuth } from "../hooks/useAuth";
-
-type BookingRow = {
-  id: string;
-  trip: string;
-  customer: string;
-  email: string;
-  phone: string;
-  divers: number;
-  total: number;
-  date: string;
-  status: string;
-};
-
-type PostForm = {
-  title: string;
-  type: string;
-  level: string;
-  price: string;
-  duration: string;
-  depth: string;
-  date: string;
-  slots: string;
-  description: string;
-};
-
-const EMPTY_FORM: PostForm = {
-  title: "",
-  type: "trip",
-  level: "Open Water",
-  price: "",
-  duration: "Full Day",
-  depth: "",
-  date: "",
-  slots: "",
-  description: "",
-};
 
 export function InstructorDashboard() {
   const navigate = useNavigate();
   const { token } = useAuth();
-  const [activeTab, setActiveTab] = useState<
-    "overview" | "bookings" | "listings" | "profile"
-  >("overview");
-  const [showPostModal, setShowPostModal] = useState(false);
-  const [bookings, setBookings] = useState<BookingRow[]>([]);
-  const [listings, setListings] = useState<Trip[]>([]);
-  const [postDone, setPostDone] = useState(false);
-  const [postError, setPostError] = useState<string | null>(null);
-  const [isPosting, setIsPosting] = useState(false);
-  const [form, setForm] = useState<PostForm>(EMPTY_FORM);
-  const [image, setImage] = useState<File | null>(null);
-  const [editingListing, setEditingListing] = useState<Trip | null>(null);
-
-  useEffect(() => {
-    if (!token) return;
-
-    let active = true;
-
-    Promise.all([
-      getTrips({ status: "all" }, token),
-      getCourses({ status: "all" }, token),
-    ])
-      .then(([trips, courses]) => {
-        if (!active) return;
-        setListings([...trips, ...courses]);
-      })
-      .catch(() => {
-        if (active) setListings([]);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [token]);
-
-  const set =
-    (key: keyof PostForm) =>
-    (
-      event: React.ChangeEvent<
-        HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-      >,
-    ) => {
-      setForm((current) => ({ ...current, [key]: event.target.value }));
-    };
-
-  const listingRoute = (listing: Trip) =>
-    listing.type === "course" ? `/courses/${listing.id}` : `/trips/${listing.id}`;
-
-  const durationLabel = (duration: string) => {
-    if (duration.includes("4")) return "Half Day";
-    if (duration.includes("3")) return "Evening";
-    if (duration.includes("24")) return "Multi-Day";
-    return "Full Day";
-  };
-
-  const openCreateModal = () => {
-    setEditingListing(null);
-    setForm(EMPTY_FORM);
-    setImage(null);
-    setPostDone(false);
-    setPostError(null);
-    setShowPostModal(true);
-  };
-
-  const openEditModal = (listing: Trip) => {
-    setEditingListing(listing);
-    setForm({
-      title: listing.title,
-      type: listing.type,
-      level: listing.level,
-      price: String(listing.price),
-      duration: durationLabel(listing.duration),
-      depth: listing.depth === "Training" || listing.depth === "Varies" ? "" : listing.depth,
-      date: listing.rawDate ? listing.rawDate.slice(0, 10) : "",
-      slots: listing.slots ? String(listing.slots) : "",
-      description: listing.description,
-    });
-    setImage(null);
-    setPostDone(false);
-    setPostError(null);
-    setShowPostModal(true);
-  };
-
-  const closePostModal = () => {
-    setShowPostModal(false);
-    setPostDone(false);
-    setPostError(null);
-    setIsPosting(false);
-    setImage(null);
-    setEditingListing(null);
-    setForm(EMPTY_FORM);
-  };
-
-  const durationHours = (duration: string) => {
-    switch (duration) {
-      case "Half Day":
-        return 4;
-      case "Evening":
-        return 3;
-      case "Multi-Day":
-        return 24;
-      case "Full Day":
-      default:
-        return 8;
-    }
-  };
-
-  const difficultyLevel = (level: string) => {
-    if (level === "Advanced") return "advanced";
-    if (level === "Intermediate") return "intermediate";
-    return "beginner";
-  };
-
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setImage(event.target.files?.[0] ?? null);
-  };
-
-  const handlePostSubmit = async () => {
-    if (!form.title || !form.price) return;
-
-    if (!editingListing && !image) {
-      setPostError("Upload an image before publishing.");
-      return;
-    }
-
-    if (!token) {
-      setPostError("You need to sign in again before posting.");
-      return;
-    }
-
-    setIsPosting(true);
-    setPostError(null);
-
-    try {
-      const price = Number(form.price);
-      const slots = form.slots ? Number(form.slots) : 4;
-      const date = form.date || new Date().toISOString().slice(0, 10);
-
-      if (Number.isNaN(price) || price < 0) {
-        throw new Error("Enter a valid price.");
-      }
-
-      if (Number.isNaN(slots) || slots <= 0) {
-        throw new Error("Enter a valid number of spots.");
-      }
-
-      if (editingListing) {
-        const updatedListing =
-          editingListing.type === "course"
-            ? await updateCourse(
-                editingListing.id,
-                {
-                  title: form.title,
-                  description: form.description || undefined,
-                  level: form.level,
-                  price,
-                  startDate: date,
-                  image,
-                },
-                token,
-              )
-            : await updateTrip(
-                editingListing.id,
-                {
-                  title: form.title,
-                  description: form.description || undefined,
-                  durationHours: durationHours(form.duration),
-                  difficultyLevel: difficultyLevel(form.level),
-                  pricePerPerson: price,
-                  maxCapacity: slots,
-                  scheduleDate: date,
-                  image,
-                },
-                token,
-              );
-
-        setListings((current) =>
-          current.map((listing) =>
-            listing.id === editingListing.id && listing.type === editingListing.type
-              ? updatedListing
-              : listing,
-          ),
-        );
-        closePostModal();
-        setActiveTab("listings");
-        return;
-      }
-
-      const createdListing =
-        form.type === "course"
-          ? await createCourse(
-              {
-                title: form.title,
-                description: form.description || undefined,
-                level: form.level,
-                price,
-                startDate: date,
-                image: image!,
-              },
-              token,
-            )
-          : await createTrip(
-              {
-                title: form.title,
-                description: form.description || undefined,
-                durationHours: durationHours(form.duration),
-                difficultyLevel: difficultyLevel(form.level),
-                pricePerPerson: price,
-                maxCapacity: slots,
-                scheduleDate: date,
-                image: image!,
-              },
-              token,
-            );
-
-      setListings((current) => [createdListing, ...current]);
-      setForm(EMPTY_FORM);
-      setImage(null);
-      setPostDone(true);
-    } catch (err) {
-      setPostError(
-        err instanceof Error
-          ? err.message
-          : "Unable to publish this listing. Please try again.",
-      );
-    } finally {
-      setIsPosting(false);
-    }
-  };
-
-  const handleDeleteListing = async (listing: Trip) => {
-    if (!token) {
-      setPostError("You need to sign in again before deleting.");
-      return;
-    }
-
-    const confirmed = window.confirm(`Delete "${listing.title}"? This cannot be undone.`);
-    if (!confirmed) return;
-
-    setPostError(null);
-
-    try {
-      if (listing.type === "course") {
-        await deleteCourse(listing.id, token);
-      } else {
-        await deleteTrip(listing.id, token);
-      }
-
-      setListings((current) =>
-        current.filter((item) => item.id !== listing.id || item.type !== listing.type),
-      );
-    } catch (err) {
-      window.alert(
-        err instanceof Error
-          ? err.message
-          : "Unable to delete this listing. Please try again.",
-      );
-    }
-  };
-
-  const revenue = bookings
-    .filter((booking) => booking.status === "confirmed")
-    .reduce((sum, booking) => sum + booking.total, 0);
-  const pending = bookings.filter(
-    (booking) => booking.status === "pending",
-  ).length;
+  const {
+    activeTab,
+    bookings,
+    closePostModal,
+    confirmBooking,
+    declineBooking,
+    editingListing,
+    form,
+    handleDeleteListing,
+    handleImageChange,
+    handlePostSubmit,
+    image,
+    isPosting,
+    listings,
+    openCreateModal,
+    openEditModal,
+    pending,
+    postDone,
+    postError,
+    revenue,
+    setActiveTab,
+    setFormField: set,
+    showPostModal,
+    viewListings,
+  } = useInstructorDashboard(token);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -445,17 +161,9 @@ export function InstructorDashboard() {
                   View all →
                 </button>
               </div>
-              <BookingsTable
+              <InstructorBookingsTable
                 bookings={bookings.slice(0, 4)}
-                onConfirm={(id) =>
-                  setBookings((current) =>
-                    current.map((booking) =>
-                      booking.id === id
-                        ? { ...booking, status: "confirmed" }
-                        : booking,
-                    ),
-                  )
-                }
+                onConfirm={confirmBooking}
               />
             </div>
 
@@ -514,22 +222,10 @@ export function InstructorDashboard() {
             <h2 className="mb-6 font-display text-2xl font-bold tracking-wide text-slate-900">
               ALL BOOKINGS
             </h2>
-            <BookingsTable
+            <InstructorBookingsTable
               bookings={bookings}
-              onConfirm={(id) =>
-                setBookings((current) =>
-                  current.map((booking) =>
-                    booking.id === id
-                      ? { ...booking, status: "confirmed" }
-                      : booking,
-                  ),
-                )
-              }
-              onDecline={(id) =>
-                setBookings((current) =>
-                  current.filter((booking) => booking.id !== id),
-                )
-              }
+              onConfirm={confirmBooking}
+              onDecline={declineBooking}
             />
           </div>
         )}
@@ -691,11 +387,7 @@ export function InstructorDashboard() {
                 </p>
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowPostModal(false);
-                    setPostDone(false);
-                    setActiveTab("listings");
-                  }}
+                  onClick={viewListings}
                   className="w-full rounded-xl bg-teal-500 py-3 font-semibold text-white transition-colors hover:bg-teal-600"
                 >
                   View My Listings
@@ -882,95 +574,6 @@ export function InstructorDashboard() {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-function BookingsTable({
-  bookings,
-  onConfirm,
-  onDecline,
-}: {
-  bookings: BookingRow[];
-  onConfirm: (id: string) => void;
-  onDecline?: (id: string) => void;
-}) {
-  return (
-    <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white">
-      <table className="w-full text-sm">
-        <thead className="border-b border-slate-100 bg-slate-50">
-          <tr>
-            {[
-              "Booking ID",
-              "Trip / Course",
-              "Customer",
-              "Divers",
-              "Total",
-              "Date",
-              "Status",
-              "Action",
-            ].map((heading) => (
-              <th
-                key={heading}
-                className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-slate-400"
-              >
-                {heading}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-50">
-          {bookings.map((booking) => (
-            <tr key={booking.id} className="transition-colors hover:bg-slate-50">
-              <td className="px-4 py-3 font-mono text-xs text-teal-600">
-                {booking.id}
-              </td>
-              <td className="max-w-[180px] truncate px-4 py-3 font-medium text-slate-800">
-                {booking.trip}
-              </td>
-              <td className="px-4 py-3 text-slate-600">{booking.customer}</td>
-              <td className="px-4 py-3 text-slate-600">{booking.divers}</td>
-              <td className="px-4 py-3 font-semibold text-slate-800">
-                SAR {booking.total.toLocaleString()}
-              </td>
-              <td className="px-4 py-3 text-slate-500">{booking.date}</td>
-              <td className="px-4 py-3">
-                <span
-                  className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                    booking.status === "confirmed"
-                      ? "border border-emerald-100 bg-emerald-50 text-emerald-700"
-                      : "border border-amber-100 bg-amber-50 text-amber-700"
-                  }`}
-                >
-                  {booking.status}
-                </span>
-              </td>
-              <td className="px-4 py-3">
-                {booking.status === "pending" && (
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => onConfirm(booking.id)}
-                      className="flex items-center gap-1 rounded-lg border border-teal-200 bg-teal-50 px-2 py-1 text-xs font-medium text-teal-700 transition-colors hover:bg-teal-100"
-                    >
-                      <CheckCircle className="h-3.5 w-3.5" /> Confirm
-                    </button>
-                    {onDecline && (
-                      <button
-                        type="button"
-                        onClick={() => onDecline(booking.id)}
-                        className="rounded-lg border border-red-100 bg-red-50 px-2 py-1 text-xs font-medium text-red-600 transition-colors hover:bg-red-100"
-                      >
-                        Decline
-                      </button>
-                    )}
-                  </div>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </div>
   );
 }
