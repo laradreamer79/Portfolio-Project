@@ -23,7 +23,6 @@ export function Home() {
     cities,
     cityCount,
     error,
-    experienceCountForCity,
     featuredCenters: featured,
     featuredCourses,
     featuredTrips,
@@ -71,7 +70,7 @@ export function Home() {
                 <div className="absolute bottom-0 left-0 right-0 p-3">
                   <p className="font-display text-lg font-bold text-white tracking-wide leading-tight">{city}</p>
                   <p className="text-teal-300 text-xs">
-                    {experienceCountForCity(city)} trips & courses
+                    Explore Trips
                   </p>
                 </div>
               </button>
