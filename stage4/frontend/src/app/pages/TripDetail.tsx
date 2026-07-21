@@ -1,68 +1,27 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { type Center, type Review, type Trip } from "../data";
 import { 
   ChevronLeft, Star, MapPin, Clock, Waves, Users, Calendar, 
   Shield, CheckCircle, AlertCircle, Phone, Mail 
 } from "lucide-react";
-import { getTripById, getTrips } from "../lib/catalogService";
+import { toReview, useExperienceDetail } from "../features/catalog";
+import { submitReview } from "../lib/reviewsService";
+import { ReviewForm } from "../components/ReviewForm";
 import { useAuth } from "../hooks/useAuth";
 
 export function TripDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { token } = useAuth();
-  const [trip, setTrip] = useState<Trip | null>(null);
-  const [center, setCenter] = useState<Center | undefined>();
-  const [tripReviews, setTripReviews] = useState<Review[]>([]);
-  const [similarTrips, setSimilarTrips] = useState<Trip[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const tripId = Number(id);
-
-    if (!Number.isInteger(tripId)) {
-      setError("Invalid trip id.");
-      setLoading(false);
-      return;
-    }
-
-    let active = true;
-    setLoading(true);
-    setError(null);
-
-    getTripById(tripId, token)
-      .then((data) => {
-        if (!active) return;
-        setTrip(data.trip);
-        setCenter(data.center);
-        setTripReviews(data.reviews);
-        return getTrips(data.center?.city ? { city: data.center.city } : {}, token).then((trips) => {
-          if (!active) return;
-          setSimilarTrips(trips.filter((candidate) => candidate.id !== data.trip.id).slice(0, 3));
-        });
-      })
-      .catch((err: unknown) => {
-        if (!active) return;
-        setError(err instanceof Error ? err.message : "Unable to load trip.");
-        setTrip(null);
-        setCenter(undefined);
-        setTripReviews([]);
-        setSimilarTrips([]);
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [id, token]);
-  
-  const avgRating = tripReviews.length > 0 
-    ? (tripReviews.reduce((sum, r) => sum + r.rating, 0) / tripReviews.length).toFixed(1)
-    : "N/A";
+  const {
+    addReview,
+    averageRating: avgRating,
+    center,
+    error,
+    experience: trip,
+    loading,
+    reviews: tripReviews,
+    similarExperiences: similarTrips,
+  } = useExperienceDetail("trip", id, token);
 
   if (loading) {
     return <div className="flex items-center justify-center h-96 text-slate-400">Loading trip...</div>;
@@ -280,6 +239,15 @@ export function TripDetail() {
                   <p className="text-slate-400 text-sm mt-1">Be the first to share your experience!</p>
                 </div>
               )}
+
+              <ReviewForm
+                label={trip.title}
+                onSubmit={async (rating, comment) => {
+                  if (!token) return;
+                  const created = await submitReview({ tripId: trip.id, rating, comment }, token);
+                  addReview(toReview(created));
+                }}
+              />
             </div>
 
             {/* Similar Trips */}
@@ -332,7 +300,7 @@ export function TripDetail() {
               </div>
 
               <button 
-                onClick={() => navigate(`/booking/${trip.id}`)}
+                onClick={() => navigate(`/booking/trip/${trip.id}`)}
                 className="w-full bg-teal-500 text-white font-semibold py-3.5 rounded-xl hover:bg-teal-600 transition-colors"
               >
                 Book Now

@@ -1,61 +1,26 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Waves, Search } from "lucide-react";
-import { CITIES, type Center, type Trip } from "../data";
-import { ExperienceCard } from "../components/cards/ExperienceCard";
-import { getCenters, getTrips } from "../lib/catalogService";
-
-const LEVELS = ["All Levels", "Beginner", "Open Water", "Intermediate", "Advanced"];
+import { CITIES } from "../data";
+import {
+  CATALOG_LEVELS,
+  ExperienceCard,
+  useExperienceCatalog,
+} from "../features/catalog";
 
 export function Trips() {
   const navigate = useNavigate();
-  const [city, setCity] = useState("All Cities");
-  const [level, setLevel] = useState("All Levels");
-  const [query, setQuery] = useState("");
-  const [trips, setTrips] = useState<Trip[]>([]);
-  const [centers, setCenters] = useState<Center[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let active = true;
-
-    setLoading(true);
-    setError(null);
-
-    Promise.all([
-      getTrips({
-        city,
-        search: query,
-        difficulty:
-          level === "All Levels" || level === "Open Water"
-            ? undefined
-            : level.toLowerCase(),
-      }),
-      getCenters(),
-    ])
-      .then(([tripData, centerData]) => {
-        if (!active) return;
-        setTrips(tripData);
-        setCenters(centerData);
-      })
-      .catch((err: unknown) => {
-        if (!active) return;
-        setError(
-          err instanceof Error ? err.message : "Unable to load dive trips.",
-        );
-        setTrips([]);
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [city, level, query]);
-
-  const filtered = trips.filter((t) => t.type === "trip");
+  const {
+    centers,
+    city,
+    error,
+    experiences: filtered,
+    level,
+    loading,
+    query,
+    setCity,
+    setLevel,
+    setQuery,
+  } = useExperienceCatalog("trip");
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -74,7 +39,7 @@ export function Trips() {
               {CITIES.map((c) => <option key={c}>{c}</option>)}
             </select>
             <select className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-teal-400" value={level} onChange={(e) => setLevel(e.target.value)}>
-              {LEVELS.map((l) => <option key={l}>{l}</option>)}
+              {CATALOG_LEVELS.map((l) => <option key={l}>{l}</option>)}
             </select>
           </div>
         </div>
@@ -106,7 +71,7 @@ export function Trips() {
                 experience={trip}
                 center={center}
                 onOpen={(selectedTrip) => navigate(`/trips/${selectedTrip.id}`)}
-                onBook={(selectedTrip) => navigate(`/booking/${selectedTrip.id}`)}
+                onBook={(selectedTrip) => navigate(`/booking/${selectedTrip.type}/${selectedTrip.id}`)}
                 onCenterSelect={(selectedCenter) => navigate(`/centers/${selectedCenter.id}`)}
               />
             );

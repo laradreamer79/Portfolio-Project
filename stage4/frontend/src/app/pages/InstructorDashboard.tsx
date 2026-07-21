@@ -13,7 +13,16 @@ import {
   X,
 } from "lucide-react";
 import type { Trip } from "../data";
-import { createCourse, createTrip, getCourses, getTrips } from "../lib/catalogService";
+import {
+  createCourse,
+  createTrip,
+  deleteCourse,
+  deleteTrip,
+  getCourses,
+  getTrips,
+  updateCourse,
+  updateTrip,
+} from "../features/catalog";
 import { useAuth } from "../hooks/useAuth";
 
 type BookingRow = {
@@ -66,6 +75,7 @@ export function InstructorDashboard() {
   const [isPosting, setIsPosting] = useState(false);
   const [form, setForm] = useState<PostForm>(EMPTY_FORM);
   const [image, setImage] = useState<File | null>(null);
+  const [editingListing, setEditingListing] = useState<Trip | null>(null);
 
   useEffect(() => {
     if (!token) return;
@@ -99,12 +109,52 @@ export function InstructorDashboard() {
       setForm((current) => ({ ...current, [key]: event.target.value }));
     };
 
+  const listingRoute = (listing: Trip) =>
+    listing.type === "course" ? `/courses/${listing.id}` : `/trips/${listing.id}`;
+
+  const durationLabel = (duration: string) => {
+    if (duration.includes("4")) return "Half Day";
+    if (duration.includes("3")) return "Evening";
+    if (duration.includes("24")) return "Multi-Day";
+    return "Full Day";
+  };
+
+  const openCreateModal = () => {
+    setEditingListing(null);
+    setForm(EMPTY_FORM);
+    setImage(null);
+    setPostDone(false);
+    setPostError(null);
+    setShowPostModal(true);
+  };
+
+  const openEditModal = (listing: Trip) => {
+    setEditingListing(listing);
+    setForm({
+      title: listing.title,
+      type: listing.type,
+      level: listing.level,
+      price: String(listing.price),
+      duration: durationLabel(listing.duration),
+      depth: listing.depth === "Training" || listing.depth === "Varies" ? "" : listing.depth,
+      date: listing.rawDate ? listing.rawDate.slice(0, 10) : "",
+      slots: listing.slots ? String(listing.slots) : "",
+      description: listing.description,
+    });
+    setImage(null);
+    setPostDone(false);
+    setPostError(null);
+    setShowPostModal(true);
+  };
+
   const closePostModal = () => {
     setShowPostModal(false);
     setPostDone(false);
     setPostError(null);
     setIsPosting(false);
     setImage(null);
+    setEditingListing(null);
+    setForm(EMPTY_FORM);
   };
 
   const durationHours = (duration: string) => {
@@ -134,7 +184,7 @@ export function InstructorDashboard() {
   const handlePostSubmit = async () => {
     if (!form.title || !form.price) return;
 
-    if (!image) {
+    if (!editingListing && !image) {
       setPostError("Upload an image before publishing.");
       return;
     }
@@ -160,6 +210,48 @@ export function InstructorDashboard() {
         throw new Error("Enter a valid number of spots.");
       }
 
+      if (editingListing) {
+        const updatedListing =
+          editingListing.type === "course"
+            ? await updateCourse(
+                editingListing.id,
+                {
+                  title: form.title,
+                  description: form.description || undefined,
+                  level: form.level,
+                  price,
+                  startDate: date,
+                  image,
+                },
+                token,
+              )
+            : await updateTrip(
+                editingListing.id,
+                {
+                  title: form.title,
+                  description: form.description || undefined,
+                  durationHours: durationHours(form.duration),
+                  difficultyLevel: difficultyLevel(form.level),
+                  pricePerPerson: price,
+                  maxCapacity: slots,
+                  scheduleDate: date,
+                  image,
+                },
+                token,
+              );
+
+        setListings((current) =>
+          current.map((listing) =>
+            listing.id === editingListing.id && listing.type === editingListing.type
+              ? updatedListing
+              : listing,
+          ),
+        );
+        closePostModal();
+        setActiveTab("listings");
+        return;
+      }
+
       const createdListing =
         form.type === "course"
           ? await createCourse(
@@ -169,7 +261,7 @@ export function InstructorDashboard() {
                 level: form.level,
                 price,
                 startDate: date,
-                image,
+                image: image!,
               },
               token,
             )
@@ -182,7 +274,7 @@ export function InstructorDashboard() {
                 pricePerPerson: price,
                 maxCapacity: slots,
                 scheduleDate: date,
-                image,
+                image: image!,
               },
               token,
             );
@@ -199,6 +291,36 @@ export function InstructorDashboard() {
       );
     } finally {
       setIsPosting(false);
+    }
+  };
+
+  const handleDeleteListing = async (listing: Trip) => {
+    if (!token) {
+      setPostError("You need to sign in again before deleting.");
+      return;
+    }
+
+    const confirmed = window.confirm(`Delete "${listing.title}"? This cannot be undone.`);
+    if (!confirmed) return;
+
+    setPostError(null);
+
+    try {
+      if (listing.type === "course") {
+        await deleteCourse(listing.id, token);
+      } else {
+        await deleteTrip(listing.id, token);
+      }
+
+      setListings((current) =>
+        current.filter((item) => item.id !== listing.id || item.type !== listing.type),
+      );
+    } catch (err) {
+      window.alert(
+        err instanceof Error
+          ? err.message
+          : "Unable to delete this listing. Please try again.",
+      );
     }
   };
 
@@ -226,7 +348,7 @@ export function InstructorDashboard() {
           </div>
           <button
             type="button"
-            onClick={() => setShowPostModal(true)}
+            onClick={openCreateModal}
             className="flex items-center gap-2 rounded-xl bg-teal-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-teal-600"
           >
             <Plus className="h-4 w-4" /> Add Trip / Course
@@ -420,7 +542,7 @@ export function InstructorDashboard() {
               </h2>
               <button
                 type="button"
-                onClick={() => setShowPostModal(true)}
+                onClick={openCreateModal}
                 className="flex items-center gap-1.5 rounded-xl bg-teal-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-teal-600"
               >
                 <Plus className="h-4 w-4" /> Add Trip / Course
@@ -465,25 +587,21 @@ export function InstructorDashboard() {
                   <div className="flex flex-shrink-0 items-center gap-2">
                     <button
                       type="button"
-                      onClick={() =>
-                        navigate(
-                          trip.type === "course"
-                            ? `/courses/${trip.id}`
-                            : `/trips/${trip.id}`,
-                        )
-                      }
+                      onClick={() => navigate(listingRoute(trip))}
                       className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-teal-50 hover:text-teal-600"
                     >
                       <Eye className="h-4 w-4" />
                     </button>
                     <button
                       type="button"
+                      onClick={() => openEditModal(trip)}
                       className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-blue-50 hover:text-blue-600"
                     >
                       <Edit3 className="h-4 w-4" />
                     </button>
                     <button
                       type="button"
+                      onClick={() => handleDeleteListing(trip)}
                       className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -547,7 +665,9 @@ export function InstructorDashboard() {
           <div className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white shadow-2xl">
             <div className="sticky top-0 flex items-center justify-between rounded-t-2xl border-b border-slate-100 bg-white px-6 py-4">
               <h3 className="font-display text-xl font-bold tracking-wide text-slate-900">
-                Add Instructor Trip / Course
+                {editingListing
+                  ? "Edit Instructor Trip / Course"
+                  : "Add Instructor Trip / Course"}
               </h3>
               <button
                 type="button"
@@ -604,10 +724,16 @@ export function InstructorDashboard() {
                       className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 focus:border-teal-400 focus:outline-none"
                       value={form.type}
                       onChange={set("type")}
+                      disabled={Boolean(editingListing)}
                     >
                       <option value="trip">Trip</option>
                       <option value="course">Course</option>
                     </select>
+                    {editingListing && (
+                      <p className="mt-1 text-xs text-slate-400">
+                        Type cannot be changed while editing.
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -708,7 +834,7 @@ export function InstructorDashboard() {
 
                 <div>
                   <label className="mb-1.5 block text-sm font-medium text-slate-600">
-                    Image *
+                    Image {editingListing ? "(optional)" : "*"}
                   </label>
                   <input
                     type="file"
@@ -723,7 +849,9 @@ export function InstructorDashboard() {
                   )}
                   {!image && (
                     <p className="mt-1.5 text-xs text-slate-400">
-                      Required for publishing.
+                      {editingListing
+                        ? "Leave empty to keep the current image."
+                        : "Required for publishing."}
                     </p>
                   )}
                 </div>
@@ -731,14 +859,18 @@ export function InstructorDashboard() {
                 <button
                   type="button"
                   onClick={handlePostSubmit}
-                  disabled={!form.title || !form.price || !image || isPosting}
+                  disabled={!form.title || !form.price || (!editingListing && !image) || isPosting}
                   className="w-full rounded-xl bg-teal-500 py-3 font-semibold text-white transition-colors hover:bg-teal-600 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {isPosting
-                    ? "Publishing..."
-                    : form.type === "course"
-                      ? "Publish Course"
-                      : "Publish Trip"}
+                    ? editingListing
+                      ? "Saving..."
+                      : "Publishing..."
+                    : editingListing
+                      ? "Save Changes"
+                      : form.type === "course"
+                        ? "Publish Course"
+                        : "Publish Trip"}
                 </button>
                 {postError && (
                   <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">

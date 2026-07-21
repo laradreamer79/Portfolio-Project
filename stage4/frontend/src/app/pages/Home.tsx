@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, CheckCircle, Search, Waves, Award } from "lucide-react";
-import { CITIES, type Center, type Trip } from "../data";
-import { CenterCard } from "../components/cards/CenterCard";
-import { ExperienceCard } from "../components/cards/ExperienceCard";
-import { getCenters, getCourses, getTrips } from "../lib/catalogService";
+import {
+  CenterCard,
+  ExperienceCard,
+  useFeaturedCatalog,
+} from "../features/catalog";
 
 const CITY_IMGS: Record<string, string> = {
   Jeddah: "https://images.unsplash.com/photo-1682687982298-c7514a167088?w=600&h=420&fit=crop&auto=format",
@@ -17,62 +17,19 @@ const CITY_IMGS: Record<string, string> = {
 
 export function Home() {
   const navigate = useNavigate();
-  const [centers, setCenters] = useState<Center[]>([]);
-  const [trips, setTrips] = useState<Trip[]>([]);
-  const [courses, setCourses] = useState<Trip[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let active = true;
-
-    setLoading(true);
-    setError(null);
-
-    Promise.all([getCenters(), getTrips(), getCourses()])
-      .then(([centerData, tripData, courseData]) => {
-        if (!active) return;
-        setCenters(centerData);
-        setTrips(tripData);
-        setCourses(courseData);
-      })
-      .catch((err: unknown) => {
-        if (!active) return;
-        setError(err instanceof Error ? err.message : "Unable to load featured catalog data.");
-        setCenters([]);
-        setTrips([]);
-        setCourses([]);
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  const featured = centers.filter((c) => c.verified).slice(0, 3);
-  const cities = CITIES.filter((c) => c !== "All Cities");
-  const featuredTrips = trips.slice(0, 3);
-  const featuredCourses = courses.slice(0, 3);
-  const centerCount = centers.length || "—";
-  const cityCount = new Set(centers.map((center) => center.city)).size || cities.length;
-  const listingCount = trips.length + courses.length || "—";
-  const experienceCountForCity = (city: string) => {
-    const centerIds = new Set(
-      centers
-        .filter((center) => center.city === city)
-        .map((center) => center.id),
-    );
-
-    return [...trips, ...courses].filter(
-      (experience) =>
-        experience.centerId !== undefined &&
-        experience.centerId !== null &&
-        centerIds.has(experience.centerId),
-    ).length;
-  };
+  const {
+    centerCount,
+    centers,
+    cities,
+    cityCount,
+    error,
+    experienceCountForCity,
+    featuredCenters: featured,
+    featuredCourses,
+    featuredTrips,
+    listingCount,
+    loading,
+  } = useFeaturedCatalog();
 
   return (
     <div>
@@ -186,7 +143,7 @@ export function Home() {
                   center={center}
                   variant="featured"
                   onOpen={(selectedTrip) => navigate(`/trips/${selectedTrip.id}`)}
-                  onBook={(selectedTrip) => navigate(`/booking/${selectedTrip.id}`)}
+                  onBook={(selectedTrip) => navigate(`/booking/${selectedTrip.type}/${selectedTrip.id}`)}
                   onCenterSelect={(selectedCenter) => navigate(`/centers/${selectedCenter.id}`)}
                 />
               );
@@ -225,7 +182,7 @@ export function Home() {
                   center={center}
                   variant="featured"
                   onOpen={(selectedCourse) => navigate(`/courses/${selectedCourse.id}`)}
-                  onBook={(selectedCourse) => navigate(`/booking/${selectedCourse.id}`)}
+                  onBook={(selectedCourse) => navigate(`/booking/${selectedCourse.type}/${selectedCourse.id}`)}
                   onCenterSelect={(selectedCenter) => navigate(`/centers/${selectedCenter.id}`)}
                 />
               );

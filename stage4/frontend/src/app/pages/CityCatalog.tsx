@@ -1,63 +1,22 @@
-import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, GraduationCap, Search, Waves } from "lucide-react";
-import type { Center, Trip } from "../data";
-import { ExperienceCard } from "../components/cards/ExperienceCard";
-import { getCenters, getCourses, getTrips } from "../lib/catalogService";
+import { ExperienceCard, useCityCatalog } from "../features/catalog";
 
 export function CityCatalog() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const city = searchParams.get("city") ?? "All Cities";
   const cityLabel = city === "All Cities" ? "All Cities" : city;
-  const [query, setQuery] = useState("");
-  const [centers, setCenters] = useState<Center[]>([]);
-  const [trips, setTrips] = useState<Trip[]>([]);
-  const [courses, setCourses] = useState<Trip[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let active = true;
-
-    setLoading(true);
-    setError(null);
-
-    Promise.all([
-      getCenters({ city }),
-      getTrips({ city, search: query }),
-      getCourses({ city, search: query }),
-    ])
-      .then(([centerData, tripData, courseData]) => {
-        if (!active) return;
-        setCenters(centerData);
-        setTrips(tripData);
-        setCourses(courseData);
-      })
-      .catch((err: unknown) => {
-        if (!active) return;
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Unable to load city experiences.",
-        );
-        setCenters([]);
-        setTrips([]);
-        setCourses([]);
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [city, query]);
-
-  const experiences = useMemo(
-    () => [...trips, ...courses].sort((a, b) => a.date.localeCompare(b.date)),
-    [trips, courses],
-  );
+  const {
+    centers,
+    courses,
+    error,
+    experiences,
+    loading,
+    query,
+    setQuery,
+    trips,
+  } = useCityCatalog(city);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -157,7 +116,7 @@ export function CityCatalog() {
                     )
                   }
                   onBook={(selectedExperience) =>
-                    navigate(`/booking/${selectedExperience.id}`)
+                    navigate(`/booking/${selectedExperience.type}/${selectedExperience.id}`)
                   }
                   onCenterSelect={(selectedCenter) =>
                     navigate(`/centers/${selectedCenter.id}`)

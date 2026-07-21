@@ -1,72 +1,27 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { type Center, type Review, type Trip } from "../data";
 import { 
   ChevronLeft, Star, MapPin, Clock, Waves, Users, Calendar, 
   Shield, CheckCircle, AlertCircle, Phone, Mail, Award, BookOpen, GraduationCap
 } from "lucide-react";
-import { getCourseById, getCourses } from "../lib/catalogService";
+import { toReview, useExperienceDetail } from "../features/catalog";
+import { submitReview } from "../lib/reviewsService";
+import { ReviewForm } from "../components/ReviewForm";
 import { useAuth } from "../hooks/useAuth";
 
 export function CourseDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { token } = useAuth();
-  const [course, setCourse] = useState<Trip | null>(null);
-  const [center, setCenter] = useState<Center | undefined>();
-  const [courseReviews, setCourseReviews] = useState<Review[]>([]);
-  const [similarCourses, setSimilarCourses] = useState<Trip[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const courseId = Number(id);
-
-    if (!Number.isInteger(courseId)) {
-      setError("Invalid course id.");
-      setLoading(false);
-      return;
-    }
-
-    let active = true;
-    setLoading(true);
-    setError(null);
-
-    getCourseById(courseId, token)
-      .then((data) => {
-        if (!active) return;
-        setCourse(data.course);
-        setCenter(data.center);
-        setCourseReviews(data.reviews);
-        return getCourses(data.center?.city ? { city: data.center.city } : {}, token).then((courses) => {
-          if (!active) return;
-          setSimilarCourses(
-            courses
-              .filter((candidate) => candidate.id !== data.course.id)
-              .slice(0, 3),
-          );
-        });
-      })
-      .catch((err: unknown) => {
-        if (!active) return;
-        setError(err instanceof Error ? err.message : "Unable to load course.");
-        setCourse(null);
-        setCenter(undefined);
-        setCourseReviews([]);
-        setSimilarCourses([]);
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [id, token]);
-  
-  const avgRating = courseReviews.length > 0 
-    ? (courseReviews.reduce((sum, r) => sum + r.rating, 0) / courseReviews.length).toFixed(1)
-    : "N/A";
+  const {
+    addReview,
+    averageRating: avgRating,
+    center,
+    error,
+    experience: course,
+    loading,
+    reviews: courseReviews,
+    similarExperiences: similarCourses,
+  } = useExperienceDetail("course", id, token);
 
   if (loading) {
     return <div className="flex items-center justify-center h-96 text-slate-400">Loading course...</div>;
@@ -302,6 +257,15 @@ export function CourseDetail() {
                   <p className="text-slate-400 text-sm mt-1">Be the first to share your experience!</p>
                 </div>
               )}
+
+              <ReviewForm
+                label={course.title}
+                onSubmit={async (rating, comment) => {
+                  if (!token) return;
+                  const created = await submitReview({ courseId: course.id, rating, comment }, token);
+                  addReview(toReview(created));
+                }}
+              />
             </div>
 
             {/* Similar Courses */}
@@ -370,7 +334,7 @@ export function CourseDetail() {
               </div>
 
               <button
-                onClick={() => navigate(`/booking/${course.id}`)}
+                onClick={() => navigate(`/booking/course/${course.id}`)}
                 className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-4 rounded-xl transition-colors mb-4"
               >
                 Reserve Your Spot

@@ -1,5 +1,5 @@
-import type { Center, Review, Trip } from "../data";
-import { apiRequest } from "./apiClient";
+import type { Center, Review, Trip } from "../../data";
+import { apiRequest } from "../../lib/apiClient";
 
 type ApiCount = {
   trips?: number;
@@ -90,6 +90,10 @@ export type CreateTripPayload = {
   image: File;
 };
 
+export type UpdateTripPayload = Partial<Omit<CreateTripPayload, "image">> & {
+  image?: File | null;
+};
+
 export type CreateCoursePayload = {
   title: string;
   description?: string;
@@ -97,6 +101,10 @@ export type CreateCoursePayload = {
   price: number;
   startDate: string;
   image: File;
+};
+
+export type UpdateCoursePayload = Partial<Omit<CreateCoursePayload, "image">> & {
+  image?: File | null;
 };
 
 function queryString(filters: CatalogFilters) {
@@ -163,6 +171,7 @@ export function toTrip(trip: ApiTrip): Trip {
     duration: `${trip.durationHours} Hours`,
     depth: "Varies",
     date: formatDate(trip.scheduleDate),
+    rawDate: trip.scheduleDate,
     slots: trip.maxCapacity,
     description: trip.description ?? "Dive trip details will be shared by the provider.",
     img: trip.imageUrl ?? "",
@@ -180,10 +189,32 @@ export function toCourse(course: ApiCourse): Trip {
     duration: "Course",
     depth: "Training",
     date: formatDate(course.startDate),
+    rawDate: course.startDate,
     slots: 12,
     description: course.description ?? "Course details will be shared by the provider.",
     img: course.imageUrl ?? "",
   };
+}
+
+/** True when the trip/course's scheduled date has already passed. */
+export function isPastExperience(experience: Pick<Trip, "rawDate">): boolean {
+  if (!experience.rawDate) return false;
+  const scheduled = new Date(experience.rawDate);
+  if (Number.isNaN(scheduled.getTime())) return false;
+  const endOfScheduledDay = new Date(scheduled);
+  endOfScheduledDay.setHours(23, 59, 59, 999);
+  return endOfScheduledDay.getTime() < Date.now();
+}
+
+/**
+ * Fetches a trip or course by id without knowing the type upfront.
+ * Tries the trips endpoint first, then falls back to courses.
+ */
+export async function getExperienceById(
+  type: "trip" | "course",
+  id: number,
+) {
+  return type === "course" ? getCourseById(id) : getTripById(id);
 }
 
 export function toReview(review: ApiReview): Review {
@@ -314,9 +345,53 @@ export async function createCourse(
   return toCourse(course);
 }
 
+export async function updateTrip(
+  id: number,
+  payload: UpdateTripPayload,
+  token: string,
+) {
+  const { image, ...data } = payload;
+  const trip = await apiRequest<ApiTrip>(`/trips/${id}`, {
+    method: "PUT",
+    body: toCatalogFormData(data, image ?? undefined),
+    token,
+  });
+
+  return toTrip(trip);
+}
+
+export async function updateCourse(
+  id: number,
+  payload: UpdateCoursePayload,
+  token: string,
+) {
+  const { image, ...data } = payload;
+  const course = await apiRequest<ApiCourse>(`/courses/${id}`, {
+    method: "PUT",
+    body: toCatalogFormData(data, image ?? undefined),
+    token,
+  });
+
+  return toCourse(course);
+}
+
+export async function deleteTrip(id: number, token: string) {
+  await apiRequest(`/trips/${id}`, {
+    method: "DELETE",
+    token,
+  });
+}
+
+export async function deleteCourse(id: number, token: string) {
+  await apiRequest(`/courses/${id}`, {
+    method: "DELETE",
+    token,
+  });
+}
+
 function toCatalogFormData(
   data: Record<string, string | number | undefined>,
-  image: File,
+  image?: File,
 ) {
   const formData = new FormData();
 
@@ -326,6 +401,9 @@ function toCatalogFormData(
     }
   });
 
-  formData.append("image", image);
+  if (image) {
+    formData.append("image", image);
+  }
+
   return formData;
 }
