@@ -1,3 +1,4 @@
+# الملف يتحقق من jwt
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
@@ -6,6 +7,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
   throw new Error("JWT_SECRET is not defined");
 }
+# مايشغل الأوثنتكيشن بدون مفتاح
 
 const jwtSecret: string = JWT_SECRET;
 
@@ -28,24 +30,29 @@ export function authenticate(
       message: "Unauthorized",
     });
   }
+  # تقرأ البيرير توكن وتتحقق منه
 
   const token = authHeader.split(" ")[1];
+  # إستخراج التوكن
 
   try {
     const decoded = jwt.verify(token, jwtSecret) as {
       id: number;
       role: string;
     };
+    # التحقق من التوكن
 
     request.user = decoded;
 
     next();
+    #إذا كان صح يسمح له ينتقل 
   } catch {
     return response.status(401).json({
       message: "Invalid token",
     });
   }
 }
+# إذا كان خطأ او منتهي 
 
 export function optionalAuthenticate(
   request: AuthRequest,
@@ -73,3 +80,4 @@ export function optionalAuthenticate(
 
   return next();
 }
+# إذا مافيه توكن عادي يسمح لبعض الأمور
