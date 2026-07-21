@@ -1,3 +1,4 @@
+# يحتوي على سكيما إنشاء المركز وتحديثه
 import { z } from "zod";
 
 const optionalString = z.string().trim().min(1).optional();
