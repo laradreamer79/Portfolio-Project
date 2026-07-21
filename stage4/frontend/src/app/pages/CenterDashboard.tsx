@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Plus, Star, Users, TrendingUp, CheckCircle, Clock, X, Edit3, Trash2, Eye } from "lucide-react";
+import { Plus, Star, Users, TrendingUp, CheckCircle, Clock, X, Edit3, Trash2, Eye, ImageUp } from "lucide-react";
 import { listingRoute } from "../features/listing-management";
 import { useCenterDashboard } from "../features/center-dashboard";
 import { useAuth } from "../hooks/useAuth";
@@ -19,14 +19,20 @@ export function CenterDashboard() {
     handleDeleteListing,
     handleImageChange,
     handlePostSubmit,
+    handleProfileImageChange,
+    handleProfileImageSubmit,
     image,
     isPosting,
+    isSavingProfile,
     listings,
     openCreateModal,
     openEditModal,
     pending,
     postDone,
     postError,
+    profileError,
+    profileImage,
+    profileSuccess,
     revenue,
     setActiveTab,
     setFormField: set,
@@ -237,6 +243,48 @@ export function CenterDashboard() {
           <div className="max-w-2xl space-y-6">
             <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide">CENTER PROFILE</h2>
             <div className="bg-white rounded-2xl border border-slate-100 p-6 space-y-4">
+              <div>
+                <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest block mb-2">Center Image</label>
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                  <div className="h-32 w-full overflow-hidden rounded-2xl bg-slate-100 sm:w-48">
+                    {center?.img ? (
+                      <img src={center.img} alt={center.name} className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex h-full flex-col items-center justify-center gap-2 text-slate-400">
+                        <ImageUp className="h-7 w-7" />
+                        <span className="text-xs">No image uploaded</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 space-y-3">
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={handleProfileImageChange}
+                      className="block w-full text-sm text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-teal-50 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-teal-700 hover:file:bg-teal-100"
+                    />
+                    <p className="text-xs text-slate-400">JPEG, PNG, or WEBP. Maximum size 5 MB.</p>
+                    {profileImage && (
+                      <p className="text-xs font-medium text-slate-600">Selected: {profileImage.name}</p>
+                    )}
+                    <button
+                      type="button"
+                      onClick={handleProfileImageSubmit}
+                      disabled={!profileImage || isSavingProfile}
+                      className="rounded-xl bg-teal-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-teal-600 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      {isSavingProfile ? "Uploading..." : "Upload Center Image"}
+                    </button>
+                  </div>
+                </div>
+                {profileError && (
+                  <div className="mt-3 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">{profileError}</div>
+                )}
+                {profileSuccess && (
+                  <div className="mt-3 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{profileSuccess}</div>
+                )}
+              </div>
+              <div className="border-t border-slate-100" />
               {[
                 { label: "Center Name", value: center?.name ?? "" },
                 { label: "City", value: center?.city ?? "" },

@@ -1,4 +1,4 @@
-import { ChevronRight, MapPin, Shield, Star } from "lucide-react";
+import { ChevronRight, MapPin, Star } from "lucide-react";
 import type { Center } from "../../../data";
 
 type CenterCardProps = {
@@ -19,11 +19,7 @@ export function CenterCard({ center, variant = "catalog", onSelect }: CenterCard
       <div className={`relative overflow-hidden bg-slate-100 ${featured ? "h-48" : "h-44"}`}>
         <img src={center.img} alt={center.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
         {!featured && <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />}
-        {center.verified && (
-          <div className={`absolute left-3 top-3 flex items-center gap-1 rounded-full bg-teal-500 text-xs font-semibold text-white ${featured ? "px-2.5 py-1" : "px-2 py-0.5"}`}>
-            <Shield className="h-3 w-3" /> Verified
-          </div>
-        )}
+
         {!featured && (
           <div className="absolute bottom-3 right-3 rounded-lg bg-white/90 px-2 py-1 text-xs font-semibold text-slate-900 backdrop-blur">
             {center.priceRange}
