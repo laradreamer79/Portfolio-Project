@@ -45,6 +45,16 @@ export function useCenterDashboard({
   const [profileError, setProfileError] = useState<string | null>(null);
   const [profileSuccess, setProfileSuccess] = useState<string | null>(null);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const profileImagePreview = useMemo(
+    () => (profileImage ? URL.createObjectURL(profileImage) : null),
+    [profileImage],
+  );
+
+  useEffect(() => {
+    return () => {
+      if (profileImagePreview) URL.revokeObjectURL(profileImagePreview);
+    };
+  }, [profileImagePreview]);
 
   useEffect(() => {
     if (!token || !userId) return;
@@ -177,6 +187,7 @@ export function useCenterDashboard({
     pending,
     profileError,
     profileImage,
+    profileImagePreview,
     profileSuccess,
     revenue,
     setActiveTab,
