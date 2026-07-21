@@ -3,7 +3,7 @@ import type {
   AuthUser,
   LoginPayload,
   RegisterPayload,
-} from "../lib/authService";
+} from "../features/auth/authService";
 
 export type AuthContextValue = {
   user: AuthUser | null;

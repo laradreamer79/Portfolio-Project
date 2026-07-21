@@ -1,5 +1,5 @@
-import { apiRequest } from "./apiClient";
-import type { RegistrationRole, UserRole } from "./roles";
+import { apiRequest } from "../../lib/apiClient";
+import type { RegistrationRole, UserRole } from "../../lib/roles";
 
 export type AuthUser = {
   id: number;
