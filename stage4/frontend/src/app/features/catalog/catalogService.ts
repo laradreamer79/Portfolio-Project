@@ -375,6 +375,32 @@ export async function updateCourse(
   return toCourse(course);
 }
 
+export type UpdateCenterPayload = {
+  name?: string;
+  city?: string;
+  address?: string;
+  description?: string;
+  priceRange?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  image?: File | null;
+};
+
+export async function updateCenter(
+  id: number,
+  payload: UpdateCenterPayload,
+  token: string,
+) {
+  const { image, ...data } = payload;
+  const center = await apiRequest<ApiCenter>(`/centers/${id}`, {
+    method: "PUT",
+    body: toCatalogFormData(data, image ?? undefined),
+    token,
+  });
+
+  return toCenter(center);
+}
+
 export async function deleteTrip(id: number, token: string) {
   await apiRequest(`/trips/${id}`, {
     method: "DELETE",

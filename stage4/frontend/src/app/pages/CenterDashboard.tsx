@@ -10,6 +10,7 @@ import {
   getCenters,
   getCourses,
   getTrips,
+  updateCenter,
   updateCourse,
   updateTrip,
 } from "../features/catalog";
@@ -55,6 +56,18 @@ export function CenterDashboard() {
   const [isPosting, setIsPosting] = useState(false);
   const [image, setImage] = useState<File | null>(null);
   const [editingListing, setEditingListing] = useState<Trip | null>(null);
+  const [centerForm, setCenterForm] = useState({
+    name: "",
+    city: "",
+    phone: "",
+    email: "",
+    address: "",
+    priceRange: "",
+    longDescription: "",
+  });
+  const [centerSaving, setCenterSaving] = useState(false);
+  const [centerSaveError, setCenterSaveError] = useState<string | null>(null);
+  const [centerSaveSuccess, setCenterSaveSuccess] = useState(false);
 
   useEffect(() => {
     if (!token || !user) return;
@@ -87,7 +100,62 @@ export function CenterDashboard() {
     };
   }, [token, user]);
 
+  useEffect(() => {
+    if (!center) return;
+    setCenterForm({
+      name: center.name ?? "",
+      city: center.city ?? "",
+      phone: center.phone === "Not provided" ? "" : center.phone ?? "",
+      email: center.email === "Not provided" ? "" : center.email ?? "",
+      address: center.address ?? "",
+      priceRange: center.priceRange === "Contact for pricing" ? "" : center.priceRange ?? "",
+      longDescription: center.longDescription ?? "",
+    });
+  }, [center]);
+
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const setCenterField = (k: keyof typeof centerForm) => (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => setCenterForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const handleCenterSave = async () => {
+    if (!center || !token) {
+      setCenterSaveError("You need to sign in again before saving.");
+      return;
+    }
+
+    setCenterSaving(true);
+    setCenterSaveError(null);
+    setCenterSaveSuccess(false);
+
+    try {
+      const updatedCenter = await updateCenter(
+        center.id,
+        {
+          name: centerForm.name,
+          city: centerForm.city,
+          address: centerForm.address,
+          description: centerForm.longDescription,
+          priceRange: centerForm.priceRange,
+          contactEmail: centerForm.email,
+          contactPhone: centerForm.phone,
+        },
+        token,
+      );
+
+      setCenter(updatedCenter);
+      setCenterSaveSuccess(true);
+    } catch (err) {
+      setCenterSaveError(
+        err instanceof Error
+          ? err.message
+          : "Unable to save changes. Please try again.",
+      );
+    } finally {
+      setCenterSaving(false);
+    }
+  };
 
   const listingRoute = (listing: Trip) =>
     listing.type === "course" ? `/courses/${listing.id}` : `/trips/${listing.id}`;
@@ -511,24 +579,49 @@ export function CenterDashboard() {
           <div className="max-w-2xl space-y-6">
             <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide">CENTER PROFILE</h2>
             <div className="bg-white rounded-2xl border border-slate-100 p-6 space-y-4">
+              {centerSaveSuccess && (
+                <div className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                  Profile updated successfully.
+                </div>
+              )}
+              {centerSaveError && (
+                <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  {centerSaveError}
+                </div>
+              )}
               {[
-                { label: "Center Name", value: center?.name ?? "" },
-                { label: "City", value: center?.city ?? "" },
-                { label: "Phone", value: center?.phone ?? "" },
-                { label: "Email", value: center?.email ?? "" },
-                { label: "Address", value: center?.address ?? "" },
-                { label: "Price Range", value: center?.priceRange ?? "" },
+                { label: "Center Name", key: "name" as const },
+                { label: "City", key: "city" as const },
+                { label: "Phone", key: "phone" as const },
+                { label: "Email", key: "email" as const },
+                { label: "Address", key: "address" as const },
+                { label: "Price Range", key: "priceRange" as const },
               ].map((f) => (
-                <div key={f.label}>
+                <div key={f.key}>
                   <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest block mb-1">{f.label}</label>
-                  <input className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-teal-400 transition-colors" defaultValue={f.value} />
+                  <input
+                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-teal-400 transition-colors"
+                    value={centerForm[f.key]}
+                    onChange={setCenterField(f.key)}
+                  />
                 </div>
               ))}
               <div>
                 <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest block mb-1">Description</label>
-                <textarea rows={4} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-teal-400 transition-colors resize-none" defaultValue={center?.longDescription ?? ""} />
+                <textarea
+                  rows={4}
+                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-teal-400 transition-colors resize-none"
+                  value={centerForm.longDescription}
+                  onChange={setCenterField("longDescription")}
+                />
               </div>
-              <button className="bg-teal-500 text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-teal-600 transition-colors text-sm">Save Changes</button>
+              <button
+                onClick={handleCenterSave}
+                disabled={centerSaving || !center}
+                className="bg-teal-500 text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-teal-600 transition-colors text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {centerSaving ? "Saving..." : "Save Changes"}
+              </button>
             </div>
           </div>
         )}
