@@ -1,73 +1,10 @@
-import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle, Loader2, XCircle } from "lucide-react";
-import { useAuth } from "../hooks/useAuth";
-import { getPayment, type ApiPayment } from "../lib/paymentsService";
-
-const STORAGE_KEY = "oyster_pending_payment_id";
-const MAX_ATTEMPTS = 8;
-const POLL_INTERVAL_MS = 2000;
-
-type CallbackState = "checking" | "paid" | "failed" | "pending_timeout" | "no_record";
+import { usePaymentCallback } from "../features/payments";
 
 export function PaymentCallback() {
   const navigate = useNavigate();
-  const { token } = useAuth();
-
-  const [state, setState] = useState<CallbackState>("checking");
-  const [payment, setPayment] = useState<ApiPayment | null>(null);
-  const attemptsRef = useRef(0);
-
-  useEffect(() => {
-    const localPaymentId = sessionStorage.getItem(STORAGE_KEY);
-
-    if (!localPaymentId || !token) {
-      setState("no_record");
-      return;
-    }
-
-    let active = true;
-
-    async function poll() {
-      try {
-        const result = await getPayment(Number(localPaymentId), token as string);
-        if (!active) return;
-
-        setPayment(result);
-
-        if (result.status === "paid") {
-          sessionStorage.removeItem(STORAGE_KEY);
-          setState("paid");
-          return;
-        }
-
-        if (result.status === "failed") {
-          sessionStorage.removeItem(STORAGE_KEY);
-          setState("failed");
-          return;
-        }
-
-        attemptsRef.current += 1;
-        if (attemptsRef.current >= MAX_ATTEMPTS) {
-          setState("pending_timeout");
-          return;
-        }
-
-        setTimeout(poll, POLL_INTERVAL_MS);
-      } catch {
-        if (!active) return;
-        setState("failed");
-      }
-    }
-
-    poll();
-
-    return () => {
-      active = false;
-    };
-  }, [token]);
-
-  const bookingId = payment?.bookingId;
+  const { state, bookingId } = usePaymentCallback();
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center py-8 px-6">
