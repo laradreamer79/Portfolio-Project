@@ -6,12 +6,12 @@ import {
   type ReactNode,
 } from "react";
 import { ApiError } from "../lib/apiClient";
-import * as authService from "../lib/authService";
+import * as authService from "../features/auth/authService";
 import type {
   AuthUser,
   LoginPayload,
   RegisterPayload,
-} from "../lib/authService";
+} from "../features/auth/authService";
 import { AuthContext, type AuthContextValue } from "./authContext";
 
 const STORAGE_KEY = "oyster_auth";
