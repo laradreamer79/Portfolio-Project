@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { tripsController } from "../controllers/trips.controller.js";
+import { tripsController } from "./trips.controller.js";
 import {
   authenticate,
   optionalAuthenticate,
