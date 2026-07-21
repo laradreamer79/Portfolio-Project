@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   AlertTriangle,
@@ -10,8 +9,7 @@ import {
   Waves,
   X,
 } from "lucide-react";
-import { getMyBookings, cancelBooking, type ApiBooking } from "../lib/bookingService";
-import { ApiError } from "../lib/apiClient";
+import { useBookingDetail } from "../features/bookings";
 import { useAuth } from "../hooks/useAuth";
 
 const fallbackImage =
@@ -34,57 +32,14 @@ export function BookingDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { token } = useAuth();
-
-  const [booking, setBooking] = useState<ApiBooking | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isCancelling, setIsCancelling] = useState(false);
-  const [cancelError, setCancelError] = useState<string | null>(null);
-
-  const bookingId = Number(id);
-
-  useEffect(() => {
-    if (!token || !Number.isInteger(bookingId)) {
-      setLoading(false);
-      return;
-    }
-
-    let active = true;
-    setLoading(true);
-    setError(null);
-
-    getMyBookings(token)
-      .then((all) => {
-        if (!active) return;
-        const found = all.find((b) => b.id === bookingId);
-        setBooking(found ?? null);
-        if (!found) setError("Booking not found.");
-      })
-      .catch((err: unknown) => {
-        if (active) setError(err instanceof Error ? err.message : "Unable to load this booking.");
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [token, bookingId]);
-
-  async function handleCancel() {
-    if (!token || !booking || isCancelling) return;
-    setIsCancelling(true);
-    setCancelError(null);
-    try {
-      const updated = await cancelBooking(booking.id, token);
-      setBooking(updated);
-    } catch (err) {
-      setCancelError(err instanceof ApiError ? err.message : "Unable to cancel this booking.");
-    } finally {
-      setIsCancelling(false);
-    }
-  }
+  const {
+    booking,
+    cancelError,
+    error,
+    handleCancel,
+    isCancelling,
+    loading,
+  } = useBookingDetail(token, id);
 
   if (loading) {
     return <div className="flex items-center justify-center h-96 text-slate-400">Loading booking...</div>;
