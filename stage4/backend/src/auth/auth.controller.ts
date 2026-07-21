@@ -1,3 +1,4 @@
+# Controller يستقبل HTTP Request ويستدعي Service
 import type { NextFunction, Request, Response } from "express";
 import type { AuthRequest } from "../middleware/auth.middleware.js";
 import {
@@ -14,7 +15,7 @@ export async function register(
 ) {
   try {
     const body = registerSchema.parse(request.body);
-
+# يتحقق من البيانات 
     const result = await registerUser(body);
 
     response.status(201).json(result);
