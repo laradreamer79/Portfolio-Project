@@ -3,9 +3,8 @@ import {
   ChevronLeft, Star, MapPin, Clock, Waves, Users, Calendar, 
   Shield, CheckCircle, AlertCircle, Phone, Mail 
 } from "lucide-react";
-import { toReview, useExperienceDetail } from "../features/catalog";
-import { submitReview } from "../lib/reviewsService";
-import { ReviewForm } from "../components/ReviewForm";
+import { useExperienceDetail } from "../features/catalog";
+import { ReviewForm, useReviewSubmission } from "../features/reviews";
 import { useAuth } from "../hooks/useAuth";
 
 export function TripDetail() {
@@ -22,6 +21,12 @@ export function TripDetail() {
     reviews: tripReviews,
     similarExperiences: similarTrips,
   } = useExperienceDetail("trip", id, token);
+  const handleReviewSubmit = useReviewSubmission({
+    token,
+    target: "trip",
+    targetId: Number(id),
+    onCreated: addReview,
+  });
 
   if (loading) {
     return <div className="flex items-center justify-center h-96 text-slate-400">Loading trip...</div>;
@@ -242,11 +247,7 @@ export function TripDetail() {
 
               <ReviewForm
                 label={trip.title}
-                onSubmit={async (rating, comment) => {
-                  if (!token) return;
-                  const created = await submitReview({ tripId: trip.id, rating, comment }, token);
-                  addReview(toReview(created));
-                }}
+                onSubmit={handleReviewSubmit}
               />
             </div>
 

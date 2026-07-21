@@ -1,5 +1,6 @@
-import type { Center, Review, Trip } from "../../data";
+import type { Center, Trip } from "../../data";
 import { apiRequest } from "../../lib/apiClient";
+import { toReview, type ApiReview } from "../reviews";
 
 type ApiCount = {
   trips?: number;
@@ -54,20 +55,6 @@ export type ApiCourse = {
   imageUrl?: string | null;
   center?: Pick<ApiCenter, "id" | "name" | "city"> | null;
   _count?: ApiCount;
-};
-
-export type ApiReview = {
-  id: number;
-  centerId?: number | null;
-  tripId?: number | null;
-  courseId?: number | null;
-  rating: number;
-  comment?: string | null;
-  createdAt?: string;
-  user?: {
-    id: number;
-    name: string;
-  };
 };
 
 type CatalogFilters = {
@@ -215,20 +202,6 @@ export async function getExperienceById(
   id: number,
 ) {
   return type === "course" ? getCourseById(id) : getTripById(id);
-}
-
-export function toReview(review: ApiReview): Review {
-  return {
-    id: review.id,
-    centerId: review.centerId ?? 0,
-    tripId: review.tripId ?? review.courseId ?? undefined,
-    user: review.user?.name ?? "Oyster user",
-    avatar:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&auto=format",
-    rating: review.rating,
-    date: review.createdAt ? formatDate(review.createdAt) : "Recently",
-    comment: review.comment ?? "",
-  };
 }
 
 export async function getCenters(filters: CatalogFilters = {}, token?: string | null) {

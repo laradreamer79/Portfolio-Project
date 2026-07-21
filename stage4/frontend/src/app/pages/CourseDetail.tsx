@@ -3,9 +3,8 @@ import {
   ChevronLeft, Star, MapPin, Clock, Waves, Users, Calendar, 
   Shield, CheckCircle, AlertCircle, Phone, Mail, Award, BookOpen, GraduationCap
 } from "lucide-react";
-import { toReview, useExperienceDetail } from "../features/catalog";
-import { submitReview } from "../lib/reviewsService";
-import { ReviewForm } from "../components/ReviewForm";
+import { useExperienceDetail } from "../features/catalog";
+import { ReviewForm, useReviewSubmission } from "../features/reviews";
 import { useAuth } from "../hooks/useAuth";
 
 export function CourseDetail() {
@@ -22,6 +21,12 @@ export function CourseDetail() {
     reviews: courseReviews,
     similarExperiences: similarCourses,
   } = useExperienceDetail("course", id, token);
+  const handleReviewSubmit = useReviewSubmission({
+    token,
+    target: "course",
+    targetId: Number(id),
+    onCreated: addReview,
+  });
 
   if (loading) {
     return <div className="flex items-center justify-center h-96 text-slate-400">Loading course...</div>;
@@ -260,11 +265,7 @@ export function CourseDetail() {
 
               <ReviewForm
                 label={course.title}
-                onSubmit={async (rating, comment) => {
-                  if (!token) return;
-                  const created = await submitReview({ courseId: course.id, rating, comment }, token);
-                  addReview(toReview(created));
-                }}
+                onSubmit={handleReviewSubmit}
               />
             </div>
 
