@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
 import { Calendar, Clock, MapPin, Waves, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { getMyBookings, cancelBooking, type ApiBooking } from "../lib/bookingService";
-import { ApiError } from "../lib/apiClient";
+import { useMyBookings } from "../features/bookings";
 import { useAuth } from "../hooks/useAuth";
 
 const fallbackImage =
@@ -18,61 +16,16 @@ function formatDate(value?: string) {
 export function UserDashboard() {
   const navigate = useNavigate();
   const { token } = useAuth();
-
-  const [bookings, setBookings] = useState<ApiBooking[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [cancellingId, setCancellingId] = useState<number | null>(null);
-  const [cancelError, setCancelError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-
-    let active = true;
-    setLoading(true);
-    setError(null);
-
-    getMyBookings(token)
-      .then((data) => {
-        if (active) setBookings(data);
-      })
-      .catch((err: unknown) => {
-        if (active) {
-          setError(err instanceof Error ? err.message : "Unable to load your bookings.");
-        }
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [token]);
-
-  async function handleCancel(bookingId: number) {
-    if (!token || cancellingId) return; // prevent duplicate cancel clicks
-
-    setCancellingId(bookingId);
-    setCancelError(null);
-
-    try {
-      const updated = await cancelBooking(bookingId, token);
-      setBookings((prev) => prev.map((b) => (b.id === bookingId ? updated : b)));
-    } catch (err) {
-      setCancelError(
-        err instanceof ApiError ? err.message : "Unable to cancel this booking. Please try again.",
-      );
-    } finally {
-      setCancellingId(null);
-    }
-  }
-
-  const upcoming = bookings.filter((b) => b.status !== "cancelled");
-  const cancelled = bookings.filter((b) => b.status === "cancelled");
+  const {
+    activeCount,
+    bookings,
+    cancelledCount,
+    cancellingId,
+    cancelError,
+    error,
+    handleCancel,
+    loading,
+  } = useMyBookings(token);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -88,8 +41,8 @@ export function UserDashboard() {
         <div className="mb-8 grid gap-4 sm:grid-cols-3">
           {[
             { label: "Total bookings", value: bookings.length },
-            { label: "Active", value: upcoming.length },
-            { label: "Cancelled", value: cancelled.length },
+            { label: "Active", value: activeCount },
+            { label: "Cancelled", value: cancelledCount },
           ].map((stat) => (
             <div key={stat.label} className="rounded-2xl border border-slate-100 bg-white p-5">
               <p className="text-sm text-slate-400">{stat.label}</p>
