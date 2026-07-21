@@ -1,9 +1,10 @@
+# منطق التسجيل والدخول الحقيقي
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { prisma } from "../prisma/client.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
-
+# لا يمكن إنشاء توكن بدون سيكرت
 if (!JWT_SECRET) {
   throw new Error("JWT_SECRET is not defined");
 }
