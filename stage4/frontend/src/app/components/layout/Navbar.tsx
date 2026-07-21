@@ -84,6 +84,7 @@ export function Navbar() {
                       <p className="text-xs text-slate-400">{roleLabel(user.role)}</p>
                     </div>
                     <button type="button" onClick={() => goTo(dashboardPathForRole(user.role))} className="w-full px-4 py-2.5 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50">Dashboard</button>
+                    <button type="button" onClick={() => goTo("/profile")} className="w-full px-4 py-2.5 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50">Profile</button>
                     <button type="button" onClick={handleLogout} className="w-full px-4 py-2.5 text-left text-sm text-red-600 transition-colors hover:bg-slate-50">Log out</button>
                   </>
                 ) : (
@@ -125,6 +126,7 @@ export function Navbar() {
             {isAuthenticated && user ? (
               <>
                 <button type="button" onClick={() => goTo(dashboardPathForRole(user.role))} className="flex-1 rounded-xl border border-teal-200 py-2 text-sm font-semibold text-teal-600">Dashboard</button>
+                <button type="button" onClick={() => goTo("/profile")} className="flex-1 rounded-xl border border-slate-200 py-2 text-sm font-semibold text-slate-600">Profile</button>
                 <button type="button" onClick={handleLogout} className="flex-1 rounded-xl bg-red-50 py-2 text-sm font-semibold text-red-600">Log out</button>
               </>
             ) : (

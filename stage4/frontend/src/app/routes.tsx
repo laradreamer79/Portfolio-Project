@@ -17,6 +17,7 @@ import { AdminDashboard } from "./pages/AdminDashboard";
 import { CenterDashboard } from "./pages/CenterDashboard";
 import { InstructorDashboard } from "./pages/InstructorDashboard";
 import { UserDashboard } from "./pages/UserDashboard";
+import { UserProfile } from "./pages/UserProfile";
 import { NotFound } from "./pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
@@ -59,6 +60,14 @@ export const router = createBrowserRouter([
         ),
       },
       { path: "auth", Component: Auth },
+      {
+        path: "profile",
+        element: (
+          <ProtectedRoute>
+            <UserProfile />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: "admin",
         element: (
