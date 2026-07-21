@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Center } from "../../data";
+import { useUrlTab } from "../../hooks/useUrlTab";
 import { getAllBookings, type BookingCard } from "../bookings";
 import { getCenters } from "../catalog";
 
@@ -30,8 +31,10 @@ export const ADMIN_TABS: ReadonlyArray<{
   { key: "reviews", label: "Reviews" },
 ];
 
+const ADMIN_TAB_KEYS = ADMIN_TABS.map((tab) => tab.key);
+
 export function useAdminDashboard(token: string | null) {
-  const [activeTab, setActiveTab] = useState<AdminTab>("overview");
+  const [activeTab, setActiveTab] = useUrlTab(ADMIN_TAB_KEYS, "overview");
   const [centers, setCenters] = useState<CenterRow[]>([]);
   const [bookings, setBookings] = useState<BookingCard[]>([]);
   const [reviews, setReviews] = useState<ReviewRow[]>([]);

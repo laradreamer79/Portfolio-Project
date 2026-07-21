@@ -1,9 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { MapPin, Star, Shield, Phone, Mail, Clock, Waves, Users, ArrowRight, ChevronLeft, Calendar } from "lucide-react";
 import { useCenterDetail } from "../features/catalog";
 import { ReviewForm, useReviewSubmission } from "../features/reviews";
 import { useAuth } from "../hooks/useAuth";
+import { useUrlTab } from "../hooks/useUrlTab";
+
+const CENTER_DETAIL_TABS = ["trips", "reviews"] as const;
 
 function StarRow({ rating }: { rating: number }) {
   return (
@@ -19,7 +21,7 @@ export function CenterDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { token } = useAuth();
-  const [activeTab, setActiveTab] = useState<"trips" | "reviews">("trips");
+  const [activeTab, setActiveTab] = useUrlTab(CENTER_DETAIL_TABS, "trips");
   const {
     addReview,
     center,

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useUrlTab } from "../../hooks/useUrlTab";
 import { useListingManagement } from "../listing-management";
 
 export type InstructorDashboardTab =
@@ -6,6 +7,13 @@ export type InstructorDashboardTab =
   | "bookings"
   | "listings"
   | "profile";
+
+const INSTRUCTOR_TABS: readonly InstructorDashboardTab[] = [
+  "overview",
+  "bookings",
+  "listings",
+  "profile",
+];
 
 export type InstructorBookingRow = {
   id: string;
@@ -20,8 +28,7 @@ export type InstructorBookingRow = {
 };
 
 export function useInstructorDashboard(token: string | null) {
-  const [activeTab, setActiveTab] =
-    useState<InstructorDashboardTab>("overview");
+  const [activeTab, setActiveTab] = useUrlTab(INSTRUCTOR_TABS, "overview");
   const [bookings, setBookings] = useState<InstructorBookingRow[]>([]);
 
   const listingManagement = useListingManagement({

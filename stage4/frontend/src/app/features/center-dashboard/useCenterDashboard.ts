@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import type { Center } from "../../data";
+import { useUrlTab } from "../../hooks/useUrlTab";
 import { getCenters, updateCenter, type UpdateCenterPayload } from "../catalog";
 import { useListingManagement } from "../listing-management";
 
@@ -15,6 +16,13 @@ export type CenterDashboardTab =
   | "bookings"
   | "trips"
   | "profile";
+
+const DASHBOARD_TABS: readonly CenterDashboardTab[] = [
+  "overview",
+  "bookings",
+  "trips",
+  "profile",
+];
 
 export type CenterBookingRow = {
   id: string;
@@ -37,8 +45,7 @@ export function useCenterDashboard({
   token,
   userId,
 }: UseCenterDashboardOptions) {
-  const [activeTab, setActiveTab] =
-    useState<CenterDashboardTab>("overview");
+  const [activeTab, setActiveTab] = useUrlTab(DASHBOARD_TABS, "overview");
   const [center, setCenter] = useState<Center | null>(null);
   const [bookings, setBookings] = useState<CenterBookingRow[]>([]);
   const [profileImage, setProfileImage] = useState<File | null>(null);
