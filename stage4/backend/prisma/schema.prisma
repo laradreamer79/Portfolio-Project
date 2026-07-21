@@ -2,7 +2,7 @@ generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
 }
-
+# enums يمنع تخزين قطم مختلفة او مكتوبة بشكل خاطئ
 datasource db {
   provider = "postgresql"
 }
