@@ -1,11 +1,11 @@
 import { Response, NextFunction } from "express";
-import { coursesService } from "../services/courses.service.js";
+import { coursesService } from "./courses.service.js";
 import { AuthRequest } from "../middleware/auth.middleware.js";
 import { uploadToCloudinary } from "../middleware/upload.middleware.js";
 import {
   courseCreateSchema,
   courseUpdateSchema,
-} from "../validation/catalog.validation.js";
+} from "./courses.validation.js";
 
 export const coursesController = {
   async getAll(req: AuthRequest, res: Response, next: NextFunction) {

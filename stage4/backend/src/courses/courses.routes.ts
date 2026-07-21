@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { coursesController } from "../controllers/courses.controller.js";
+import { coursesController } from "./courses.controller.js";
 import {
   authenticate,
   optionalAuthenticate,

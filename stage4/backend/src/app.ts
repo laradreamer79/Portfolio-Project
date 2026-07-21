@@ -8,7 +8,7 @@ import { authRouter } from "./auth/auth.routes.js";
 import { adminRouter } from "./routes/admin.routes.js";
 import { centersRouter } from "./centers/centers.routes.js";
 import { tripsRouter } from "./trips/trips.routes.js";
-import { coursesRouter } from "./routes/courses.routes.js";
+import { coursesRouter } from "./courses/courses.routes.js";
 
 import { bookingsRouter } from "./bookings/bookings.routes.js";
 import { reviewsRouter } from "./reviews/reviews.routes.js";
