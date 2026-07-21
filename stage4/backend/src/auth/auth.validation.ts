@@ -23,7 +23,7 @@ export const registerSchema = z
     role: z
       .enum(["user", "instructor", "diving_center"])
       .default("user"),
-
+# ماسمح للمستخدم بتسجيل نفسه ادمن 
     instructorLicenseNumber: optionalTrimmedString,
     centerName: optionalTrimmedString,
     centerCity: optionalTrimmedString,
