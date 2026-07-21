@@ -7,7 +7,7 @@ import {
   getUserBookings,
   getAllBookings,
 } from "./bookings.service.js";
-
+# يتأكد من وجود المستخدم
 export async function createBookingController(
   req: AuthRequest,
   res: Response,
@@ -57,7 +57,7 @@ export async function createBookingController(
     });
   }
 }
-
+# يقرأ id من الرابط
 export async function cancelBookingController(
   req: AuthRequest,
   res: Response,
@@ -70,7 +70,7 @@ export async function cancelBookingController(
     }
 
     const bookingId = Number(req.params.id);
-
+# يقارن مالك الحجز بالمستخدم الحالي
     const booking = await cancelBooking(
       bookingId,
       req.user.id,
@@ -102,7 +102,7 @@ export async function cancelBookingController(
     });
   }
 }
-
+# يستخدم id المستخدم الحالي ويعيد حجوزاته فقط
 export async function getMyBookingsController(
   req: AuthRequest,
   res: Response,
@@ -131,7 +131,7 @@ export async function getMyBookingsController(
 
 export const myBookingsController =
   getMyBookingsController;
-
+# يعيد كل الحجوزات للاداره
 export async function allBookingsController(
   req: AuthRequest,
   res: Response,
