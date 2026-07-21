@@ -1,11 +1,11 @@
 import { Response, NextFunction } from "express";
-import { centersService } from "../services/centers.service.js";
+import { centersService } from "./centers.service.js";
 import { AuthRequest } from "../middleware/auth.middleware.js";
 import { uploadToCloudinary } from "../middleware/upload.middleware.js";
 import {
   centerCreateSchema,
   centerUpdateSchema,
-} from "../validation/catalog.validation.js";
+} from "./centers.validation.js";
 
 export const centersController = {
   async getAll(req: AuthRequest, res: Response, next: NextFunction) {
