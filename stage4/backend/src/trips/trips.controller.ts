@@ -1,11 +1,11 @@
 import { Response, NextFunction } from "express";
-import { tripsService } from "../services/trips.service.js";
+import { tripsService } from "./trips.service.js";
 import { AuthRequest } from "../middleware/auth.middleware.js";
 import { uploadToCloudinary } from "../middleware/upload.middleware.js";
 import {
   tripCreateSchema,
   tripUpdateSchema,
-} from "../validation/catalog.validation.js";
+} from "./trips.validation.js";
 
 export const tripsController = {
   async getAll(req: AuthRequest, res: Response, next: NextFunction) {

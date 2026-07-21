@@ -1,5 +1,5 @@
-import { prisma } from "../prisma/client.js";
 import { HttpError } from "../utils/http-error.js";
+import { prisma } from "../prisma/client.js";
 
 type Actor = {
   id: number;
