@@ -1,3 +1,4 @@
+# الملف يقدم نسخه اكثر امانا للصلاحيات
 import type { NextFunction, Response } from "express";
 import type { AuthRequest } from "../../middleware/auth.middleware.js";
 
