@@ -1,3 +1,4 @@
+# يجمع إعدادات البيئه فأوبجكت واحد
 const DEFAULT_PORT = 3000;
 const DEFAULT_MOYASAR_BASE_URL =
   "https://api.moyasar.com/v1";
