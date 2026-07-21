@@ -6,7 +6,7 @@ import { notFound } from './middleware/not-found.middleware.js';
 import { healthRouter } from './routes/health.routes.js';
 import { authRouter } from "./auth/auth.routes.js";
 import { adminRouter } from "./routes/admin.routes.js";
-import { centersRouter } from "./routes/centers.routes.js";
+import { centersRouter } from "./centers/centers.routes.js";
 import { tripsRouter } from "./routes/trips.routes.js";
 import { coursesRouter } from "./routes/courses.routes.js";
 

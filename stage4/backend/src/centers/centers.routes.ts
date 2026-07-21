@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { centersController } from "../controllers/centers.controller.js";
+import { centersController } from "./centers.controller.js";
 import {
   authenticate,
   optionalAuthenticate,
