@@ -1,10 +1,12 @@
+# الملف مسؤول عن استقبال الصور ورفعها
 import multer from "multer";
 import cloudinary, { hasCloudinaryConfig } from "../config/cloudinary.js";
 import { HttpError } from "../utils/http-error.js";
 
 const storage = multer.memoryStorage();
+# الصوره تنحفظ مؤقتا بالذاكره كبفر موكملف دائم عالسيرفر
 const allowedImageTypes = ["image/jpeg", "image/png", "image/webp"];
-
+#انواع الصور
 export const upload = multer({
   storage,
   limits: {
