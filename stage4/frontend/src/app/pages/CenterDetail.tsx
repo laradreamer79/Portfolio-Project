@@ -1,9 +1,8 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { MapPin, Star, Shield, Phone, Mail, Clock, Waves, Users, ArrowRight, ChevronLeft, Calendar } from "lucide-react";
-import { toReview, useCenterDetail } from "../features/catalog";
-import { submitReview } from "../lib/reviewsService";
-import { ReviewForm } from "../components/ReviewForm";
+import { useCenterDetail } from "../features/catalog";
+import { ReviewForm, useReviewSubmission } from "../features/reviews";
 import { useAuth } from "../hooks/useAuth";
 
 function StarRow({ rating }: { rating: number }) {
@@ -29,6 +28,12 @@ export function CenterDetail() {
     loading,
     reviews,
   } = useCenterDetail(id);
+  const handleReviewSubmit = useReviewSubmission({
+    token,
+    target: "center",
+    targetId: Number(id),
+    onCreated: addReview,
+  });
 
   if (loading) return <div className="flex items-center justify-center h-96 text-slate-400">Loading center...</div>;
   if (error) return <div className="flex items-center justify-center h-96 text-red-500">{error}</div>;
@@ -160,11 +165,7 @@ export function CenterDetail() {
                 {/* Submit review */}
                 <ReviewForm
                   label={center.name}
-                  onSubmit={async (rating, comment) => {
-                    if (!token) return;
-                    const created = await submitReview({ centerId: center.id, rating, comment }, token);
-                    addReview(toReview(created));
-                  }}
+                  onSubmit={handleReviewSubmit}
                 />
               </div>
             )}
