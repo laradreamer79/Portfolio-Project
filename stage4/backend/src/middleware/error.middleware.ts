@@ -1,7 +1,7 @@
 import type { ErrorRequestHandler } from 'express';
 import { ZodError } from 'zod';
 import { HttpError } from '../utils/http-error.js';
-
+# لمعالجه الأخطاء
 export const errorHandler: ErrorRequestHandler = (
   error: unknown,
   _request,
@@ -28,3 +28,4 @@ export const errorHandler: ErrorRequestHandler = (
     message: 'Internal server error',
   });
 };
+# اخطاء غير متوقعه مايحط تفاصيل للمستخدم
