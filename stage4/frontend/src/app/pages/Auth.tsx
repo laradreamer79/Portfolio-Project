@@ -143,7 +143,9 @@ export function Auth() {
                 <AuthField
                   label="Full Name"
                   value={registerForm.name}
-                  onChange={(value) => updateRegisterField("name", value)}
+                  onChange={(value) => {
+                    if (/^[A-Za-zء-ي\s]*$/.test(value)) updateRegisterField("name", value);
+                  }}
                   autoComplete="name"
                   minLength={2}
                 />
@@ -178,9 +180,9 @@ export function Auth() {
                     <AuthField
                       label="Diving Center Name"
                       value={registerForm.centerName}
-                      onChange={(value) =>
-                        updateRegisterField("centerName", value)
-                      }
+                      onChange={(value) => {
+                        if (/^[A-Za-zء-ي\s]*$/.test(value)) updateRegisterField("centerName", value);
+                      }}
                       autoComplete="organization"
                       minLength={2}
                     />
