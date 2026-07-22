@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import type { RegistrationRole } from "../../lib/roles";
+import { isValidEmail } from "../../lib/validation";
 import type { LoginPayload } from "./authService";
 
 export type AuthTab = "login" | "register";
@@ -50,6 +51,7 @@ export function useAuthForm() {
     params.get("tab") === "register" ? "register" : "login",
   );
   const [showPassword, setShowPassword] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [loginForm, setLoginForm] = useState(EMPTY_LOGIN_FORM);
   const [registerForm, setRegisterForm] = useState(EMPTY_REGISTER_FORM);
 
@@ -61,18 +63,22 @@ export function useAuthForm() {
 
   function switchTab(nextTab: AuthTab) {
     clearError();
+    setValidationError(null);
     setTab(nextTab);
   }
 
   function updateLoginField(field: keyof LoginPayload, value: string) {
+    setValidationError(null);
     setLoginForm((current) => ({ ...current, [field]: value }));
   }
 
   function updateRegisterField(field: RegisterTextField, value: string) {
+    setValidationError(null);
     setRegisterForm((current) => ({ ...current, [field]: value }));
   }
 
   function setRegistrationRole(role: RegistrationRole) {
+    setValidationError(null);
     setRegisterForm((current) => ({ ...current, role }));
   }
 
@@ -86,8 +92,18 @@ export function useAuthForm() {
   async function handleLogin(event: FormEvent) {
     event.preventDefault();
 
+    if (!isValidEmail(loginForm.email)) {
+      setValidationError("Enter a valid email address.");
+      return;
+    }
+
+    if (!loginForm.password) {
+      setValidationError("Password is required.");
+      return;
+    }
+
     try {
-      await login(loginForm);
+      await login({ ...loginForm, email: loginForm.email.trim() });
       finishAuthentication();
     } catch {
       // AuthProvider exposes the request error.
@@ -97,8 +113,55 @@ export function useAuthForm() {
   async function handleRegister(event: FormEvent) {
     event.preventDefault();
 
+    const name = registerForm.name.trim();
+    const email = registerForm.email.trim();
+
+    if (name.length < 2) {
+      setValidationError("Name must be at least 2 characters.");
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setValidationError("Enter a valid email address.");
+      return;
+    }
+
+    if (registerForm.password.length < 6) {
+      setValidationError("Password must be at least 6 characters.");
+      return;
+    }
+
+    if (
+      registerForm.role === "instructor" &&
+      registerForm.instructorLicenseNumber.trim().length < 2
+    ) {
+      setValidationError("Instructor license number is required.");
+      return;
+    }
+
+    if (
+      registerForm.role === "diving_center" &&
+      (registerForm.centerName.trim().length < 2 ||
+        registerForm.centerCity.trim().length < 2 ||
+        registerForm.centerLicenseNumber.trim().length < 2)
+    ) {
+      setValidationError(
+        "Center name, city, and license number are required.",
+      );
+      return;
+    }
+
     try {
-      await register(registerForm);
+      await register({
+        ...registerForm,
+        name,
+        email,
+        instructorLicenseNumber:
+          registerForm.instructorLicenseNumber.trim(),
+        centerName: registerForm.centerName.trim(),
+        centerCity: registerForm.centerCity.trim(),
+        centerLicenseNumber: registerForm.centerLicenseNumber.trim(),
+      });
       finishAuthentication();
     } catch {
       // AuthProvider exposes the request error.
@@ -106,7 +169,7 @@ export function useAuthForm() {
   }
 
   return {
-    error,
+    error: validationError ?? error,
     goHome: () => navigate("/"),
     handleLogin,
     handleRegister,

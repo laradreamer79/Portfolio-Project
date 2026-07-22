@@ -1,14 +1,12 @@
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import type { Center } from "../../data";
+import {
+  imageValidationError,
+  isValidEmail,
+  isValidSaudiPhone,
+} from "../../lib/validation";
 import { getCenters, updateCenter, type UpdateCenterPayload } from "../catalog";
 import { useListingManagement } from "../listing-management";
-
-const ALLOWED_IMAGE_TYPES = new Set([
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-]);
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
 export type CenterDashboardTab =
   | "overview"
@@ -105,16 +103,10 @@ export function useCenterDashboard({
       return;
     }
 
-    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+    const imageError = imageValidationError(file);
+    if (imageError) {
       setProfileImage(null);
-      setProfileError("Upload a JPEG, PNG, or WEBP image.");
-      event.target.value = "";
-      return;
-    }
-
-    if (file.size > MAX_IMAGE_SIZE) {
-      setProfileImage(null);
-      setProfileError("The center image must be 5 MB or smaller.");
+      setProfileError(imageError);
       event.target.value = "";
       return;
     }
@@ -135,6 +127,27 @@ export function useCenterDashboard({
         String(value).trim() || undefined,
       ]),
     ) as UpdateCenterPayload;
+
+    if (!payload.name?.trim() || !payload.city?.trim()) {
+      setProfileError("Center name and city are required.");
+      return;
+    }
+
+    if (payload.contactEmail && !isValidEmail(payload.contactEmail)) {
+      setProfileError("Enter a valid contact email address.");
+      return;
+    }
+
+    if (payload.contactPhone) {
+      if (!isValidSaudiPhone(payload.contactPhone)) {
+        setProfileError(
+          "Enter a Saudi phone number such as 05XXXXXXXX or +9665XXXXXXXX.",
+        );
+        return;
+      }
+
+      payload.contactPhone = payload.contactPhone.replace(/[\s-]/g, "");
+    }
 
     if (profileImage) payload.image = profileImage;
 

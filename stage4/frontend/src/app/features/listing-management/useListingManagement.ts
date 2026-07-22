@@ -1,6 +1,10 @@
 import { useEffect, useState, type ChangeEvent } from "react";
 import type { Trip } from "../../data";
 import {
+  imageValidationError,
+  isTodayOrFuture,
+} from "../../lib/validation";
+import {
   createCourse,
   createTrip,
   deleteCourse,
@@ -163,11 +167,64 @@ export function useListingManagement({
   }
 
   function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
-    setImage(event.target.files?.[0] ?? null);
+    const file = event.target.files?.[0] ?? null;
+    setPostError(null);
+
+    if (!file) {
+      setImage(null);
+      return;
+    }
+
+    const error = imageValidationError(file);
+    if (error) {
+      setImage(null);
+      setPostError(error);
+      event.target.value = "";
+      return;
+    }
+
+    setImage(file);
   }
 
   async function handlePostSubmit() {
-    if (!form.title || !form.price) return;
+    const title = form.title.trim();
+    const description = form.description.trim();
+    const price = Number(form.price);
+    const slots = Number(form.slots);
+
+    if (!title) {
+      setPostError("Enter a title.");
+      return;
+    }
+
+    if (!description) {
+      setPostError("Enter a description.");
+      return;
+    }
+
+    if (!form.price || !Number.isFinite(price) || price < 0) {
+      setPostError("Enter a valid non-negative price.");
+      return;
+    }
+
+    if (
+      form.type === "trip" &&
+      (!form.slots || !Number.isInteger(slots) || slots <= 0)
+    ) {
+      setPostError("Enter a positive whole number of spots.");
+      return;
+    }
+
+    if (!form.date) {
+      setPostError("Choose a date.");
+      return;
+    }
+
+    const originalDate = editingListing?.rawDate?.slice(0, 10);
+    if (form.date !== originalDate && !isTodayOrFuture(form.date)) {
+      setPostError("Choose today or a future date.");
+      return;
+    }
 
     if (!editingListing && !image) {
       setPostError("Upload an image before publishing.");
@@ -183,17 +240,8 @@ export function useListingManagement({
     setPostError(null);
 
     try {
-      const price = Number(form.price);
-      const slots = form.slots ? Number(form.slots) : defaultSlots;
-      const date = form.date || new Date().toISOString().slice(0, 10);
-
-      if (Number.isNaN(price) || price < 0) {
-        throw new Error("Enter a valid price.");
-      }
-
-      if (Number.isNaN(slots) || slots <= 0) {
-        throw new Error("Enter a valid number of spots.");
-      }
+      const tripSlots = form.type === "trip" ? slots : defaultSlots;
+      const date = form.date;
 
       if (editingListing) {
         const updatedListing =
@@ -201,8 +249,8 @@ export function useListingManagement({
             ? await updateCourse(
                 editingListing.id,
                 {
-                  title: form.title,
-                  description: form.description || undefined,
+                  title,
+                  description,
                   level: form.level,
                   price,
                   startDate: date,
@@ -213,12 +261,12 @@ export function useListingManagement({
             : await updateTrip(
                 editingListing.id,
                 {
-                  title: form.title,
-                  description: form.description || undefined,
+                  title,
+                  description,
                   durationHours: durationHours(form.duration),
                   difficultyLevel: difficultyLevel(form.level),
                   pricePerPerson: price,
-                  maxCapacity: slots,
+                  maxCapacity: tripSlots,
                   scheduleDate: date,
                   image,
                 },
@@ -242,8 +290,8 @@ export function useListingManagement({
         form.type === "course"
           ? await createCourse(
               {
-                title: form.title,
-                description: form.description || undefined,
+                title,
+                description,
                 level: form.level,
                 price,
                 startDate: date,
@@ -253,12 +301,12 @@ export function useListingManagement({
             )
           : await createTrip(
               {
-                title: form.title,
-                description: form.description || undefined,
+                title,
+                description,
                 durationHours: durationHours(form.duration),
                 difficultyLevel: difficultyLevel(form.level),
                 pricePerPerson: price,
-                maxCapacity: slots,
+                maxCapacity: tripSlots,
                 scheduleDate: date,
                 image: image!,
               },
