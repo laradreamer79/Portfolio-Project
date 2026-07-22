@@ -15,7 +15,11 @@ function formatReviewDate(value: string) {
 export function toReview(review: ApiReview): Review {
   return {
     id: review.id,
-    centerId: review.centerId ?? 0,
+    centerId:
+      review.centerId ??
+      review.trip?.centerId ??
+      review.course?.centerId ??
+      0,
     tripId: review.tripId ?? review.courseId ?? undefined,
     user: review.user?.name ?? "Oyster user",
     avatar: fallbackAvatar,

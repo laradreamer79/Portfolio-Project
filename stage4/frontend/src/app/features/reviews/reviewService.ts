@@ -10,6 +10,8 @@ export type ApiReview = {
   tripId?: number | null;
   courseId?: number | null;
   user?: { id: number; name: string };
+  trip?: { id: number; centerId?: number | null } | null;
+  course?: { id: number; centerId?: number | null } | null;
 };
 
 export type CreateReviewPayload = {

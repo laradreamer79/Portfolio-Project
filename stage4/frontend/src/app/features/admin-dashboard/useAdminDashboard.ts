@@ -165,7 +165,10 @@ export function useAdminDashboard(token: string | null) {
   }, [centerQuery, centers, statusFilter]);
 
   const totalRevenue = useMemo(
-    () => bookings.reduce((sum, booking) => sum + booking.total, 0),
+    () =>
+      bookings
+        .filter((booking) => booking.status === "confirmed")
+        .reduce((sum, booking) => sum + booking.total, 0),
     [bookings],
   );
   const pendingCount = useMemo(
