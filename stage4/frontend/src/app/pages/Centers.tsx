@@ -19,7 +19,10 @@ export function Centers() {
     setQuery,
     setVerifiedOnly,
     verifiedOnly,
-  } = useCentersCatalog(params.get("city") || "All Cities");
+  } = useCentersCatalog(
+    params.get("city") || "All Cities",
+    params.get("search") || "",
+  );
 
   return (
     <div className="min-h-screen bg-slate-50">
