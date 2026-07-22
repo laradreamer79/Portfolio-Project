@@ -102,6 +102,7 @@ export type UpdateCenterPayload = {
   priceRange?: string;
   contactEmail?: string;
   contactPhone?: string;
+  status?: "pending" | "approved" | "rejected";
   image?: File | null;
 };
 
@@ -153,6 +154,7 @@ export function toCenter(center: ApiCenter): Center {
     img: center.imageUrl ?? "",
     gallery: center.imageUrl ? [center.imageUrl] : [],
     verified: center.status === "approved",
+    status: center.status,
     since: center.createdAt ? new Date(center.createdAt).getFullYear() : 2026,
     specialties: ["Diving", "Trips", "Courses"],
   };
@@ -280,6 +282,14 @@ export async function updateCenter(
   });
 
   return toCenter(center);
+}
+
+export function updateCenterStatus(
+  id: number,
+  status: "pending" | "approved" | "rejected",
+  token: string,
+) {
+  return updateCenter(id, { status }, token);
 }
 
 export async function getTripById(id: number, token?: string | null) {

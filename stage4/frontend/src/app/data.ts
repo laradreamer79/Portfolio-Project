@@ -15,6 +15,7 @@ export type Center = {
   img: string;
   gallery: string[];
   verified: boolean;
+  status?: string;
   since: number;
   specialties: string[];
 };

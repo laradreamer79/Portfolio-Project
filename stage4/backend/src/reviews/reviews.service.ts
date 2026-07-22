@@ -142,6 +142,15 @@ export async function getCenterReviews(
   });
 }
 
+export async function getAllReviews() {
+  return prisma.review.findMany({
+    include: reviewInclude,
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
+
 export async function getTripReviews(
   tripId: number,
 ) {
@@ -167,5 +176,20 @@ export async function getCourseReviews(
     orderBy: {
       createdAt: "desc",
     },
+  });
+}
+
+export async function deleteReview(id: number) {
+  const existingReview = await prisma.review.findUnique({
+    where: { id },
+    select: { id: true },
+  });
+
+  if (!existingReview) {
+    throw new Error("Review not found");
+  }
+
+  return prisma.review.delete({
+    where: { id },
   });
 }

@@ -16,6 +16,7 @@ export function AdminDashboard() {
   const {
     activeTab,
     bookings,
+    cancelAdminBooking,
     centerQuery,
     centers,
     filteredCenters,
@@ -107,7 +108,11 @@ export function AdminDashboard() {
         )}
 
         {activeTab === "bookings" && (
-          <AdminBookings bookings={bookings} totalRevenue={totalRevenue} />
+          <AdminBookings
+            bookings={bookings}
+            totalRevenue={totalRevenue}
+            onCancel={cancelAdminBooking}
+          />
         )}
 
         {activeTab === "reviews" && (

@@ -407,11 +407,13 @@ export function AdminCenters({
 type AdminBookingsProps = {
   bookings: BookingCard[];
   totalRevenue: number;
+  onCancel: (id: number) => void;
 };
 
 export function AdminBookings({
   bookings,
   totalRevenue,
+  onCancel,
 }: AdminBookingsProps) {
   return (
     <div>
@@ -442,6 +444,8 @@ export function AdminBookings({
                 "Divers",
                 "Total",
                 "Date",
+                "Status",
+                "Actions",
               ].map((heading) => (
                 <th
                   key={heading}
@@ -482,6 +486,37 @@ export function AdminBookings({
                 <td className="px-4 py-3.5 text-slate-500">
                   {booking.date}
                 </td>
+                <td className="px-4 py-3.5">
+                  <span
+                    className={`rounded-full border px-2.5 py-1 text-xs font-semibold capitalize ${
+                      booking.status === "confirmed"
+                        ? "border-emerald-100 bg-emerald-50 text-emerald-700"
+                        : booking.status === "cancelled"
+                          ? "border-red-100 bg-red-50 text-red-600"
+                          : "border-amber-100 bg-amber-50 text-amber-700"
+                    }`}
+                  >
+                    {booking.status}
+                  </span>
+                </td>
+                <td className="px-4 py-3.5">
+                  {booking.status !== "cancelled" && (
+                    <button
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            "Cancel this booking? This will not issue a refund.",
+                          )
+                        ) {
+                          onCancel(booking.id);
+                        }
+                      }}
+                      className="rounded-lg border border-red-100 bg-red-50 px-2.5 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-100"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -496,7 +531,7 @@ export function AdminBookings({
               <td className="px-4 py-3 font-bold text-slate-900">
                 SAR {totalRevenue.toLocaleString()}
               </td>
-              <td />
+              <td colSpan={3} />
             </tr>
           </tfoot>
         </table>

@@ -23,4 +23,7 @@ export const centerCreateSchema = z
 export const centerUpdateSchema = centerCreateSchema
   .omit({ licenseNumber: true })
   .partial()
+  .extend({
+    status: z.enum(["pending", "approved", "rejected"]).optional(),
+  })
   .strict();
