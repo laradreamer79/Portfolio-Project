@@ -1,8 +1,7 @@
 import type { Review } from "../../data";
 import type { ApiReview } from "./reviewService";
 
-const fallbackAvatar =
-  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&auto=format";
+const fallbackAvatar = "/default-user.png";
 
 function formatReviewDate(value: string) {
   return new Intl.DateTimeFormat("en", {
