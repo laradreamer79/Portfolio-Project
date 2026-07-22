@@ -3,6 +3,7 @@ import { Plus, Star, Users, TrendingUp, CheckCircle, Clock, X, Edit3, Trash2, Ey
 import { listingRoute } from "../features/listing-management";
 import { useCenterDashboard } from "../features/center-dashboard";
 import { useAuth } from "../hooks/useAuth";
+import { todayInputValue } from "../lib/validation";
 
 export function CenterDashboard() {
   const navigate = useNavigate();
@@ -360,11 +361,11 @@ export function CenterDashboard() {
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Price (SAR) *</label>
-                    <input className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400" placeholder="e.g. 320" value={form.price} onChange={set("price")} />
+                    <input type="number" inputMode="decimal" min="0" step="0.01" className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400" placeholder="e.g. 320" value={form.price} onChange={set("price")} />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-slate-600 block mb-1.5">Max Spots</label>
-                    <input className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400" placeholder="e.g. 8" value={form.slots} onChange={set("slots")} />
+                    <label className="text-sm font-medium text-slate-600 block mb-1.5">Max Spots {form.type === "trip" ? "*" : "(trips only)"}</label>
+                    <input type="number" inputMode="numeric" min="1" step="1" disabled={form.type === "course"} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 disabled:bg-slate-50 disabled:text-slate-400" placeholder="e.g. 8" value={form.slots} onChange={set("slots")} />
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Duration</label>
@@ -378,11 +379,11 @@ export function CenterDashboard() {
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-600 block mb-1.5">Date</label>
-                  <input type="date" className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-teal-400" value={form.date} onChange={set("date")} />
+                  <label className="text-sm font-medium text-slate-600 block mb-1.5">Date *</label>
+                  <input type="date" min={todayInputValue()} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-teal-400" value={form.date} onChange={set("date")} />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-600 block mb-1.5">Description</label>
+                  <label className="text-sm font-medium text-slate-600 block mb-1.5">Description *</label>
                   <textarea rows={3} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 resize-none" placeholder="Describe the dive site, conditions, and what participants will experience..." value={form.description} onChange={set("description")} />
                 </div>
                 <div>
@@ -391,7 +392,7 @@ export function CenterDashboard() {
                   </label>
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg,image/png,image/webp"
                     onChange={handleImageChange}
                     className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-teal-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-teal-700 hover:file:bg-teal-100"
                   />

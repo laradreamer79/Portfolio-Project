@@ -1,6 +1,11 @@
 import { useEffect, useState, type ChangeEvent } from "react";
 import type { Trip } from "../../data";
 import {
+  validateListingForm,
+  validateListingImage,
+  type ListingForm,
+} from "./listingValidation";
+import {
   createCourse,
   createTrip,
   deleteCourse,
@@ -10,18 +15,6 @@ import {
   updateCourse,
   updateTrip,
 } from "../catalog";
-
-export type ListingForm = {
-  title: string;
-  type: string;
-  level: string;
-  price: string;
-  duration: string;
-  depth: string;
-  date: string;
-  slots: string;
-  description: string;
-};
 
 const EMPTY_FORM: ListingForm = {
   title: "",
@@ -163,16 +156,38 @@ export function useListingManagement({
   }
 
   function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
-    setImage(event.target.files?.[0] ?? null);
+    const file = event.target.files?.[0] ?? null;
+    setPostError(null);
+
+    if (!file) {
+      setImage(null);
+      return;
+    }
+
+    const error = validateListingImage(file);
+    if (error) {
+      setImage(null);
+      setPostError(error);
+      event.target.value = "";
+      return;
+    }
+
+    setImage(file);
   }
 
   async function handlePostSubmit() {
-    if (!form.title || !form.price) return;
+    const validation = validateListingForm(form, {
+      image,
+      requiresImage: !editingListing,
+      originalDate: editingListing?.rawDate?.slice(0, 10),
+    });
 
-    if (!editingListing && !image) {
-      setPostError("Upload an image before publishing.");
+    if (!validation.ok) {
+      setPostError(validation.error);
       return;
     }
+
+    const { title, description, price, slots, date } = validation.data;
 
     if (!token) {
       setPostError("You need to sign in again before posting.");
@@ -183,17 +198,7 @@ export function useListingManagement({
     setPostError(null);
 
     try {
-      const price = Number(form.price);
-      const slots = form.slots ? Number(form.slots) : defaultSlots;
-      const date = form.date || new Date().toISOString().slice(0, 10);
-
-      if (Number.isNaN(price) || price < 0) {
-        throw new Error("Enter a valid price.");
-      }
-
-      if (Number.isNaN(slots) || slots <= 0) {
-        throw new Error("Enter a valid number of spots.");
-      }
+      const tripSlots = form.type === "trip" ? slots : defaultSlots;
 
       if (editingListing) {
         const updatedListing =
@@ -201,8 +206,8 @@ export function useListingManagement({
             ? await updateCourse(
                 editingListing.id,
                 {
-                  title: form.title,
-                  description: form.description || undefined,
+                  title,
+                  description,
                   level: form.level,
                   price,
                   startDate: date,
@@ -213,12 +218,12 @@ export function useListingManagement({
             : await updateTrip(
                 editingListing.id,
                 {
-                  title: form.title,
-                  description: form.description || undefined,
+                  title,
+                  description,
                   durationHours: durationHours(form.duration),
                   difficultyLevel: difficultyLevel(form.level),
                   pricePerPerson: price,
-                  maxCapacity: slots,
+                  maxCapacity: tripSlots,
                   scheduleDate: date,
                   image,
                 },
@@ -242,8 +247,8 @@ export function useListingManagement({
         form.type === "course"
           ? await createCourse(
               {
-                title: form.title,
-                description: form.description || undefined,
+                title,
+                description,
                 level: form.level,
                 price,
                 startDate: date,
@@ -253,12 +258,12 @@ export function useListingManagement({
             )
           : await createTrip(
               {
-                title: form.title,
-                description: form.description || undefined,
+                title,
+                description,
                 durationHours: durationHours(form.duration),
                 difficultyLevel: difficultyLevel(form.level),
                 pricePerPerson: price,
-                maxCapacity: slots,
+                maxCapacity: tripSlots,
                 scheduleDate: date,
                 image: image!,
               },

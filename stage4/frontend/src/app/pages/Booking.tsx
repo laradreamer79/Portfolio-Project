@@ -10,7 +10,12 @@ import {
   MapPin,
   AlertTriangle,
 } from "lucide-react";
-import { useBookingFlow } from "../features/bookings";
+import {
+  formatCardNumber,
+  formatCvv,
+  formatExpiry,
+  useBookingFlow,
+} from "../features/bookings";
 
 export function Booking() {
   const {
@@ -21,6 +26,7 @@ export function Booking() {
     experience,
     experienceType,
     form,
+    handleDetailsContinue,
     handlePay,
     isSubmitting,
     loading,
@@ -37,6 +43,7 @@ export function Booking() {
     stepIdx,
     submitError,
     total,
+    validationError,
   } = useBookingFlow();
 
   if (loading) {
@@ -99,18 +106,23 @@ export function Booking() {
             {step === "details" && (
               <div className="bg-white rounded-2xl border border-slate-100 p-6 space-y-5">
                 <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide">Your Details</h2>
+                {validationError && (
+                  <div role="alert" className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {validationError}
+                  </div>
+                )}
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Full Name *</label>
-                    <input className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="Mohammed Al-Rashid" value={form.name} onChange={setFormField("name")} />
+                    <input autoComplete="name" minLength={2} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="Mohammed Al-Rashid" value={form.name} onChange={setFormField("name")} />
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Email Address *</label>
-                    <input className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="your@email.com" value={form.email} onChange={setFormField("email")} />
+                    <input type="email" autoComplete="email" className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="your@email.com" value={form.email} onChange={setFormField("email")} />
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Phone Number *</label>
-                    <input className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="+966 50 000 0000" value={form.phone} onChange={setFormField("phone")} />
+                    <input type="tel" autoComplete="tel" inputMode="tel" className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="05XXXXXXXX or +9665XXXXXXXX" value={form.phone} onChange={setFormField("phone")} />
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Scheduled Date</label>
@@ -131,8 +143,8 @@ export function Booking() {
                   <textarea rows={3} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors resize-none" placeholder="Certification level, equipment needs, accessibility requirements..." value={form.notes} onChange={setFormField("notes")} />
                 </div>
                 <button
-                  onClick={() => form.name && form.email && form.phone && setStep("payment")}
-                  disabled={!form.name || !form.email || !form.phone || past}
+                  onClick={handleDetailsContinue}
+                  disabled={past}
                   className="w-full bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   Continue to Payment →
@@ -157,22 +169,22 @@ export function Booking() {
                   <p className="text-xs text-slate-400 font-medium mb-1 uppercase tracking-widest">Card Number</p>
                   <div className="flex items-center gap-3">
                     <CreditCard className="w-5 h-5 text-slate-400" />
-                    <input className="flex-1 text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="4242 4242 4242 4242" maxLength={19} value={payment.card} onChange={(e) => { const v = e.target.value.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim(); setPaymentValue("card", v); }} />
+                    <input inputMode="numeric" autoComplete="cc-number" className="flex-1 text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="4242 4242 4242 4242" maxLength={19} value={payment.card} onChange={(event) => setPaymentValue("card", formatCardNumber(event.target.value))} />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                     <p className="text-xs text-slate-400 font-medium mb-1 uppercase tracking-widest">Expiry Date</p>
-                    <input className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="MM / YY" value={payment.expiry} onChange={setPaymentField("expiry")} />
+                    <input inputMode="numeric" autoComplete="cc-exp" maxLength={7} className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="MM / YY" value={payment.expiry} onChange={(event) => setPaymentValue("expiry", formatExpiry(event.target.value))} />
                   </div>
                   <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                     <p className="text-xs text-slate-400 font-medium mb-1 uppercase tracking-widest">CVV</p>
-                    <input className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="•••" maxLength={4} type="password" value={payment.cvv} onChange={setPaymentField("cvv")} />
+                    <input inputMode="numeric" autoComplete="cc-csc" className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="•••" maxLength={4} type="password" value={payment.cvv} onChange={(event) => setPaymentValue("cvv", formatCvv(event.target.value))} />
                   </div>
                 </div>
                 <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                   <p className="text-xs text-slate-400 font-medium mb-1 uppercase tracking-widest">Cardholder Name</p>
-                  <input className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent" placeholder="Name as on card" value={payment.holder} onChange={setPaymentField("holder")} />
+                  <input autoComplete="cc-name" className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent" placeholder="Name as on card" value={payment.holder} onChange={setPaymentField("holder")} />
                 </div>
                 <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-50 rounded-xl p-3 border border-slate-100">
                   <Lock className="w-3.5 h-3.5" />
@@ -182,7 +194,7 @@ export function Booking() {
                   <button onClick={() => setStep("details")} disabled={isSubmitting} className="flex-1 border border-slate-200 text-slate-500 font-medium py-3 rounded-xl hover:border-slate-300 transition-colors text-sm disabled:opacity-40">← Back</button>
                   <button
                     onClick={handlePay}
-                    disabled={!payment.card || !payment.expiry || !payment.cvv || !payment.holder || isSubmitting || past}
+                    disabled={isSubmitting || past}
                     className="flex-1 bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-sm"
                   >
                     {isSubmitting ? "Processing..." : `Pay SAR ${total.toLocaleString()}`}

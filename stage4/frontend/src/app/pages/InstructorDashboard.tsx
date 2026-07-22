@@ -17,6 +17,7 @@ import {
 } from "../features/instructor-dashboard";
 import { listingRoute } from "../features/listing-management";
 import { useAuth } from "../hooks/useAuth";
+import { todayInputValue } from "../lib/validation";
 
 export function InstructorDashboard() {
   const navigate = useNavigate();
@@ -450,6 +451,10 @@ export function InstructorDashboard() {
                       Price (SAR) *
                     </label>
                     <input
+                      type="number"
+                      inputMode="decimal"
+                      min="0"
+                      step="0.01"
                       className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:border-teal-400 focus:outline-none"
                       placeholder="e.g. 450"
                       value={form.price}
@@ -459,10 +464,15 @@ export function InstructorDashboard() {
 
                   <div>
                     <label className="mb-1.5 block text-sm font-medium text-slate-600">
-                      Max Spots
+                      Max Spots {form.type === "trip" ? "*" : "(trips only)"}
                     </label>
                     <input
-                      className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:border-teal-400 focus:outline-none"
+                      type="number"
+                      inputMode="numeric"
+                      min="1"
+                      step="1"
+                      disabled={form.type === "course"}
+                      className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:border-teal-400 focus:outline-none disabled:bg-slate-50 disabled:text-slate-400"
                       placeholder="e.g. 4"
                       value={form.slots}
                       onChange={set("slots")}
@@ -501,10 +511,11 @@ export function InstructorDashboard() {
 
                 <div>
                   <label className="mb-1.5 block text-sm font-medium text-slate-600">
-                    Date
+                    Date *
                   </label>
                   <input
                     type="date"
+                    min={todayInputValue()}
                     className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-800 focus:border-teal-400 focus:outline-none"
                     value={form.date}
                     onChange={set("date")}
@@ -513,7 +524,7 @@ export function InstructorDashboard() {
 
                 <div>
                   <label className="mb-1.5 block text-sm font-medium text-slate-600">
-                    Description
+                    Description *
                   </label>
                   <textarea
                     rows={3}
@@ -530,7 +541,7 @@ export function InstructorDashboard() {
                   </label>
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg,image/png,image/webp"
                     onChange={handleImageChange}
                     className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-teal-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-teal-700 hover:file:bg-teal-100"
                   />

@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Star } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { ApiError } from "../../lib/apiClient";
+import { validateReview } from "./reviewValidation";
 
 type ReviewFormProps = {
   onSubmit: (rating: number, comment: string) => Promise<void>;
@@ -51,7 +52,13 @@ export function ReviewForm({
   }
 
   async function handleSubmit() {
-    if (isSubmitting || rating < 1 || rating > 5 || !comment.trim()) return;
+    if (isSubmitting) return;
+
+    const validationError = validateReview(rating, comment);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
 
     setIsSubmitting(true);
     setError(null);

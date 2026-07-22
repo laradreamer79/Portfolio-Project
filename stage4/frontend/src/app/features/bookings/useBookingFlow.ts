@@ -10,6 +10,10 @@ import {
 import { createPayment, type ApiPayment } from "../payments";
 import { useAuth } from "../../hooks/useAuth";
 import { createBooking, type ApiBooking } from "./bookingService";
+import {
+  validateBookingDetails,
+  validatePaymentDetails,
+} from "./bookingValidation";
 
 export type BookingStep = "details" | "payment" | "success";
 export type BookingExperienceType = "trip" | "course";
@@ -60,6 +64,7 @@ export function useBookingFlow() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [confirmedBooking, setConfirmedBooking] = useState<ApiBooking | null>(
     null,
@@ -135,6 +140,7 @@ export function useBookingFlow() {
   const setFormField =
     (key: keyof BookingFormState) =>
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setValidationError(null);
       setForm((current) => ({
         ...current,
         [key]: event.target.value,
@@ -144,6 +150,7 @@ export function useBookingFlow() {
   const setPaymentField =
     (key: keyof PaymentFormState) =>
     (event: ChangeEvent<HTMLInputElement>) => {
+      setSubmitError(null);
       setPayment((current) => ({
         ...current,
         [key]: event.target.value,
@@ -151,14 +158,30 @@ export function useBookingFlow() {
     };
 
   const setPaymentValue = (key: keyof PaymentFormState, value: string) => {
+    setSubmitError(null);
     setPayment((current) => ({
       ...current,
       [key]: value,
     }));
   };
 
+  function handleDetailsContinue() {
+    const error = validateBookingDetails(form);
+    setValidationError(error);
+
+    if (!error && !past) {
+      setStep("payment");
+    }
+  }
+
   async function handlePay() {
     if (isSubmitting || !experienceType || !Number.isInteger(experienceId)) {
+      return;
+    }
+
+    const paymentError = validatePaymentDetails(payment);
+    if (paymentError) {
+      setSubmitError(paymentError);
       return;
     }
 
@@ -224,6 +247,7 @@ export function useBookingFlow() {
     experienceType,
     form,
     handlePay,
+    handleDetailsContinue,
     isSubmitting,
     loading,
     loadError,
@@ -239,5 +263,6 @@ export function useBookingFlow() {
     stepIdx,
     submitError,
     total,
+    validationError,
   };
 }

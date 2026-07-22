@@ -1,14 +1,11 @@
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import type { Center } from "../../data";
+import {
+  validateCenterProfile,
+  validateCenterProfileImage,
+} from "./centerProfileValidation";
 import { getCenters, updateCenter, type UpdateCenterPayload } from "../catalog";
 import { useListingManagement } from "../listing-management";
-
-const ALLOWED_IMAGE_TYPES = new Set([
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-]);
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
 export type CenterDashboardTab =
   | "overview"
@@ -105,16 +102,10 @@ export function useCenterDashboard({
       return;
     }
 
-    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+    const imageError = validateCenterProfileImage(file);
+    if (imageError) {
       setProfileImage(null);
-      setProfileError("Upload a JPEG, PNG, or WEBP image.");
-      event.target.value = "";
-      return;
-    }
-
-    if (file.size > MAX_IMAGE_SIZE) {
-      setProfileImage(null);
-      setProfileError("The center image must be 5 MB or smaller.");
+      setProfileError(imageError);
       event.target.value = "";
       return;
     }
@@ -129,13 +120,20 @@ export function useCenterDashboard({
       return;
     }
 
-    const payload = Object.fromEntries(
+    const formPayload = Object.fromEntries(
       Array.from(new FormData(event.currentTarget), ([key, value]) => [
         key,
         String(value).trim() || undefined,
       ]),
     ) as UpdateCenterPayload;
 
+    const validation = validateCenterProfile(formPayload);
+    if (!validation.ok) {
+      setProfileError(validation.error);
+      return;
+    }
+
+    const payload = validation.data;
     if (profileImage) payload.image = profileImage;
 
     setIsSavingProfile(true);

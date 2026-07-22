@@ -3,19 +3,13 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import type { RegistrationRole } from "../../lib/roles";
 import type { LoginPayload } from "./authService";
+import {
+  validateLoginForm,
+  validateRegisterForm,
+  type RegisterFormState,
+} from "./authValidation";
 
 export type AuthTab = "login" | "register";
-
-type RegisterFormState = {
-  name: string;
-  email: string;
-  password: string;
-  role: RegistrationRole;
-  instructorLicenseNumber: string;
-  centerName: string;
-  centerCity: string;
-  centerLicenseNumber: string;
-};
 
 type RegisterTextField = Exclude<keyof RegisterFormState, "role">;
 
@@ -50,6 +44,7 @@ export function useAuthForm() {
     params.get("tab") === "register" ? "register" : "login",
   );
   const [showPassword, setShowPassword] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [loginForm, setLoginForm] = useState(EMPTY_LOGIN_FORM);
   const [registerForm, setRegisterForm] = useState(EMPTY_REGISTER_FORM);
 
@@ -61,18 +56,22 @@ export function useAuthForm() {
 
   function switchTab(nextTab: AuthTab) {
     clearError();
+    setValidationError(null);
     setTab(nextTab);
   }
 
   function updateLoginField(field: keyof LoginPayload, value: string) {
+    setValidationError(null);
     setLoginForm((current) => ({ ...current, [field]: value }));
   }
 
   function updateRegisterField(field: RegisterTextField, value: string) {
+    setValidationError(null);
     setRegisterForm((current) => ({ ...current, [field]: value }));
   }
 
   function setRegistrationRole(role: RegistrationRole) {
+    setValidationError(null);
     setRegisterForm((current) => ({ ...current, role }));
   }
 
@@ -86,8 +85,11 @@ export function useAuthForm() {
   async function handleLogin(event: FormEvent) {
     event.preventDefault();
 
+    const error = validateLoginForm(loginForm);
+    if (error) return setValidationError(error);
+
     try {
-      await login(loginForm);
+      await login({ ...loginForm, email: loginForm.email.trim() });
       finishAuthentication();
     } catch {
       // AuthProvider exposes the request error.
@@ -97,8 +99,23 @@ export function useAuthForm() {
   async function handleRegister(event: FormEvent) {
     event.preventDefault();
 
+    const error = validateRegisterForm(registerForm);
+    if (error) return setValidationError(error);
+
+    const name = registerForm.name.trim();
+    const email = registerForm.email.trim();
+
     try {
-      await register(registerForm);
+      await register({
+        ...registerForm,
+        name,
+        email,
+        instructorLicenseNumber:
+          registerForm.instructorLicenseNumber.trim(),
+        centerName: registerForm.centerName.trim(),
+        centerCity: registerForm.centerCity.trim(),
+        centerLicenseNumber: registerForm.centerLicenseNumber.trim(),
+      });
       finishAuthentication();
     } catch {
       // AuthProvider exposes the request error.
@@ -106,7 +123,7 @@ export function useAuthForm() {
   }
 
   return {
-    error,
+    error: validationError ?? error,
     goHome: () => navigate("/"),
     handleLogin,
     handleRegister,
