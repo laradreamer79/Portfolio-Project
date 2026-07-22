@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Center } from "../../data";
-import { getAllBookings, type BookingCard } from "../bookings";
+import {
+  cancelBooking,
+  getAllBookings,
+  type BookingCard,
+} from "../bookings";
 import { getCenters, updateCenterStatus } from "../catalog";
 import { deleteReview, getAllReviews, toReview } from "../reviews";
 
@@ -149,6 +153,27 @@ export function useAdminDashboard(token: string | null) {
     }
   }
 
+  async function cancelAdminBooking(id: number) {
+    if (!token) return;
+
+    const previousBookings = bookings;
+    setBookings((current) =>
+      current.map((booking) =>
+        booking.id === id
+          ? { ...booking, status: "cancelled" }
+          : booking,
+      ),
+    );
+
+    try {
+      await cancelBooking(id, token);
+      showToast("Booking cancelled.");
+    } catch {
+      setBookings(previousBookings);
+      showToast("Unable to cancel booking.");
+    }
+  }
+
   const filteredCenters = useMemo(() => {
     const normalizedQuery = centerQuery.trim().toLowerCase();
 
@@ -179,6 +204,7 @@ export function useAdminDashboard(token: string | null) {
   return {
     activeTab,
     bookings,
+    cancelAdminBooking,
     centerQuery,
     centers,
     filteredCenters,

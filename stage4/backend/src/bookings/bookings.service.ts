@@ -7,6 +7,11 @@ interface CreateBookingInput {
   numberOfPeople: number;
 }
 
+interface BookingActor {
+  id: number;
+  role: string;
+}
+
 export async function createBooking(
   data: CreateBookingInput,
 ) {
@@ -100,7 +105,7 @@ export async function createBooking(
 
 export async function cancelBooking(
   bookingId: number,
-  userId: number,
+  actor: BookingActor,
 ) {
   const booking =
     await prisma.booking.findUnique({
@@ -114,8 +119,11 @@ export async function cancelBooking(
     throw new Error("BOOKING_NOT_FOUND");
   }
 
-  // Let controller return 403
-  if (booking.userId !== userId) {
+  // Booking owners and admins may cancel; other users remain forbidden.
+  if (
+    actor.role !== "admin" &&
+    booking.userId !== actor.id
+  ) {
     throw new Error("FORBIDDEN");
   }
 

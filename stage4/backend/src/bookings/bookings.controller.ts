@@ -73,7 +73,7 @@ export async function cancelBookingController(
 
     const booking = await cancelBooking(
       bookingId,
-      req.user.id,
+      req.user,
     );
 
     return res.status(200).json(booking);
