@@ -20,6 +20,55 @@ export async function createReview(
     );
   }
 
+ let confirmedBooking;
+
+if (data.tripId) {
+  confirmedBooking = await prisma.booking.findFirst({
+    where: {
+      userId,
+      tripId: data.tripId,
+      status: "confirmed",
+    },
+  });
+} else if (data.courseId) {
+  confirmedBooking = await prisma.booking.findFirst({
+    where: {
+      userId,
+      courseId: data.courseId,
+      status: "confirmed",
+    },
+  });
+} else {
+  confirmedBooking = await prisma.booking.findFirst({
+    where: {
+      userId,
+      status: "confirmed",
+      OR: [
+        {
+          trip: {
+            is: {
+              centerId: data.centerId,
+            },
+          },
+        },
+        {
+          course: {
+            is: {
+              centerId: data.centerId,
+            },
+          },
+        },
+      ],
+    },
+  });
+}
+
+if (!confirmedBooking) {
+  throw new Error(
+    "You can only review an item that you have booked",
+  );
+} 
+
   let existingReview;
 
   if (data.tripId) {
