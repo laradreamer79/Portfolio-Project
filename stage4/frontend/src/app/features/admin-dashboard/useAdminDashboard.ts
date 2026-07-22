@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Center } from "../../data";
 import { getAllBookings, type BookingCard } from "../bookings";
-import { getCenters } from "../catalog";
+import { getCenters, updateCenterStatus } from "../catalog";
+import { deleteReview, getAllReviews, toReview } from "../reviews";
 
 export type AdminTab = "overview" | "centers" | "bookings" | "reviews";
 export type CenterStatus = "active" | "pending" | "suspended";
@@ -39,6 +40,12 @@ export function useAdminDashboard(token: string | null) {
   const [statusFilter, setStatusFilter] = useState<CenterStatus | "all">("all");
   const [toast, setToast] = useState<string | null>(null);
 
+  function toCenterStatus(status?: string): CenterStatus {
+    if (status === "approved") return "active";
+    if (status === "rejected") return "suspended";
+    return "pending";
+  }
+
   useEffect(() => {
     if (!token) return;
 
@@ -50,7 +57,7 @@ export function useAdminDashboard(token: string | null) {
         setCenters(
           centerData.map((center) => ({
             ...center,
-            status: center.verified ? "active" : "pending",
+            status: toCenterStatus(center.status),
           })),
         );
       })
@@ -66,6 +73,15 @@ export function useAdminDashboard(token: string | null) {
         if (active) setBookings([]);
       });
 
+    getAllReviews(token)
+      .then((reviewData) => {
+        if (!active) return;
+        setReviews(reviewData.map(toReview));
+      })
+      .catch(() => {
+        if (active) setReviews([]);
+      });
+
     return () => {
       active = false;
     };
@@ -76,7 +92,10 @@ export function useAdminDashboard(token: string | null) {
     window.setTimeout(() => setToast(null), 3000);
   }
 
-  function verifyCenter(id: number) {
+  async function verifyCenter(id: number) {
+    if (!token) return;
+
+    const previousCenters = centers;
     setCenters((current) =>
       current.map((center) =>
         center.id === id
@@ -84,21 +103,50 @@ export function useAdminDashboard(token: string | null) {
           : center,
       ),
     );
-    showToast("Center verified and activated.");
+
+    try {
+      await updateCenterStatus(id, "approved", token);
+      showToast("Center verified and activated.");
+    } catch {
+      setCenters(previousCenters);
+      showToast("Unable to update center status.");
+    }
   }
 
-  function suspendCenter(id: number) {
+  async function suspendCenter(id: number) {
+    if (!token) return;
+
+    const previousCenters = centers;
     setCenters((current) =>
       current.map((center) =>
-        center.id === id ? { ...center, status: "suspended" } : center,
+        center.id === id
+          ? { ...center, status: "suspended", verified: false }
+          : center,
       ),
     );
-    showToast("Center suspended.");
+
+    try {
+      await updateCenterStatus(id, "rejected", token);
+      showToast("Center suspended.");
+    } catch {
+      setCenters(previousCenters);
+      showToast("Unable to update center status.");
+    }
   }
 
-  function removeReview(id: number) {
+  async function removeReview(id: number) {
+    if (!token) return;
+
+    const previousReviews = reviews;
     setReviews((current) => current.filter((review) => review.id !== id));
-    showToast("Review removed.");
+
+    try {
+      await deleteReview(id, token);
+      showToast("Review removed.");
+    } catch {
+      setReviews(previousReviews);
+      showToast("Unable to remove review.");
+    }
   }
 
   const filteredCenters = useMemo(() => {

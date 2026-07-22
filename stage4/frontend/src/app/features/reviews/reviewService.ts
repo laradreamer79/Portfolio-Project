@@ -27,3 +27,16 @@ export function submitReview(payload: CreateReviewPayload, token: string) {
     token,
   });
 }
+
+export function getAllReviews(token: string) {
+  return apiRequest<ApiReview[]>("/reviews", {
+    token,
+  });
+}
+
+export function deleteReview(id: number, token: string) {
+  return apiRequest(`/reviews/${id}`, {
+    method: "DELETE",
+    token,
+  });
+}

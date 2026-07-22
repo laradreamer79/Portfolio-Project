@@ -121,13 +121,20 @@ export const centersService = {
       contactEmail: string;
       contactPhone: string;
       imageUrl: string;
+      status: "pending" | "approved" | "rejected";
     }>
   ) {
     await assertCenterAccess(id, actor);
 
+    const nextData = { ...data };
+
+    if (actor.role !== "admin") {
+      delete nextData.status;
+    }
+
     return prisma.divingCenter.update({
       where: { id },
-      data,
+      data: nextData,
     });
   },
 

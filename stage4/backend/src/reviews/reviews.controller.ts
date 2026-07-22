@@ -3,6 +3,8 @@ import type { AuthRequest } from "../middleware/auth.middleware.js";
 
 import {
   createReview,
+  deleteReview,
+  getAllReviews,
   getCenterReviews,
   getCourseReviews,
   getTripReviews,
@@ -99,6 +101,48 @@ function parsePositiveId(
   }
 
   return id;
+}
+
+export async function getAllReviewsController(
+  _req: AuthRequest,
+  res: Response,
+) {
+  try {
+    const reviews = await getAllReviews();
+
+    return res.status(200).json(reviews);
+  } catch (error) {
+    return res.status(400).json({
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to get reviews",
+    });
+  }
+}
+
+export async function deleteReviewController(
+  req: AuthRequest,
+  res: Response,
+) {
+  try {
+    const id = parsePositiveId(req.params.id, "reviewId");
+
+    await deleteReview(id);
+
+    return res.status(200).json({
+      message: "Review deleted successfully",
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Failed to delete review";
+
+    return res.status(message === "Review not found" ? 404 : 400).json({
+      message,
+    });
+  }
 }
 
 export async function getCenterReviewsController(
