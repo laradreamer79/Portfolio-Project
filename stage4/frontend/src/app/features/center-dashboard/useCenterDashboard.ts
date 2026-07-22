@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import type { Center } from "../../data";
 import {
-  imageValidationError,
-  isValidEmail,
-  isValidSaudiPhone,
-} from "../../lib/validation";
+  validateCenterProfile,
+  validateCenterProfileImage,
+} from "./centerProfileValidation";
 import { getCenters, updateCenter, type UpdateCenterPayload } from "../catalog";
 import { useListingManagement } from "../listing-management";
 
@@ -103,7 +102,7 @@ export function useCenterDashboard({
       return;
     }
 
-    const imageError = imageValidationError(file);
+    const imageError = validateCenterProfileImage(file);
     if (imageError) {
       setProfileImage(null);
       setProfileError(imageError);
@@ -121,34 +120,20 @@ export function useCenterDashboard({
       return;
     }
 
-    const payload = Object.fromEntries(
+    const formPayload = Object.fromEntries(
       Array.from(new FormData(event.currentTarget), ([key, value]) => [
         key,
         String(value).trim() || undefined,
       ]),
     ) as UpdateCenterPayload;
 
-    if (!payload.name?.trim() || !payload.city?.trim()) {
-      setProfileError("Center name and city are required.");
+    const validation = validateCenterProfile(formPayload);
+    if (!validation.ok) {
+      setProfileError(validation.error);
       return;
     }
 
-    if (payload.contactEmail && !isValidEmail(payload.contactEmail)) {
-      setProfileError("Enter a valid contact email address.");
-      return;
-    }
-
-    if (payload.contactPhone) {
-      if (!isValidSaudiPhone(payload.contactPhone)) {
-        setProfileError(
-          "Enter a Saudi phone number such as 05XXXXXXXX or +9665XXXXXXXX.",
-        );
-        return;
-      }
-
-      payload.contactPhone = payload.contactPhone.replace(/[\s-]/g, "");
-    }
-
+    const payload = validation.data;
     if (profileImage) payload.image = profileImage;
 
     setIsSavingProfile(true);

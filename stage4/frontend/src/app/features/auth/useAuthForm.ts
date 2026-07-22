@@ -2,21 +2,14 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import type { RegistrationRole } from "../../lib/roles";
-import { isValidEmail } from "../../lib/validation";
 import type { LoginPayload } from "./authService";
+import {
+  validateLoginForm,
+  validateRegisterForm,
+  type RegisterFormState,
+} from "./authValidation";
 
 export type AuthTab = "login" | "register";
-
-type RegisterFormState = {
-  name: string;
-  email: string;
-  password: string;
-  role: RegistrationRole;
-  instructorLicenseNumber: string;
-  centerName: string;
-  centerCity: string;
-  centerLicenseNumber: string;
-};
 
 type RegisterTextField = Exclude<keyof RegisterFormState, "role">;
 
@@ -92,15 +85,8 @@ export function useAuthForm() {
   async function handleLogin(event: FormEvent) {
     event.preventDefault();
 
-    if (!isValidEmail(loginForm.email)) {
-      setValidationError("Enter a valid email address.");
-      return;
-    }
-
-    if (!loginForm.password) {
-      setValidationError("Password is required.");
-      return;
-    }
+    const error = validateLoginForm(loginForm);
+    if (error) return setValidationError(error);
 
     try {
       await login({ ...loginForm, email: loginForm.email.trim() });
@@ -113,43 +99,11 @@ export function useAuthForm() {
   async function handleRegister(event: FormEvent) {
     event.preventDefault();
 
+    const error = validateRegisterForm(registerForm);
+    if (error) return setValidationError(error);
+
     const name = registerForm.name.trim();
     const email = registerForm.email.trim();
-
-    if (name.length < 2) {
-      setValidationError("Name must be at least 2 characters.");
-      return;
-    }
-
-    if (!isValidEmail(email)) {
-      setValidationError("Enter a valid email address.");
-      return;
-    }
-
-    if (registerForm.password.length < 6) {
-      setValidationError("Password must be at least 6 characters.");
-      return;
-    }
-
-    if (
-      registerForm.role === "instructor" &&
-      registerForm.instructorLicenseNumber.trim().length < 2
-    ) {
-      setValidationError("Instructor license number is required.");
-      return;
-    }
-
-    if (
-      registerForm.role === "diving_center" &&
-      (registerForm.centerName.trim().length < 2 ||
-        registerForm.centerCity.trim().length < 2 ||
-        registerForm.centerLicenseNumber.trim().length < 2)
-    ) {
-      setValidationError(
-        "Center name, city, and license number are required.",
-      );
-      return;
-    }
 
     try {
       await register({

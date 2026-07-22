@@ -1,9 +1,10 @@
 import { useEffect, useState, type ChangeEvent } from "react";
 import type { Trip } from "../../data";
 import {
-  imageValidationError,
-  isTodayOrFuture,
-} from "../../lib/validation";
+  validateListingForm,
+  validateListingImage,
+  type ListingForm,
+} from "./listingValidation";
 import {
   createCourse,
   createTrip,
@@ -14,18 +15,6 @@ import {
   updateCourse,
   updateTrip,
 } from "../catalog";
-
-export type ListingForm = {
-  title: string;
-  type: string;
-  level: string;
-  price: string;
-  duration: string;
-  depth: string;
-  date: string;
-  slots: string;
-  description: string;
-};
 
 const EMPTY_FORM: ListingForm = {
   title: "",
@@ -175,7 +164,7 @@ export function useListingManagement({
       return;
     }
 
-    const error = imageValidationError(file);
+    const error = validateListingImage(file);
     if (error) {
       setImage(null);
       setPostError(error);
@@ -187,49 +176,18 @@ export function useListingManagement({
   }
 
   async function handlePostSubmit() {
-    const title = form.title.trim();
-    const description = form.description.trim();
-    const price = Number(form.price);
-    const slots = Number(form.slots);
+    const validation = validateListingForm(form, {
+      image,
+      requiresImage: !editingListing,
+      originalDate: editingListing?.rawDate?.slice(0, 10),
+    });
 
-    if (!title) {
-      setPostError("Enter a title.");
+    if (!validation.ok) {
+      setPostError(validation.error);
       return;
     }
 
-    if (!description) {
-      setPostError("Enter a description.");
-      return;
-    }
-
-    if (!form.price || !Number.isFinite(price) || price < 0) {
-      setPostError("Enter a valid non-negative price.");
-      return;
-    }
-
-    if (
-      form.type === "trip" &&
-      (!form.slots || !Number.isInteger(slots) || slots <= 0)
-    ) {
-      setPostError("Enter a positive whole number of spots.");
-      return;
-    }
-
-    if (!form.date) {
-      setPostError("Choose a date.");
-      return;
-    }
-
-    const originalDate = editingListing?.rawDate?.slice(0, 10);
-    if (form.date !== originalDate && !isTodayOrFuture(form.date)) {
-      setPostError("Choose today or a future date.");
-      return;
-    }
-
-    if (!editingListing && !image) {
-      setPostError("Upload an image before publishing.");
-      return;
-    }
+    const { title, description, price, slots, date } = validation.data;
 
     if (!token) {
       setPostError("You need to sign in again before posting.");
@@ -241,7 +199,6 @@ export function useListingManagement({
 
     try {
       const tripSlots = form.type === "trip" ? slots : defaultSlots;
-      const date = form.date;
 
       if (editingListing) {
         const updatedListing =
