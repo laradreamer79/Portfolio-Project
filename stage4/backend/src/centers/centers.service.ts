@@ -63,6 +63,7 @@ export const centersService = {
           OR: [
             { name: { contains: search, mode: "insensitive" } },
             { description: { contains: search, mode: "insensitive" } },
+            { city: { contains: search, mode: "insensitive" } },
           ],
         }),
         ...(status && status !== "all" && { status: status as any }),

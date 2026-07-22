@@ -87,9 +87,12 @@ export function useExperienceCatalog(kind: ExperienceKind) {
   };
 }
 
-export function useCentersCatalog(initialCity = "All Cities") {
+export function useCentersCatalog(
+  initialCity = "All Cities",
+  initialQuery = "",
+) {
   const [city, setCity] = useState(initialCity);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery);
   const [minRating, setMinRating] = useState(0);
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [centers, setCenters] = useState<Center[]>([]);
@@ -99,6 +102,10 @@ export function useCentersCatalog(initialCity = "All Cities") {
   useEffect(() => {
     setCity(initialCity);
   }, [initialCity]);
+
+  useEffect(() => {
+    setQuery(initialQuery);
+  }, [initialQuery]);
 
   useEffect(() => {
     let active = true;

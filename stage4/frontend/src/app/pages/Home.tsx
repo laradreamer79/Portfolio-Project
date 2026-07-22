@@ -1,3 +1,4 @@
+import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, CheckCircle, Search, Waves, Award } from "lucide-react";
 import {
@@ -17,6 +18,7 @@ const CITY_IMGS: Record<string, string> = {
 
 export function Home() {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
   const {
     centerCount,
     centers,
@@ -31,6 +33,12 @@ export function Home() {
     loading,
   } = useFeaturedCatalog();
 
+  function handleSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const query = searchQuery.trim();
+    navigate(query ? `/centers?search=${encodeURIComponent(query)}` : "/centers");
+  }
+
   return (
     <div>
       {/* Hero */}
@@ -43,13 +51,22 @@ export function Home() {
             DISCOVER THE<br /><span className="text-teal-400">RED SEA.</span>
           </h1>
           <p className="text-white/70 text-lg max-w-lg mb-8">Browse certified diving centers across the Kingdom. Book trips, courses, and experiences — all in one place.</p>
-          <div className="flex flex-col sm:flex-row gap-2 max-w-2xl">
+          <form
+            onSubmit={handleSearch}
+            className="flex max-w-2xl flex-col gap-2 sm:flex-row"
+          >
             <div className="flex items-center gap-2 flex-1 bg-white rounded-2xl px-4 py-3 shadow-xl">
               <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
-              <input className="flex-1 text-sm text-slate-700 placeholder-slate-400 focus:outline-none bg-transparent" placeholder="Search by city or center name..." />
+              <input
+                type="search"
+                className="flex-1 bg-transparent text-sm text-slate-700 placeholder-slate-400 focus:outline-none"
+                placeholder="Search by city or center name..."
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+              />
             </div>
-            <button onClick={() => navigate("/centers")} className="bg-teal-500 text-white font-semibold px-8 py-3 rounded-2xl hover:bg-teal-600 transition-colors text-sm whitespace-nowrap shadow-xl">Find Centers</button>
-          </div>
+            <button type="submit" className="bg-teal-500 text-white font-semibold px-8 py-3 rounded-2xl hover:bg-teal-600 transition-colors text-sm whitespace-nowrap shadow-xl">Find Centers</button>
+          </form>
         </div>
       </section>
 
