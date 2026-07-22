@@ -54,7 +54,9 @@ export function useMyBookings(token: string | null) {
       const updated = await cancelBooking(bookingId, token);
       setBookings((current) =>
         current.map((booking) =>
-          booking.id === bookingId ? updated : booking,
+          booking.id === bookingId
+            ? { ...booking, ...updated }
+            : booking,
         ),
       );
     } catch (requestError) {
