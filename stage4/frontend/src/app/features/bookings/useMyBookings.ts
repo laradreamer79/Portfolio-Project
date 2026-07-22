@@ -55,10 +55,17 @@ export function useMyBookings(token: string | null) {
       setBookings((current) =>
         current.map((booking) =>
           booking.id === bookingId
-            ? { ...booking, ...updated }
+            ? { ...booking, status: updated.status }
             : booking,
         ),
       );
+
+      try {
+        const refreshedBookings = await getMyBookings(token);
+        setBookings(refreshedBookings);
+      } catch {
+        // Keep the safe local status update when refreshing the list fails.
+      }
     } catch (requestError) {
       setCancelError(
         requestError instanceof ApiError
