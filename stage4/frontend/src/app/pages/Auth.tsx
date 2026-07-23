@@ -160,7 +160,7 @@ export function Auth() {
                   show={showPassword}
                   onToggle={togglePassword}
                   autoComplete="new-password"
-                  minLength={6}
+                  minLength={8}
                 />
                 {registerForm.role === "instructor" && (
                   <AuthField
