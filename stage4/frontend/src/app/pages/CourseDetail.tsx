@@ -1,7 +1,17 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { 
-  ChevronLeft, Star, MapPin, Clock, Waves, Users, Calendar, 
-  Shield, CheckCircle, AlertCircle, Phone, Mail, Award, BookOpen, GraduationCap
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  AlertCircle,
+  Calendar,
+  CheckCircle,
+  ChevronLeft,
+  Clock,
+  GraduationCap,
+  Mail,
+  MapPin,
+  Phone,
+  Shield,
+  Star,
+  Users,
 } from "lucide-react";
 import { useExperienceDetail } from "../features/catalog";
 import { ReviewForm, useReviewSubmission } from "../features/reviews";
@@ -29,18 +39,29 @@ export function CourseDetail() {
   });
 
   if (loading) {
-    return <div className="flex items-center justify-center h-96 text-slate-400">Loading course...</div>;
+    return (
+      <div className="flex h-96 items-center justify-center text-slate-400">
+        Loading course...
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="flex items-center justify-center h-96 text-red-500">{error}</div>;
+    return (
+      <div className="flex h-96 items-center justify-center text-red-500">
+        {error}
+      </div>
+    );
   }
 
   if (!course) {
     return (
-      <div className="flex flex-col items-center justify-center h-96 gap-4">
+      <div className="flex h-96 flex-col items-center justify-center gap-4">
         <p className="text-slate-400">Course not found.</p>
-        <button onClick={() => navigate("/courses")} className="text-purple-600 text-sm font-medium">
+        <button
+          onClick={() => navigate("/courses")}
+          className="text-sm font-medium text-purple-600"
+        >
           ← Back to Courses
         </button>
       </div>
@@ -48,9 +69,9 @@ export function CourseDetail() {
   }
 
   const includedItems = [
-    "Full PADI certification materials (digital & physical)",
+    "Full PADI certification materials (digital and physical)",
     "All dive equipment rental throughout the course",
-    "Experienced PADI-certified instructor (max 4 students)",
+    "Experienced PADI-certified instructor",
     "Boat trips and dive site access",
     "Digital certification card upon completion",
     "Logbook and training slate",
@@ -62,57 +83,95 @@ export function CourseDetail() {
     "Swimwear and towel",
     "Sunscreen (reef-safe)",
     "Notebook for theory sessions",
-    "Positive attitude and willingness to learn",
   ];
 
-  const prerequisites = course.level === "Beginner" 
-    ? ["Minimum age 10 years", "Basic swimming ability", "Good health (medical form required)"]
-    : course.level === "Intermediate"
-    ? ["PADI Open Water certification (or equivalent)", "Minimum age 12 years", "Recent diving experience recommended"]
-    : ["PADI Advanced Open Water certification", "Minimum 20+ logged dives", "Excellent buoyancy control"];
+  const prerequisites =
+    course.level === "Beginner"
+      ? [
+          "Minimum age 10 years",
+          "Basic swimming ability",
+          "Good health (medical form required)",
+        ]
+      : course.level === "Intermediate"
+        ? [
+            "PADI Open Water certification (or equivalent)",
+            "Minimum age 12 years",
+            "Recent diving experience recommended",
+          ]
+        : [
+            "PADI Advanced Open Water certification",
+            "Minimum 20 logged dives",
+            "Excellent buoyancy control",
+          ];
+
+  const quickInfo = [
+    {
+      icon: <Clock className="h-5 w-5" />,
+      label: "Duration",
+      value: course.duration,
+    },
+    {
+      icon: <GraduationCap className="h-5 w-5" />,
+      label: "Level",
+      value: course.level,
+    },
+    {
+      icon: <Users className="h-5 w-5" />,
+      label: "Spots",
+      value: course.slots,
+    },
+    {
+      icon: <Calendar className="h-5 w-5" />,
+      label: "Start Date",
+      value: course.date,
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Hero Section */}
-      <div className="relative h-[400px] md:h-[500px] bg-slate-900">
-        <img 
-          src={course.img} 
-          alt={course.title} 
-          className="w-full h-full object-cover opacity-80"
+      <div className="relative h-[400px] bg-slate-900 md:h-[500px]">
+        <img
+          src={course.img}
+          alt={course.title}
+          className="h-full w-full object-cover opacity-80"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-purple-900/80 via-purple-900/40 to-transparent" />
-        
-        <div className="absolute top-6 left-6">
-          <button 
-            onClick={() => navigate(-1)} 
-            className="flex items-center gap-2 text-white/90 hover:text-white bg-black/30 backdrop-blur-sm px-4 py-2 rounded-xl transition-colors"
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent" />
+
+        <div className="absolute left-6 top-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 rounded-xl bg-black/30 px-4 py-2 text-white/90 backdrop-blur-sm transition-colors hover:text-white"
           >
-            <ChevronLeft className="w-4 h-4" /> Back
+            <ChevronLeft className="h-4 w-4" /> Back
           </button>
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
-          <div className="max-w-6xl mx-auto">
-            <span className="text-xs font-semibold px-3 py-1.5 rounded-full inline-block mb-3 bg-purple-500 text-white">
-              <GraduationCap className="w-3.5 h-3.5 inline mr-1.5 -mt-0.5" />
-              PADI Course
+          <div className="mx-auto max-w-6xl">
+            <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-purple-500 px-3 py-1.5 text-xs font-semibold text-white">
+              <GraduationCap className="h-3.5 w-3.5" />
+              Course
             </span>
-            <h1 className="font-display text-4xl md:text-5xl font-bold text-white tracking-wide mb-3">
+            <h1 className="mb-3 font-display text-4xl font-bold tracking-wide text-white md:text-5xl">
               {course.title}
             </h1>
             <div className="flex flex-wrap items-center gap-4 text-white/90">
               <button
                 onClick={() => center && navigate(`/centers/${center.id}`)}
-                className="flex items-center gap-2 hover:text-white transition-colors"
+                className="flex items-center gap-2 transition-colors hover:text-white"
               >
-                <MapPin className="w-4 h-4" />
-                {center ? `${center.name} · ${center.city}` : "Independent Instructor"}
+                <MapPin className="h-4 w-4" />
+                {center
+                  ? `${center.name} · ${center.city}`
+                  : "Independent Instructor"}
               </button>
               {courseReviews.length > 0 && (
                 <div className="flex items-center gap-1.5">
-                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                  <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                   <span className="font-semibold">{avgRating}</span>
-                  <span className="text-white/70">({courseReviews.length} reviews)</span>
+                  <span className="text-white/70">
+                    ({courseReviews.length} reviews)
+                  </span>
                 </div>
               )}
             </div>
@@ -120,146 +179,161 @@ export function CourseDetail() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-6 py-10 md:py-16">
-        <div className="grid lg:grid-cols-3 gap-10">
-          {/* Left Column */}
-          <div className="lg:col-span-2 space-y-10">
-            
-            {/* Quick Info Cards */}
-            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-white rounded-2xl p-5 border border-slate-100">
-                <Clock className="w-5 h-5 text-purple-600 mb-2" />
-                <div className="text-2xl font-bold text-slate-900">{course.duration}</div>
-                <div className="text-xs text-slate-500 mt-1">Duration</div>
-              </div>
-              <div className="bg-white rounded-2xl p-5 border border-slate-100">
-                <Waves className="w-5 h-5 text-purple-600 mb-2" />
-                <div className="text-2xl font-bold text-slate-900">{course.depth}</div>
-                <div className="text-xs text-slate-500 mt-1">Depth Range</div>
-              </div>
-              <div className="bg-white rounded-2xl p-5 border border-slate-100">
-                <Shield className="w-5 h-5 text-purple-600 mb-2" />
-                <div className="text-2xl font-bold text-slate-900">{course.level}</div>
-                <div className="text-xs text-slate-500 mt-1">Level</div>
-              </div>
-              <div className="bg-white rounded-2xl p-5 border border-slate-100">
-                <Users className="w-5 h-5 text-purple-600 mb-2" />
-                <div className="text-2xl font-bold text-slate-900">{course.slots}</div>
-                <div className="text-xs text-slate-500 mt-1">Available Spots</div>
+      <div className="mx-auto max-w-6xl px-6 py-10">
+        <div className="grid gap-8 lg:grid-cols-3">
+          <div className="space-y-8 lg:col-span-2">
+            <div className="rounded-2xl border border-slate-100 bg-white p-6">
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                {quickInfo.map((item) => (
+                  <div
+                    key={item.label}
+                    className="rounded-xl bg-slate-50 p-3 text-center"
+                  >
+                    <div className="mb-2 flex justify-center text-purple-500">
+                      {item.icon}
+                    </div>
+                    <p className="mb-1 text-xs font-medium uppercase tracking-widest text-slate-400">
+                      {item.label}
+                    </p>
+                    <p className="text-sm font-semibold text-slate-800">
+                      {item.value}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* About This Course */}
-            <div className="bg-white rounded-3xl p-8 border border-slate-100">
-              <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide mb-4 flex items-center gap-2">
-                <BookOpen className="w-6 h-6 text-purple-600" />
+            <div className="rounded-2xl border border-slate-100 bg-white p-6">
+              <h2 className="mb-4 font-display text-2xl font-bold tracking-wide text-slate-900">
                 ABOUT THIS COURSE
               </h2>
-              <p className="text-slate-600 leading-relaxed mb-6">{course.description}</p>
-              <p className="text-slate-600 leading-relaxed">
-                This comprehensive PADI certification course combines classroom theory, confined water training, 
-                and open water dives to ensure you develop the skills and confidence needed to dive safely. 
-                Our experienced instructors maintain small class sizes (maximum 4 students) to provide 
-                personalized attention and support throughout your learning journey.
+              <p className="mb-4 leading-relaxed text-slate-600">
+                {course.description}
+              </p>
+              <p className="leading-relaxed text-slate-600">
+                This certification course combines theory, confined-water
+                training, and open-water dives. The instructor guides students
+                through the skills and safety practices required for the
+                selected course level.
               </p>
             </div>
 
-            {/* Prerequisites */}
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 rounded-3xl p-8 border border-purple-200">
-              <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide mb-4 flex items-center gap-2">
-                <AlertCircle className="w-6 h-6 text-purple-600" />
+            <div className="rounded-2xl border border-slate-100 bg-white p-6">
+              <h2 className="mb-4 font-display text-2xl font-bold tracking-wide text-slate-900">
                 PREREQUISITES
               </h2>
-              <ul className="space-y-3">
-                {prerequisites.map((item, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
-                    <span className="text-slate-700">{item}</span>
-                  </li>
+              <div className="space-y-2.5">
+                {prerequisites.map((item) => (
+                  <div key={item} className="flex items-start gap-3">
+                    <CheckCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-purple-500" />
+                    <span className="text-slate-600">{item}</span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
 
-            {/* What's Included */}
-            <div className="bg-white rounded-3xl p-8 border border-slate-100">
-              <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide mb-4">
-                WHAT'S INCLUDED
+            <div className="rounded-2xl border border-slate-100 bg-white p-6">
+              <h2 className="mb-4 font-display text-2xl font-bold tracking-wide text-slate-900">
+                WHAT&apos;S INCLUDED
               </h2>
-              <ul className="space-y-3">
-                {includedItems.map((item, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
-                    <span className="text-slate-700">{item}</span>
-                  </li>
+              <div className="space-y-2.5">
+                {includedItems.map((item) => (
+                  <div key={item} className="flex items-start gap-3">
+                    <CheckCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-purple-500" />
+                    <span className="text-slate-600">{item}</span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
 
-            {/* What to Bring */}
-            <div className="bg-white rounded-3xl p-8 border border-slate-100">
-              <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide mb-4">
+            <div className="rounded-2xl border border-slate-100 bg-white p-6">
+              <h2 className="mb-4 font-display text-2xl font-bold tracking-wide text-slate-900">
                 WHAT TO BRING
               </h2>
-              <ul className="space-y-3">
-                {whatToBring.map((item, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-purple-600 mt-2.5 flex-shrink-0" />
-                    <span className="text-slate-700">{item}</span>
-                  </li>
+              <div className="space-y-2.5">
+                {whatToBring.map((item) => (
+                  <div key={item} className="flex items-start gap-3">
+                    <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-slate-400" />
+                    <span className="text-slate-600">{item}</span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
 
-            {/* Reviews */}
-            <div className="bg-white rounded-3xl p-8 border border-slate-100">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide">
-                  REVIEWS
-                </h2>
-                {courseReviews.length > 0 && (
-                  <div className="flex items-center gap-2">
-                    <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
-                    <span className="text-2xl font-bold text-slate-900">{avgRating}</span>
-                    <span className="text-slate-400">({courseReviews.length})</span>
-                  </div>
-                )}
+            <div className="rounded-2xl border border-slate-100 bg-white p-6">
+              <div className="mb-6 flex items-center justify-between">
+                <div>
+                  <h2 className="font-display text-2xl font-bold tracking-wide text-slate-900">
+                    REVIEWS
+                  </h2>
+                  {courseReviews.length > 0 && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <div className="flex items-center gap-1">
+                        <Star className="h-5 w-5 fill-amber-400 text-amber-400" />
+                        <span className="text-lg font-bold text-slate-900">
+                          {avgRating}
+                        </span>
+                      </div>
+                      <span className="text-sm text-slate-400">
+                        · {courseReviews.length} review
+                        {courseReviews.length !== 1 ? "s" : ""}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
-              
+
               {courseReviews.length > 0 ? (
-                <div className="space-y-6">
+                <div className="space-y-5">
                   {courseReviews.map((review) => (
-                    <div key={review.id} className="pb-6 border-b border-slate-100 last:border-0 last:pb-0">
-                      <div className="flex gap-4">
-                        <img 
-                          src={review.avatar} 
-                          alt={review.user} 
-                          className="w-12 h-12 rounded-full object-cover border-2 border-white shadow flex-shrink-0"
+                    <div
+                      key={review.id}
+                      className="border-b border-slate-100 pb-5 last:border-0 last:pb-0"
+                    >
+                      <div className="flex items-start gap-4">
+                        <img
+                          src={review.avatar}
+                          alt={review.user}
+                          className="h-12 w-12 flex-shrink-0 rounded-full border-2 border-white object-cover shadow"
                         />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-semibold text-slate-900">{review.user}</span>
-                            <span className="text-xs text-slate-400">· {review.date}</span>
+                        <div className="min-w-0 flex-1">
+                          <div className="mb-1 flex items-center gap-2">
+                            <span className="font-semibold text-slate-900">
+                              {review.user}
+                            </span>
+                            <span className="text-xs text-slate-400">
+                              · {review.date}
+                            </span>
                           </div>
-                          <div className="flex gap-0.5 mb-2">
+                          <div className="mb-2 flex gap-0.5">
                             {[1, 2, 3, 4, 5].map((star) => (
-                              <Star 
-                                key={star} 
-                                className={`w-4 h-4 ${star <= review.rating ? "fill-amber-400 text-amber-400" : "text-slate-200"}`}
+                              <Star
+                                key={star}
+                                className={`h-4 w-4 ${
+                                  star <= review.rating
+                                    ? "fill-amber-400 text-amber-400"
+                                    : "text-slate-200"
+                                }`}
                               />
                             ))}
                           </div>
-                          <p className="text-slate-600 text-sm leading-relaxed">{review.comment}</p>
+                          <p className="text-sm leading-relaxed text-slate-600">
+                            {review.comment}
+                          </p>
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12">
-                  <Star className="w-12 h-12 text-slate-200 mx-auto mb-3" />
-                  <p className="text-slate-400">No reviews yet for this course.</p>
-                  <p className="text-slate-400 text-sm mt-1">Be the first to share your experience!</p>
+                <div className="py-12 text-center">
+                  <Star className="mx-auto mb-3 h-12 w-12 text-slate-200" />
+                  <p className="text-slate-400">
+                    No reviews yet for this course.
+                  </p>
+                  <p className="mt-1 text-sm text-slate-400">
+                    Be the first to share your experience!
+                  </p>
                 </div>
               )}
 
@@ -269,108 +343,137 @@ export function CourseDetail() {
               />
             </div>
 
-            {/* Similar Courses */}
             {similarCourses.length > 0 && (
               <div>
-                <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide mb-4">
+                <h2 className="mb-4 font-display text-2xl font-bold tracking-wide text-slate-900">
                   SIMILAR COURSES
                 </h2>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {similarCourses.map((c) => {
-                    return (
-                      <button
-                        key={c.id}
-                        onClick={() => navigate(`/courses/${c.id}`)}
-                        className="bg-white rounded-2xl border border-slate-100 overflow-hidden hover:border-purple-200 hover:shadow-md transition-all text-left"
-                      >
-                        <div className="h-32 overflow-hidden">
-                          <img src={c.img} alt={c.title} className="w-full h-full object-cover" />
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {similarCourses.map((similarCourse) => (
+                    <button
+                      key={similarCourse.id}
+                      onClick={() =>
+                        navigate(`/courses/${similarCourse.id}`)
+                      }
+                      className="overflow-hidden rounded-2xl border border-slate-100 bg-white text-left transition-all hover:border-purple-200 hover:shadow-md"
+                    >
+                      <div className="h-32 overflow-hidden">
+                        <img
+                          src={similarCourse.img}
+                          alt={similarCourse.title}
+                          loading="lazy"
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <span className="rounded-full bg-purple-50 px-2 py-0.5 text-xs font-semibold text-purple-700">
+                          Course
+                        </span>
+                        <h3 className="mt-2 line-clamp-2 font-semibold text-slate-900">
+                          {similarCourse.title}
+                        </h3>
+                        <p className="mt-1 text-xs text-slate-400">
+                          {center?.city ?? "Oyster listing"}
+                        </p>
+                        <div className="mt-3 flex items-center justify-between">
+                          <span className="font-bold text-purple-600">
+                            SAR {similarCourse.price}
+                          </span>
+                          <span className="text-xs text-slate-400">
+                            {similarCourse.level}
+                          </span>
                         </div>
-                        <div className="p-4">
-                          <h3 className="font-semibold text-slate-900 mb-2 line-clamp-1">{c.title}</h3>
-                          <div className="flex items-center justify-between text-xs text-slate-500">
-                            <span className="flex items-center gap-1">
-                              <MapPin className="w-3 h-3" />
-                              {center?.city ?? "Oyster listing"}
-                            </span>
-                            <span className="font-bold text-purple-600 text-sm">SAR {c.price}</span>
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })}
+                      </div>
+                    </button>
+                  ))}
                 </div>
               </div>
             )}
-
           </div>
 
-          {/* Right Column - Booking Card */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-3xl border border-slate-100 p-6 lg:sticky lg:top-6">
-              <div className="mb-6">
-                <div className="text-3xl font-bold text-slate-900 mb-1">
-                  SAR {course.price}
+            <div className="sticky top-24 space-y-5 rounded-2xl border border-slate-100 bg-white p-6">
+              <div>
+                <div className="mb-1 flex items-baseline gap-2">
+                  <span className="font-display text-3xl font-bold text-purple-600">
+                    SAR {course.price}
+                  </span>
+                  <span className="text-sm text-slate-400">full course</span>
                 </div>
-                <div className="text-sm text-slate-500">Full course price</div>
-              </div>
-
-              <div className="space-y-3 mb-6 pb-6 border-b border-slate-100">
-                <div className="flex items-center gap-3 text-sm">
-                  <Calendar className="w-4 h-4 text-purple-600" />
-                  <span className="text-slate-600">Starts {course.date}</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm">
-                  <Clock className="w-4 h-4 text-purple-600" />
-                  <span className="text-slate-600">{course.duration}</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm">
-                  <Users className="w-4 h-4 text-purple-600" />
-                  <span className="text-slate-600">{course.slots} spots remaining</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm">
-                  <Award className="w-4 h-4 text-purple-600" />
-                  <span className="text-slate-600">PADI Certified</span>
-                </div>
+                <p className="text-xs text-slate-400">
+                  {course.slots} spots available · Starts {course.date}
+                </p>
               </div>
 
               <button
                 onClick={() => navigate(`/booking/course/${course.id}`)}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-4 rounded-xl transition-colors mb-4"
+                className="w-full rounded-xl bg-purple-500 py-3.5 font-semibold text-white transition-colors hover:bg-purple-600"
               >
-                Reserve Your Spot
+                Enroll Now
               </button>
 
-              <p className="text-xs text-center text-slate-400 mb-6">
-                You won't be charged yet
-              </p>
+              <div className="space-y-3 border-t border-slate-100 pt-5">
+                <h3 className="text-sm font-semibold text-slate-900">
+                  Provided by
+                </h3>
+                <button
+                  onClick={() => center && navigate(`/centers/${center.id}`)}
+                  className="-m-2 flex w-full items-center gap-3 rounded-xl p-2 transition-colors hover:bg-slate-50"
+                >
+                  <img
+                    src={center?.img ?? course.img}
+                    alt={center?.name ?? "Independent Instructor"}
+                    className="h-12 w-12 rounded-xl border border-slate-100 object-cover"
+                  />
+                  <div className="min-w-0 flex-1 text-left">
+                    <p className="truncate text-sm font-semibold text-slate-900">
+                      {center?.name ?? "Independent Instructor"}
+                    </p>
+                    <div className="mt-0.5 flex items-center gap-1.5">
+                      {center?.verified && (
+                        <Shield className="h-3 w-3 text-purple-500" />
+                      )}
+                      <span className="text-xs text-slate-400">
+                        {center?.city ?? "Instructor-owned listing"}
+                      </span>
+                    </div>
+                  </div>
+                </button>
+
+                {center && (
+                  <div className="flex items-center gap-1.5 text-sm">
+                    <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                    <span className="font-semibold text-slate-900">
+                      {center.rating}
+                    </span>
+                    <span className="text-slate-400">
+                      ({center.reviews} reviews)
+                    </span>
+                  </div>
+                )}
+              </div>
 
               {center && (
-                <div className="space-y-3 pt-6 border-t border-slate-100">
-                  <h3 className="font-semibold text-slate-900 text-sm mb-3">Contact Center</h3>
+                <div className="space-y-2.5 border-t border-slate-100 pt-5">
                   <a
                     href={`tel:${center.phone}`}
-                    className="flex items-center gap-2 text-sm text-slate-600 hover:text-purple-600 transition-colors"
+                    className="flex items-center gap-3 text-sm text-slate-600 transition-colors hover:text-purple-600"
                   >
-                    <Phone className="w-4 h-4" />
+                    <Phone className="h-4 w-4" />
                     {center.phone}
                   </a>
                   <a
                     href={`mailto:${center.email}`}
-                    className="flex items-center gap-2 text-sm text-slate-600 hover:text-purple-600 transition-colors"
+                    className="flex items-center gap-3 text-sm text-slate-600 transition-colors hover:text-purple-600"
                   >
-                    <Mail className="w-4 h-4" />
+                    <Mail className="h-4 w-4" />
                     {center.email}
                   </a>
                 </div>
               )}
 
-              <div className="bg-purple-50 border border-purple-100 rounded-xl p-4 text-xs text-purple-800 leading-relaxed mt-6">
-                <strong>Free cancellation</strong> up to 7 days before course start. Full refund guaranteed.
-              </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>

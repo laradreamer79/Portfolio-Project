@@ -357,9 +357,6 @@ export function TripDetail() {
                 </div>
               )}
 
-              <div className="bg-teal-50 border border-teal-100 rounded-xl p-4 text-xs text-teal-800 leading-relaxed">
-                <strong>Free cancellation</strong> up to 48 hours before the trip. Full refund guaranteed.
-              </div>
             </div>
           </div>
 
