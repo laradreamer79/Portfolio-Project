@@ -1,51 +1,41 @@
 import { Router } from "express";
-import {
-  createReviewController,
-  deleteReviewController,
-  getAllReviewsController,
-  getCenterReviewsController,
-  getCourseReviewsController,
-  getTripReviewsController,
-} from "./reviews.controller.js";
-
+import { reviewsController } from "./reviews.controller.js";
 import { authenticate } from "../middleware/auth.middleware.js";
 import { authorize } from "../middleware/role.middleware.js";
 
-
 export const reviewsRouter = Router();
-
 
 reviewsRouter.post(
   "/",
   authenticate,
-  createReviewController,
+  reviewsController.create,
 );
 
 reviewsRouter.get(
   "/",
   authenticate,
   authorize("admin"),
-  getAllReviewsController,
+  reviewsController.getAll,
 );
 
 reviewsRouter.delete(
   "/:id",
   authenticate,
   authorize("admin"),
-  deleteReviewController,
+  reviewsController.delete,
 );
 
 reviewsRouter.get(
   "/center/:centerId",
-  getCenterReviewsController,
+  reviewsController.getByCenter,
 );
 
 reviewsRouter.get(
   "/trip/:tripId",
-  getTripReviewsController,
+  reviewsController.getByTrip,
 );
 
 reviewsRouter.get(
   "/course/:courseId",
-  getCourseReviewsController,
+  reviewsController.getByCourse,
 );

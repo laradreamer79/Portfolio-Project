@@ -1,195 +1,195 @@
+import { Prisma } from "../generated/prisma/client.js";
 import { prisma } from "../prisma/client.js";
-
-export async function createReview(
-  userId: number,
-  data: any,
-) {
-  if (data.rating < 1 || data.rating > 5) {
-    throw new Error("Rating must be between 1 and 5");
-  }
-
-
-  if (
-    Number(!!data.centerId) +
-      Number(!!data.tripId) +
-      Number(!!data.courseId) !==
-    1
-  ) {
-    throw new Error(
-      "Review must be for exactly one item",
-    );
-  }
-
- let confirmedBooking;
-
-if (data.tripId) {
-  confirmedBooking = await prisma.booking.findFirst({
-    where: {
-      userId,
-      tripId: data.tripId,
-      status: "confirmed",
-    },
-  });
-} else if (data.courseId) {
-  confirmedBooking = await prisma.booking.findFirst({
-    where: {
-      userId,
-      courseId: data.courseId,
-      status: "confirmed",
-    },
-  });
-} else {
-  confirmedBooking = await prisma.booking.findFirst({
-    where: {
-      userId,
-      status: "confirmed",
-      OR: [
-        {
-          trip: {
-            is: {
-              centerId: data.centerId,
-            },
-          },
-        },
-        {
-          course: {
-            is: {
-              centerId: data.centerId,
-            },
-          },
-        },
-      ],
-    },
-  });
-}
-
-if (!confirmedBooking) {
-  throw new Error(
-    "You can only review an item that you have booked",
-  );
-} 
-
-  let existingReview;
-
-  if (data.tripId) {
-    existingReview =
-      await prisma.review.findFirst({
-        where: {
-          userId,
-          tripId: data.tripId,
-        },
-      });
-  } else if (data.courseId) {
-    existingReview =
-      await prisma.review.findFirst({
-        where: {
-          userId,
-          courseId: data.courseId,
-        },
-      });
-  } else {
-    existingReview =
-      await prisma.review.findFirst({
-        where: {
-          userId,
-          centerId: data.centerId,
-        },
-      });
-  }
-
-  if (existingReview) {
-    throw new Error(
-      "You have already reviewed this item",
-    );
-  }
-
-  return prisma.review.create({
-    data: {
-      userId,
-      centerId: data.centerId,
-      tripId: data.tripId,
-      courseId: data.courseId,
-      rating: data.rating,
-      comment: data.comment,
-    },
-    include: {
-      user: true,
-      center: true,
-      trip: true,
-      course: true,
-    },
-  });
-}
+import { HttpError } from "../utils/http-error.js";
+import type { CreateReviewInput } from "./reviews.validation.js";
 
 const reviewInclude = {
-  user: true,
+  user: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
   center: true,
   trip: true,
   course: true,
-};
+} satisfies Prisma.ReviewInclude;
 
-export async function getCenterReviews(
-  centerId: number,
-) {
+function confirmedBookingWhere(
+  userId: number,
+  review: CreateReviewInput,
+): Prisma.BookingWhereInput {
+  if (review.tripId !== undefined) {
+    return {
+      userId,
+      tripId: review.tripId,
+      status: "confirmed",
+    };
+  }
+
+  if (review.courseId !== undefined) {
+    return {
+      userId,
+      courseId: review.courseId,
+      status: "confirmed",
+    };
+  }
+
+  return {
+    userId,
+    status: "confirmed",
+    OR: [
+      {
+        trip: {
+          is: { centerId: review.centerId },
+        },
+      },
+      {
+        course: {
+          is: { centerId: review.centerId },
+        },
+      },
+    ],
+  };
+}
+
+function existingReviewWhere(
+  userId: number,
+  review: CreateReviewInput,
+): Prisma.ReviewWhereInput {
+  if (review.tripId !== undefined) {
+    return { userId, tripId: review.tripId };
+  }
+
+  if (review.courseId !== undefined) {
+    return { userId, courseId: review.courseId };
+  }
+
+  return { userId, centerId: review.centerId };
+}
+
+async function create(userId: number, data: CreateReviewInput) {
+  const maxAttempts = 3;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      return await prisma.$transaction(
+        async (transaction) => {
+          const confirmedBooking = await transaction.booking.findFirst({
+            where: confirmedBookingWhere(userId, data),
+            select: { id: true },
+          });
+
+          if (!confirmedBooking) {
+            throw new HttpError(
+              403,
+              "You can only review an item that you have booked",
+            );
+          }
+
+          const existingReview = await transaction.review.findFirst({
+            where: existingReviewWhere(userId, data),
+            select: { id: true },
+          });
+
+          if (existingReview) {
+            throw new HttpError(
+              409,
+              "You have already reviewed this item",
+            );
+          }
+
+          return transaction.review.create({
+            data: {
+              userId,
+              centerId: data.centerId,
+              tripId: data.tripId,
+              courseId: data.courseId,
+              rating: data.rating,
+              comment: data.comment,
+            },
+            include: reviewInclude,
+          });
+        },
+        { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+      );
+    } catch (error) {
+      const isWriteConflict =
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2034";
+
+      if (isWriteConflict && attempt < maxAttempts) continue;
+
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
+        throw new HttpError(409, "You have already reviewed this item");
+      }
+
+      if (isWriteConflict) {
+        throw new HttpError(
+          409,
+          "Review submission conflicted with another request. Please retry.",
+        );
+      }
+
+      throw error;
+    }
+  }
+
+  throw new HttpError(409, "Unable to submit review. Please retry.");
+}
+
+async function getAll() {
   return prisma.review.findMany({
-    where: {
-      centerId,
-    },
     include: reviewInclude,
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: { createdAt: "desc" },
   });
 }
 
-export async function getAllReviews() {
+async function getByCenter(centerId: number) {
   return prisma.review.findMany({
+    where: { centerId },
     include: reviewInclude,
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: { createdAt: "desc" },
   });
 }
 
-export async function getTripReviews(
-  tripId: number,
-) {
+async function getByTrip(tripId: number) {
   return prisma.review.findMany({
-    where: {
-      tripId,
-    },
+    where: { tripId },
     include: reviewInclude,
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: { createdAt: "desc" },
   });
 }
 
-export async function getCourseReviews(
-  courseId: number,
-) {
+async function getByCourse(courseId: number) {
   return prisma.review.findMany({
-    where: {
-      courseId,
-    },
+    where: { courseId },
     include: reviewInclude,
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: { createdAt: "desc" },
   });
 }
 
-export async function deleteReview(id: number) {
+async function deleteReview(id: number) {
   const existingReview = await prisma.review.findUnique({
     where: { id },
     select: { id: true },
   });
 
   if (!existingReview) {
-    throw new Error("Review not found");
+    throw new HttpError(404, "Review not found");
   }
 
-  return prisma.review.delete({
-    where: { id },
-  });
+  return prisma.review.delete({ where: { id } });
 }
+
+export const reviewsService = {
+  create,
+  getAll,
+  getByCenter,
+  getByTrip,
+  getByCourse,
+  delete: deleteReview,
+};
