@@ -9,6 +9,14 @@ type ApiCount = {
   bookings?: number;
 };
 
+type ApiInstructor = {
+  id: number;
+  name: string;
+  instructorProfile?: {
+    city?: string | null;
+  } | null;
+};
+
 export type ApiCenter = {
   id: number;
   name: string;
@@ -40,6 +48,7 @@ export type ApiTrip = {
   instructorId?: number | null;
   imageUrl?: string | null;
   center?: Pick<ApiCenter, "id" | "name" | "city"> | null;
+  instructor?: ApiInstructor | null;
   _count?: ApiCount;
 };
 
@@ -54,6 +63,7 @@ export type ApiCourse = {
   instructorId?: number | null;
   imageUrl?: string | null;
   center?: Pick<ApiCenter, "id" | "name" | "city"> | null;
+  instructor?: ApiInstructor | null;
   _count?: ApiCount;
 };
 
@@ -164,6 +174,8 @@ export function toTrip(trip: ApiTrip): Trip {
   return {
     id: trip.id,
     centerId: trip.centerId,
+    city: trip.center?.city ?? trip.instructor?.instructorProfile?.city ?? undefined,
+    providerName: trip.center?.name ?? trip.instructor?.name,
     title: trip.title,
     type: "trip",
     level: formatLevel(trip.difficultyLevel),
@@ -182,6 +194,11 @@ export function toCourse(course: ApiCourse): Trip {
   return {
     id: course.id,
     centerId: course.centerId,
+    city:
+      course.center?.city ??
+      course.instructor?.instructorProfile?.city ??
+      undefined,
+    providerName: course.center?.name ?? course.instructor?.name,
     title: course.title,
     type: "course",
     level: course.level,

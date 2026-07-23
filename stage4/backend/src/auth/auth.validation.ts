@@ -1,9 +1,14 @@
 import { z } from "zod";
+import {
+  CENTER_CITIES,
+  type CenterCity,
+} from "../centers/centers.constants.js";
 
-const optionalTrimmedString = z
+const optionalTrimmedString = z.string().trim().optional();
+const emailSchema = z
   .string()
   .trim()
-  .optional();
+  .email("Invalid email address");
 
 export const registerSchema = z
   .object({
@@ -12,10 +17,7 @@ export const registerSchema = z
       .trim()
       .min(2, "Name must be at least 2 characters"),
 
-    email: z
-      .string()
-      .trim()
-      .email("Invalid email address"),
+    email: emailSchema,
 
     password: z
       .string()
@@ -26,6 +28,7 @@ export const registerSchema = z
       .default("user"),
 
     instructorLicenseNumber: optionalTrimmedString,
+    instructorCity: optionalTrimmedString,
     centerName: optionalTrimmedString,
     centerCity: optionalTrimmedString,
     centerLicenseNumber: optionalTrimmedString,
@@ -40,6 +43,22 @@ export const registerSchema = z
         path: ["instructorLicenseNumber"],
         message: "Instructor license number is required",
       });
+    }
+
+    if (data.role === "instructor") {
+      if (!data.instructorCity) {
+        context.addIssue({
+          code: "custom",
+          path: ["instructorCity"],
+          message: "Instructor city is required",
+        });
+      } else if (!CENTER_CITIES.includes(data.instructorCity as CenterCity)) {
+        context.addIssue({
+          code: "custom",
+          path: ["instructorCity"],
+          message: "Choose a valid instructor city",
+        });
+      }
     }
 
     if (data.role === "diving_center") {
@@ -57,6 +76,12 @@ export const registerSchema = z
           path: ["centerCity"],
           message: "Center city is required",
         });
+      } else if (!CENTER_CITIES.includes(data.centerCity as CenterCity)) {
+        context.addIssue({
+          code: "custom",
+          path: ["centerCity"],
+          message: "Choose a valid center city",
+        });
       }
 
       if (!data.centerLicenseNumber || data.centerLicenseNumber.length < 2) {
@@ -70,14 +95,16 @@ export const registerSchema = z
   });
 
 export const loginSchema = z.object({
-  email: z
-    .string()
-    .email("Invalid email address"),
-
-  password: z
-    .string()
-    .min(1, "Password is required"),
+  email: emailSchema,
+  password: z.string().min(1, "Password is required"),
 });
+
+export const instructorCitySchema = z
+  .object({
+    city: z.enum(CENTER_CITIES),
+  })
+  .strict();
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
+export type InstructorCityInput = z.infer<typeof instructorCitySchema>;

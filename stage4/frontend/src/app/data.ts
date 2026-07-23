@@ -1,4 +1,13 @@
-export const CITIES = ["All Cities", "Jeddah", "Yanbu", "Dammam", "Al Khobar", "NEOM", "Jizan"];
+export const DIVING_CITIES = [
+  "Jeddah",
+  "Yanbu",
+  "Dammam",
+  "Al Khobar",
+  "NEOM",
+  "Jazan",
+] as const;
+
+export const CITIES = ["All Cities", ...DIVING_CITIES];
 
 export type Center = {
   id: number;
@@ -23,6 +32,8 @@ export type Center = {
 export type Trip = {
   id: number;
   centerId?: number | null;
+  city?: string;
+  providerName?: string;
   title: string;
   type: "trip" | "course";
   level: string;

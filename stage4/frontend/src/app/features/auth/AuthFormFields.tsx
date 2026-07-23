@@ -1,4 +1,4 @@
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { ChevronDown, Eye, EyeOff, Loader2 } from "lucide-react";
 import type { ReactNode } from "react";
 
 type AuthFieldProps = {
@@ -32,6 +32,48 @@ export function AuthField({
         minLength={minLength}
         className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-800 outline-none transition-colors focus:border-teal-400"
       />
+    </label>
+  );
+}
+
+type AuthSelectFieldProps = {
+  label: string;
+  value: string;
+  options: readonly string[];
+  placeholder: string;
+  onChange: (value: string) => void;
+};
+
+export function AuthSelectField({
+  label,
+  value,
+  options,
+  placeholder,
+  onChange,
+}: AuthSelectFieldProps) {
+  return (
+    <label className="block">
+      <span className="mb-1.5 block text-sm font-medium text-slate-600">
+        {label}
+      </span>
+      <span className="relative block">
+        <select
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className="w-full appearance-none rounded-xl border border-slate-200 bg-white py-2.5 pl-4 pr-12 text-sm text-slate-800 outline-none transition-colors focus:border-teal-400"
+        >
+          <option value="">{placeholder}</option>
+          {options.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+        <ChevronDown
+          aria-hidden="true"
+          className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+        />
+      </span>
     </label>
   );
 }

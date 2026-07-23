@@ -59,12 +59,15 @@ model User {
 model InstructorProfile {
   id            Int            @id @default(autoincrement())
   licenseNumber String         @unique
+  city          String?
   status        ApprovalStatus @default(pending)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int  @unique
+
+  @@index([city])
 }
 
 model DivingCenter {

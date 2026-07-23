@@ -13,7 +13,7 @@ const CITY_IMGS: Record<string, string> = {
   Dammam: "https://images.unsplash.com/photo-1708649290066-5f617003b93f?w=600&h=420&fit=crop&auto=format",
   "Al Khobar": "https://images.unsplash.com/photo-1573553467420-b2a90be8d317?w=600&h=420&fit=crop&auto=format",
   NEOM: "https://images.unsplash.com/photo-1682687981630-cefe9cd73072?w=600&h=420&fit=crop&auto=format",
-  Jizan: "https://images.unsplash.com/photo-1682687981922-7b55dbb30892?w=600&h=420&fit=crop&auto=format",
+  Jazan: "https://images.unsplash.com/photo-1682687981922-7b55dbb30892?w=600&h=420&fit=crop&auto=format",
 };
 
 export function Home() {

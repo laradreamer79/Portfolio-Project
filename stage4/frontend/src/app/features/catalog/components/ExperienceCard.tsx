@@ -72,6 +72,13 @@ export function ExperienceCard({
             {center.name} · {center.city}
           </button>
         )}
+        {!center && experience.city && (
+          <div className="mb-3 flex items-center gap-1 text-xs font-medium text-teal-600">
+            <MapPin className={`h-3 w-3 ${course && featured ? "text-purple-500" : "text-teal-500"}`} />
+            {experience.providerName ?? "Independent Instructor"} ·{" "}
+            {experience.city}
+          </div>
+        )}
 
         {!featured && <p className="mb-3 line-clamp-2 flex-1 text-sm leading-relaxed text-slate-500">{experience.description}</p>}
 

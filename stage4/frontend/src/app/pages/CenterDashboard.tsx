@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Plus, Star, Users, TrendingUp, CheckCircle, Clock, X, Edit3, Trash2, Eye, ImageUp } from "lucide-react";
+import { DIVING_CITIES } from "../data";
 import { listingRoute } from "../features/listing-management";
 import { useCenterDashboard } from "../features/center-dashboard";
 import { useAuth } from "../hooks/useAuth";
@@ -244,7 +245,7 @@ export function CenterDashboard() {
         {activeTab === "profile" && (
           <div className="max-w-2xl space-y-6">
             <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide">CENTER PROFILE</h2>
-            <form key={center?.id ?? "empty"} onSubmit={handleProfileSubmit} className="bg-white rounded-2xl border border-slate-100 p-6 space-y-4">
+            <form key={center?.id ?? "empty"} onSubmit={handleProfileSubmit} noValidate className="bg-white rounded-2xl border border-slate-100 p-6 space-y-4">
               <div>
                 <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest block mb-2">Center Image</label>
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -294,13 +295,29 @@ export function CenterDashboard() {
               ] as const).map((field) => (
                 <div key={field.key}>
                   <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest block mb-1">{field.label}</label>
-                  <input
-                    type={field.type}
-                    name={field.key}
-                    required={field.key === "name" || field.key === "city"}
-                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-teal-400 transition-colors"
-                    defaultValue={field.value}
-                  />
+                  {field.key === "city" ? (
+                    <select
+                      name={field.key}
+                      required
+                      className="w-full border border-slate-200 rounded-xl bg-white px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-teal-400 transition-colors"
+                      defaultValue={field.value}
+                    >
+                      <option value="">Choose a city</option>
+                      {DIVING_CITIES.map((city) => (
+                        <option key={city} value={city}>
+                          {city}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type={field.type}
+                      name={field.key}
+                      required={field.key === "name"}
+                      className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-teal-400 transition-colors"
+                      defaultValue={field.value}
+                    />
+                  )}
                 </div>
               ))}
               <div>

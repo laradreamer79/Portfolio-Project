@@ -6,6 +6,11 @@ export type AuthUser = {
   name: string;
   email: string;
   role: UserRole;
+  instructorProfile?: {
+    licenseNumber: string;
+    city?: string | null;
+    status: string;
+  } | null;
 };
 
 export type AuthResponse = {
@@ -25,6 +30,7 @@ export type RegisterPayload = {
   password: string;
   role: RegistrationRole;
   instructorLicenseNumber?: string;
+  instructorCity?: string;
   centerName?: string;
   centerCity?: string;
   centerLicenseNumber?: string;
@@ -46,4 +52,15 @@ export function register(payload: RegisterPayload): Promise<AuthResponse> {
 
 export function getMe(token: string): Promise<AuthUser> {
   return apiRequest<AuthUser>("/auth/me", { token });
+}
+
+export function updateInstructorCity(city: string, token: string) {
+  return apiRequest<NonNullable<AuthUser["instructorProfile"]>>(
+    "/auth/instructor-profile/city",
+    {
+      method: "PATCH",
+      body: { city },
+      token,
+    },
+  );
 }

@@ -1,86 +1,72 @@
 import type { NextFunction, Request, Response } from "express";
 import type { AuthRequest } from "../middleware/auth.middleware.js";
+import { HttpError } from "../utils/http-error.js";
+import { authService } from "./auth.service.js";
 import {
-  getCurrentUser,
-  loginUser,
-  registerUser,
-} from "./auth.service.js";
-import { loginSchema, registerSchema } from "./auth.validation.js";
+  instructorCitySchema,
+  loginSchema,
+  registerSchema,
+} from "./auth.validation.js";
 
-export async function register(
-  request: Request,
-  response: Response,
-  next: NextFunction,
-) {
-  try {
-    const body = registerSchema.parse(request.body);
+export const authController = {
+  async register(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = registerSchema.parse(req.body);
+      const result = await authService.register(data);
 
-    const result = await registerUser(body);
-
-    response.status(201).json(result);
-  } catch (error: any) {
-    if (error?.issues) {
-      return response.status(400).json({
-        message: "Validation failed",
-        errors: error.issues,
-      });
+      return res.status(201).json(result);
+    } catch (error) {
+      next(error);
     }
+  },
 
-    if (error?.status) {
-      return response.status(error.status).json({
-        message: error.message,
-      });
+  async login(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = loginSchema.parse(req.body);
+      const result = await authService.login(data);
+
+      return res.status(200).json(result);
+    } catch (error) {
+      next(error);
     }
+  },
 
-    next(error);
-  }
-}
+  async me(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        throw new HttpError(401, "Unauthorized");
+      }
 
-export async function login(
-  request: Request,
-  response: Response,
-  next: NextFunction,
-) {
-  try {
-    const body = loginSchema.parse(request.body);
-
-    const result = await loginUser(body);
-
-    response.json(result);
-  } catch (error: any) {
-    if (error?.issues) {
-      return response.status(400).json({
-        message: "Validation failed",
-        errors: error.issues,
-      });
+      const user = await authService.getCurrentUser(req.user.id);
+      return res.status(200).json(user);
+    } catch (error) {
+      next(error);
     }
+  },
 
-    if (error?.status) {
-      return response.status(error.status).json({
-        message: error.message,
-      });
+  async updateInstructorCity(
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      if (!req.user) {
+        throw new HttpError(401, "Unauthorized");
+      }
+
+      if (req.user.role !== "instructor") {
+        throw new HttpError(403, "Instructor access required");
+      }
+
+      const data = instructorCitySchema.parse(req.body);
+      const profile = await authService.updateInstructorCity(
+        req.user.id,
+        data,
+      );
+
+      return res.status(200).json(profile);
+    } catch (error) {
+      next(error);
     }
-
-    next(error);
-  }
-}
-
-export async function me(
-  request: AuthRequest,
-  response: Response,
-  next: NextFunction,
-) {
-  try {
-    const user = await getCurrentUser(request.user!.id);
-
-    response.json(user);
-  } catch (error: any) {
-    if (error?.status) {
-      return response.status(error.status).json({
-        message: error.message,
-      });
-    }
-
-    next(error);
-  }
-}
+  },
+};

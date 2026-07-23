@@ -1,19 +1,18 @@
 import type { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
-
-const JWT_SECRET = process.env.JWT_SECRET;
-
-if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET is not defined");
-}
-
-const jwtSecret: string = JWT_SECRET;
+import {
+  verifyAuthToken,
+  type AuthTokenPayload,
+} from "../auth/auth.token.js";
 
 export interface AuthRequest extends Request {
-  user?: {
-    id: number;
-    role: string;
-  };
+  user?: AuthTokenPayload;
+}
+
+function getBearerToken(request: Request) {
+  const authHeader = request.headers.authorization;
+  return authHeader?.startsWith("Bearer ")
+    ? authHeader.slice(7)
+    : undefined;
 }
 
 export function authenticate(
@@ -21,25 +20,17 @@ export function authenticate(
   response: Response,
   next: NextFunction,
 ) {
-  const authHeader = request.headers.authorization;
+  const token = getBearerToken(request);
 
-  if (!authHeader?.startsWith("Bearer ")) {
+  if (!token) {
     return response.status(401).json({
       message: "Unauthorized",
     });
   }
 
-  const token = authHeader.split(" ")[1];
-
   try {
-    const decoded = jwt.verify(token, jwtSecret) as {
-      id: number;
-      role: string;
-    };
-
-    request.user = decoded;
-
-    next();
+    request.user = verifyAuthToken(token);
+    return next();
   } catch {
     return response.status(401).json({
       message: "Invalid token",
@@ -52,21 +43,14 @@ export function optionalAuthenticate(
   _response: Response,
   next: NextFunction,
 ) {
-  const authHeader = request.headers.authorization;
+  const token = getBearerToken(request);
 
-  if (!authHeader?.startsWith("Bearer ")) {
+  if (!token) {
     return next();
   }
 
-  const token = authHeader.split(" ")[1];
-
   try {
-    const decoded = jwt.verify(token, jwtSecret) as {
-      id: number;
-      role: string;
-    };
-
-    request.user = decoded;
+    request.user = verifyAuthToken(token);
   } catch {
     request.user = undefined;
   }

@@ -21,6 +21,7 @@ const EMPTY_REGISTER_FORM: RegisterFormState = {
   password: "",
   role: "user",
   instructorLicenseNumber: "",
+  instructorCity: "",
   centerName: "",
   centerCity: "",
   centerLicenseNumber: "",
@@ -112,6 +113,7 @@ export function useAuthForm() {
         email,
         instructorLicenseNumber:
           registerForm.instructorLicenseNumber.trim(),
+        instructorCity: registerForm.instructorCity.trim(),
         centerName: registerForm.centerName.trim(),
         centerCity: registerForm.centerCity.trim(),
         centerLicenseNumber: registerForm.centerLicenseNumber.trim(),

@@ -2,10 +2,12 @@ import { Navigate } from "react-router-dom";
 import { Anchor, Loader2 } from "lucide-react";
 import {
   AuthField,
+  AuthSelectField,
   AuthSubmitButton,
   PasswordField,
   useAuthForm,
 } from "../features/auth";
+import { DIVING_CITIES } from "../data";
 
 export function Auth() {
   const {
@@ -93,7 +95,11 @@ export function Auth() {
             )}
 
             {tab === "login" ? (
-              <form className="space-y-4" onSubmit={handleLogin}>
+              <form
+                className="space-y-4"
+                onSubmit={handleLogin}
+                noValidate
+              >
                 <AuthField
                   label="Email"
                   type="email"
@@ -113,7 +119,11 @@ export function Auth() {
                 </AuthSubmitButton>
               </form>
             ) : (
-              <form className="space-y-4" onSubmit={handleRegister}>
+              <form
+                className="space-y-4"
+                onSubmit={handleRegister}
+                noValidate
+              >
                 <fieldset>
                   <legend className="mb-2 text-sm font-medium text-slate-600">
                     Account Type
@@ -163,18 +173,29 @@ export function Auth() {
                   minLength={8}
                 />
                 {registerForm.role === "instructor" && (
-                  <AuthField
-                    label="Instructor License Number"
-                    value={registerForm.instructorLicenseNumber}
-                    onChange={(value) =>
-                      updateRegisterField("instructorLicenseNumber", value)
-                    }
-                    autoComplete="off"
-                    minLength={2}
-                  />
+                  <>
+                    <AuthField
+                      label="Instructor License Number"
+                      value={registerForm.instructorLicenseNumber}
+                      onChange={(value) =>
+                        updateRegisterField("instructorLicenseNumber", value)
+                      }
+                      autoComplete="off"
+                      minLength={2}
+                    />
+                    <AuthSelectField
+                      label="City"
+                      value={registerForm.instructorCity}
+                      options={DIVING_CITIES}
+                      placeholder="Choose a city"
+                      onChange={(value) =>
+                        updateRegisterField("instructorCity", value)
+                      }
+                    />
+                  </>
                 )}
                 {registerForm.role === "diving_center" && (
-                  <div className="space-y-4 rounded-2xl border border-teal-100 bg-teal-50/50 p-4">
+                  <div className="space-y-4">
                     <AuthField
                       label="Diving Center Name"
                       value={registerForm.centerName}
@@ -184,14 +205,14 @@ export function Auth() {
                       autoComplete="organization"
                       minLength={2}
                     />
-                    <AuthField
+                    <AuthSelectField
                       label="City"
                       value={registerForm.centerCity}
+                      options={DIVING_CITIES}
+                      placeholder="Choose a city"
                       onChange={(value) =>
                         updateRegisterField("centerCity", value)
                       }
-                      autoComplete="address-level2"
-                      minLength={2}
                     />
                     <AuthField
                       label="Diving Center License Number"
