@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export const ACCEPTED_IMAGE_TYPES = new Set([
   "image/jpeg",
   "image/png",
@@ -6,44 +8,70 @@ export const ACCEPTED_IMAGE_TYPES = new Set([
 
 export const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const SAUDI_PHONE_PATTERN = /^(05\d{8}|\+9665\d{8})$/;
-const PERSON_NAME_PATTERN = /^[\p{L}][\p{L}\s'-]*$/u;
+export const emailSchema = z
+  .string()
+  .trim()
+  .email("Enter a valid email address.");
 
-export function isValidEmail(value: string) {
-  return EMAIL_PATTERN.test(value.trim());
-}
+export const saudiPhoneSchema = z
+  .string()
+  .transform((value) => value.replace(/[\s-]/g, ""))
+  .pipe(
+    z
+      .string()
+      .regex(
+        /^(05\d{8}|\+9665\d{8})$/,
+        "Enter a Saudi phone number such as 05XXXXXXXX or +9665XXXXXXXX.",
+      ),
+  );
 
-export function isValidSaudiPhone(value: string) {
-  return SAUDI_PHONE_PATTERN.test(value.replace(/[\s-]/g, ""));
-}
+export const personNameSchema = z
+  .string()
+  .trim()
+  .min(2, "Enter a name using at least two letters.")
+  .regex(
+    /^[\p{L}][\p{L}\s'-]*$/u,
+    "Enter a name using letters, spaces, apostrophes, or hyphens.",
+  );
 
-export function isValidPersonName(value: string) {
-  const name = value.trim();
-  return name.length >= 2 && PERSON_NAME_PATTERN.test(name);
-}
+export const imageFileSchema = z
+  .custom<File>(
+    (value) => typeof File !== "undefined" && value instanceof File,
+    "Choose an image file.",
+  )
+  .superRefine((file, context) => {
+    if (!ACCEPTED_IMAGE_TYPES.has(file.type)) {
+      context.addIssue({
+        code: "custom",
+        message: "Upload a JPEG, PNG, or WEBP image.",
+      });
+    }
 
-export function imageValidationError(file: File): string | null {
-  if (!ACCEPTED_IMAGE_TYPES.has(file.type)) {
-    return "Upload a JPEG, PNG, or WEBP image.";
-  }
+    if (file.size > MAX_IMAGE_SIZE) {
+      context.addIssue({
+        code: "custom",
+        message: "The image must be 5 MB or smaller.",
+      });
+    }
+  });
 
-  if (file.size > MAX_IMAGE_SIZE) {
-    return "The image must be 5 MB or smaller.";
-  }
+export const dateInputSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Choose a valid date.")
+  .refine(
+    (value) => !Number.isNaN(new Date(`${value}T00:00:00`).getTime()),
+    "Choose a valid date.",
+  );
 
-  return null;
-}
-
-export function isTodayOrFuture(value: string) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-
+export const todayOrFutureDateSchema = dateInputSchema.refine((value) => {
   const selected = new Date(`${value}T00:00:00`);
-  if (Number.isNaN(selected.getTime())) return false;
-
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   return selected.getTime() >= today.getTime();
+}, "Choose today or a future date.");
+
+export function firstZodError(error: z.ZodError) {
+  return error.issues[0]?.message ?? "Enter valid information.";
 }
 
 export function todayInputValue() {

@@ -160,7 +160,7 @@ export function Auth() {
                   show={showPassword}
                   onToggle={togglePassword}
                   autoComplete="new-password"
-                  minLength={6}
+                  minLength={8}
                 />
                 {registerForm.role === "instructor" && (
                   <AuthField
@@ -204,10 +204,6 @@ export function Auth() {
                     />
                   </div>
                 )}
-                <p className="text-xs text-slate-400">
-                  Choose the account type that matches how you will use Oyster.
-                  Admin accounts cannot be created through public registration.
-                </p>
                 <AuthSubmitButton loading={isSubmitting}>
                   Create Account
                 </AuthSubmitButton>

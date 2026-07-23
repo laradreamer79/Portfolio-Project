@@ -1,7 +1,9 @@
+import { z } from "zod";
 import {
-  imageValidationError,
-  isValidEmail,
-  isValidSaudiPhone,
+  emailSchema,
+  firstZodError,
+  imageFileSchema,
+  saudiPhoneSchema,
 } from "../../lib/validation";
 import type { UpdateCenterPayload } from "../catalog";
 
@@ -10,33 +12,32 @@ type CenterProfileValidationResult =
   | { ok: true; data: UpdateCenterPayload };
 
 export function validateCenterProfileImage(file: File) {
-  return imageValidationError(file);
+  const result = imageFileSchema.safeParse(file);
+  return result.success ? null : firstZodError(result.error);
 }
+
+export const centerProfileSchema = z.object({
+  name: z.string().trim().min(1, "Center name and city are required."),
+  city: z.string().trim().min(1, "Center name and city are required."),
+  contactEmail: z.union([emailSchema, z.literal("")]).optional(),
+  contactPhone: z.union([saudiPhoneSchema, z.literal("")]).optional(),
+});
 
 export function validateCenterProfile(
   payload: UpdateCenterPayload,
 ): CenterProfileValidationResult {
-  if (!payload.name?.trim() || !payload.city?.trim()) {
-    return { ok: false, error: "Center name and city are required." };
-  }
-
-  if (payload.contactEmail && !isValidEmail(payload.contactEmail)) {
-    return { ok: false, error: "Enter a valid contact email address." };
-  }
-
-  if (payload.contactPhone && !isValidSaudiPhone(payload.contactPhone)) {
-    return {
-      ok: false,
-      error:
-        "Enter a Saudi phone number such as 05XXXXXXXX or +9665XXXXXXXX.",
-    };
+  const result = centerProfileSchema.safeParse(payload);
+  if (!result.success) {
+    return { ok: false, error: firstZodError(result.error) };
   }
 
   return {
     ok: true,
     data: {
       ...payload,
-      contactPhone: payload.contactPhone?.replace(/[\s-]/g, ""),
+      ...result.data,
+      contactEmail: result.data.contactEmail || undefined,
+      contactPhone: result.data.contactPhone || undefined,
     },
   };
 }

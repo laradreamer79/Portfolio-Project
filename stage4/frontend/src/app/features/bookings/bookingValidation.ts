@@ -1,32 +1,20 @@
+import { z } from "zod";
 import {
-  isValidEmail,
-  isValidPersonName,
-  isValidSaudiPhone,
+  emailSchema,
+  firstZodError,
+  personNameSchema,
+  saudiPhoneSchema,
 } from "../../lib/validation";
 import type { BookingFormState, PaymentFormState } from "./useBookingFlow";
 
-export function validateBookingDetails(form: BookingFormState) {
-  if (!isValidPersonName(form.name)) {
-    return "Enter a valid full name using at least two letters.";
-  }
+export const bookingDetailsSchema = z.object({
+  name: personNameSchema,
+  email: emailSchema,
+  phone: saudiPhoneSchema,
+  notes: z.string(),
+});
 
-  if (!isValidEmail(form.email)) {
-    return "Enter a valid email address.";
-  }
-
-  if (!isValidSaudiPhone(form.phone)) {
-    return "Enter a Saudi phone number such as 05XXXXXXXX or +9665XXXXXXXX.";
-  }
-
-  return null;
-}
-
-export function validatePaymentDetails(payment: PaymentFormState) {
-  const cardDigits = payment.card.replace(/\D/g, "");
-  if (cardDigits.length !== 16) {
-    return "Card number must contain 16 digits.";
-  }
-
+function passesLuhnCheck(cardDigits: string) {
   const checksum = [...cardDigits]
     .reverse()
     .reduce((sum, digit, index) => {
@@ -36,32 +24,54 @@ export function validatePaymentDetails(payment: PaymentFormState) {
       return sum + (doubled > 9 ? doubled - 9 : doubled);
     }, 0);
 
-  if (checksum % 10 !== 0) {
-    return "Enter a valid card number.";
-  }
+  return checksum % 10 === 0;
+}
 
-  const expiryMatch = payment.expiry.match(/^(0[1-9]|1[0-2]) \/ (\d{2})$/);
-  if (!expiryMatch) {
-    return "Enter the expiry date as MM / YY.";
-  }
+const cardNumberSchema = z
+  .string()
+  .transform((value) => value.replace(/\D/g, ""))
+  .pipe(
+    z
+      .string()
+      .length(16, "Card number must contain 16 digits.")
+      .refine(passesLuhnCheck, "Enter a valid card number."),
+  );
 
-  const expiryMonth = Number(expiryMatch[1]);
-  const expiryYear = 2000 + Number(expiryMatch[2]);
-  const now = new Date();
-  const expiryEnd = new Date(expiryYear, expiryMonth, 0, 23, 59, 59, 999);
-  if (expiryEnd.getTime() < now.getTime()) {
-    return "The card expiry date has passed.";
-  }
+const expirySchema = z
+  .string()
+  .regex(/^(0[1-9]|1[0-2]) \/ (\d{2})$/, "Enter the expiry date as MM / YY.")
+  .refine((expiry) => {
+    const [, month, year] =
+      expiry.match(/^(0[1-9]|1[0-2]) \/ (\d{2})$/) ?? [];
+    if (!month || !year) return false;
 
-  if (!/^\d{3,4}$/.test(payment.cvv)) {
-    return "CVV must contain 3 or 4 digits.";
-  }
+    const expiryEnd = new Date(
+      2000 + Number(year),
+      Number(month),
+      0,
+      23,
+      59,
+      59,
+      999,
+    );
+    return expiryEnd.getTime() >= Date.now();
+  }, "The card expiry date has passed.");
 
-  if (!isValidPersonName(payment.holder)) {
-    return "Enter a valid cardholder name.";
-  }
+export const paymentDetailsSchema = z.object({
+  card: cardNumberSchema,
+  expiry: expirySchema,
+  cvv: z.string().regex(/^\d{3,4}$/, "CVV must contain 3 or 4 digits."),
+  holder: personNameSchema,
+});
 
-  return null;
+export function validateBookingDetails(form: BookingFormState) {
+  const result = bookingDetailsSchema.safeParse(form);
+  return result.success ? null : firstZodError(result.error);
+}
+
+export function validatePaymentDetails(payment: PaymentFormState) {
+  const result = paymentDetailsSchema.safeParse(payment);
+  return result.success ? null : firstZodError(result.error);
 }
 
 export function formatCardNumber(value: string) {

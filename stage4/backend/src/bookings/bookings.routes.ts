@@ -1,11 +1,6 @@
 import { Router } from "express";
 
-import {
-  createBookingController,
-  cancelBookingController,
-  myBookingsController,
-  allBookingsController,
-} from "./bookings.controller.js";
+import { bookingsController } from "./bookings.controller.js";
 
 import { authenticate } from "../middleware/auth.middleware.js";
 
@@ -19,24 +14,24 @@ export const bookingsRouter = Router();
 bookingsRouter.post(
   "/",
   authenticate,
-  createBookingController,
+  bookingsController.create,
 );
 
 bookingsRouter.patch(
   "/:id/cancel",
   authenticate,
-  cancelBookingController,
+  bookingsController.cancel,
 );
 
 bookingsRouter.get(
   "/my",
   authenticate,
-  myBookingsController,
+  bookingsController.getMine,
 );
 
 bookingsRouter.get(
   "/",
   authenticate,
   authorizeRoles(ROLES.ADMIN),
-  allBookingsController,
+  bookingsController.getAll,
 );
