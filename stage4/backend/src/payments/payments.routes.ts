@@ -1,18 +1,7 @@
 import { Router } from "express";
-
 import { authenticate } from "../middleware/auth.middleware.js";
-
-import {
-  ROLES,
-  authorizeRoles,
-} from "../common/decorators/roles.js";
-
-import {
-  createPaymentController,
-  getPaymentController,
-  getAllPaymentsController,
-  webhookController,
-} from "./payments.controller.js";
+import { authorize } from "../middleware/role.middleware.js";
+import { paymentsController } from "./payments.controller.js";
 
 export const paymentsRouter = Router();
 
@@ -24,7 +13,7 @@ export const paymentsRouter = Router();
 paymentsRouter.post(
   "/",
   authenticate,
-  createPaymentController,
+  paymentsController.create,
 );
 
 /**
@@ -37,7 +26,7 @@ paymentsRouter.post(
  */
 paymentsRouter.post(
   "/webhook",
-  webhookController,
+  paymentsController.webhook,
 );
 
 /**
@@ -48,7 +37,7 @@ paymentsRouter.post(
 paymentsRouter.get(
   "/:id",
   authenticate,
-  getPaymentController,
+  paymentsController.getById,
 );
 
 /**
@@ -61,6 +50,6 @@ paymentsRouter.get(
 paymentsRouter.get(
   "/",
   authenticate,
-  authorizeRoles(ROLES.ADMIN),
-  getAllPaymentsController,
+  authorize("admin"),
+  paymentsController.getAll,
 );
