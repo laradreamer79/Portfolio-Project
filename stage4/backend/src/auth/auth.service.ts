@@ -4,7 +4,6 @@ import { prisma } from "../prisma/client.js";
 import { HttpError } from "../utils/http-error.js";
 import { createAuthToken } from "./auth.token.js";
 import type {
-  InstructorCityInput,
   LoginInput,
   RegisterInput,
 } from "./auth.validation.js";
@@ -16,13 +15,6 @@ const publicUserSelect = {
   name: true,
   email: true,
   role: true,
-  instructorProfile: {
-    select: {
-      licenseNumber: true,
-      city: true,
-      status: true,
-    },
-  },
 } satisfies Prisma.UserSelect;
 
 function throwRegistrationConflict(
@@ -57,7 +49,7 @@ async function register(data: RegisterInput) {
   );
 
   try {
-    const userId = await prisma.$transaction(async (transaction) => {
+    const user = await prisma.$transaction(async (transaction) => {
       const createdUser = await transaction.user.create({
         data: {
           name: data.name,
@@ -65,7 +57,7 @@ async function register(data: RegisterInput) {
           passwordHash,
           role: data.role,
         },
-        select: { id: true },
+        select: publicUserSelect,
       });
 
       if (
@@ -99,12 +91,7 @@ async function register(data: RegisterInput) {
         });
       }
 
-      return createdUser.id;
-    });
-
-    const user = await prisma.user.findUniqueOrThrow({
-      where: { id: userId },
-      select: publicUserSelect,
+      return createdUser;
     });
 
     return {
@@ -160,35 +147,8 @@ async function getCurrentUser(id: number) {
   return user;
 }
 
-async function updateInstructorCity(
-  userId: number,
-  data: InstructorCityInput,
-) {
-  try {
-    return await prisma.instructorProfile.update({
-      where: { userId },
-      data: { city: data.city },
-      select: {
-        licenseNumber: true,
-        city: true,
-        status: true,
-      },
-    });
-  } catch (error) {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2025"
-    ) {
-      throw new HttpError(404, "Instructor profile not found");
-    }
-
-    throw error;
-  }
-}
-
 export const authService = {
   register,
   login,
   getCurrentUser,
-  updateInstructorCity,
 };
