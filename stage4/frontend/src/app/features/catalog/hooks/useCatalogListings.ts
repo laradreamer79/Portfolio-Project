@@ -269,15 +269,8 @@ export function useFeaturedCatalog() {
   const listingCount = trips.length + courses.length || "—";
 
   function experienceCountForCity(city: string) {
-    const centerIds = new Set(
-      centers
-        .filter((center) => center.city === city)
-        .map((center) => center.id),
-    );
-
     return [...trips, ...courses].filter(
-      (experience) =>
-        experience.centerId != null && centerIds.has(experience.centerId),
+      (experience) => experience.city === city,
     ).length;
   }
 

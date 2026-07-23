@@ -26,7 +26,7 @@ const ADMIN_CITIES = [
   "Dammam",
   "Al Khobar",
   "NEOM",
-  "Jizan",
+  "Jazan",
 ];
 
 type AdminOverviewProps = {

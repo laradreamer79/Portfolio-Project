@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CENTER_CITIES } from "./centers.constants.js";
 
 const optionalString = z.string().trim().min(1).optional();
 const requiredString = z.string().trim().min(1);
@@ -10,7 +11,7 @@ const saudiPhone = z
 export const centerCreateSchema = z
   .object({
     name: requiredString,
-    city: requiredString,
+    city: z.enum(CENTER_CITIES),
     address: requiredString,
     licenseNumber: requiredString,
     description: requiredString,

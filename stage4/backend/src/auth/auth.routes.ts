@@ -1,10 +1,14 @@
 import { Router } from "express";
-import { login, me, register } from "./auth.controller.js";
 import { authenticate } from "../middleware/auth.middleware.js";
+import { authController } from "./auth.controller.js";
 
 export const authRouter = Router();
 
-authRouter.post("/register", register);
-authRouter.post("/login", login);
-
-authRouter.get("/me", authenticate, me);
+authRouter.post("/register", authController.register);
+authRouter.post("/login", authController.login);
+authRouter.get("/me", authenticate, authController.me);
+authRouter.patch(
+  "/instructor-profile/city",
+  authenticate,
+  authController.updateInstructorCity,
+);

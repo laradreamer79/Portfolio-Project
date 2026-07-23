@@ -252,17 +252,38 @@ export const tripsService = {
             ...(maxPrice !== undefined && { lte: maxPrice }),
           },
         }),
-        ...(city && { center: { city: { contains: city, mode: "insensitive" } } }),
-        ...(search && {
+        ...(city && {
           OR: [
-            { title: { contains: search, mode: "insensitive" } },
-            { description: { contains: search, mode: "insensitive" } },
+            { center: { city: { equals: city, mode: "insensitive" } } },
+            {
+              instructor: {
+                instructorProfile: {
+                  city: { equals: city, mode: "insensitive" },
+                },
+              },
+            },
+          ],
+        }),
+        ...(search && {
+          AND: [
+            {
+              OR: [
+                { title: { contains: search, mode: "insensitive" } },
+                { description: { contains: search, mode: "insensitive" } },
+              ],
+            },
           ],
         }),
       },
       include: {
         center: { select: { id: true, name: true, city: true } },
-        instructor: { select: { id: true, name: true } },
+        instructor: {
+          select: {
+            id: true,
+            name: true,
+            instructorProfile: { select: { city: true } },
+          },
+        },
         _count: { select: { bookings: true, reviews: true } },
       },
       orderBy: { scheduleDate: "asc" },
@@ -277,7 +298,13 @@ export const tripsService = {
       },
       include: {
         center: { select: { id: true, name: true, city: true, contactPhone: true } },
-        instructor: { select: { id: true, name: true } },
+        instructor: {
+          select: {
+            id: true,
+            name: true,
+            instructorProfile: { select: { city: true } },
+          },
+        },
         reviews: {
           include: { user: { select: { id: true, name: true } } },
           orderBy: { createdAt: "desc" },

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { DIVING_CITIES } from "../../data";
 import { emailSchema, firstZodError } from "../../lib/validation";
 import type { LoginPayload } from "./authService";
 
@@ -14,6 +15,7 @@ export const registerFormSchema = z
     password: z.string().min(8, "Password must be at least 8 characters."),
     role: z.enum(["user", "instructor", "diving_center"]),
     instructorLicenseNumber: z.string(),
+    instructorCity: z.string(),
     centerName: z.string(),
     centerCity: z.string(),
     centerLicenseNumber: z.string(),
@@ -30,18 +32,58 @@ export const registerFormSchema = z
       });
     }
 
-    if (form.role === "diving_center") {
-      const requiredCenterFields = [
-        form.centerName,
-        form.centerCity,
-        form.centerLicenseNumber,
-      ];
+    if (form.role === "instructor") {
+      if (!form.instructorCity) {
+        context.addIssue({
+          code: "custom",
+          path: ["instructorCity"],
+          message: "Instructor city is required.",
+        });
+      } else if (
+        !DIVING_CITIES.includes(
+          form.instructorCity as (typeof DIVING_CITIES)[number],
+        )
+      ) {
+        context.addIssue({
+          code: "custom",
+          path: ["instructorCity"],
+          message: "Choose a valid instructor city.",
+        });
+      }
+    }
 
-      if (requiredCenterFields.some((value) => value.trim().length < 2)) {
+    if (form.role === "diving_center") {
+      if (form.centerName.trim().length < 2) {
         context.addIssue({
           code: "custom",
           path: ["centerName"],
-          message: "Center name, city, and license number are required.",
+          message: "Center name is required.",
+        });
+      }
+
+      if (form.centerCity.trim().length < 2) {
+        context.addIssue({
+          code: "custom",
+          path: ["centerCity"],
+          message: "Center city is required.",
+        });
+      } else if (
+        !DIVING_CITIES.includes(
+          form.centerCity as (typeof DIVING_CITIES)[number],
+        )
+      ) {
+        context.addIssue({
+          code: "custom",
+          path: ["centerCity"],
+          message: "Choose a valid center city.",
+        });
+      }
+
+      if (form.centerLicenseNumber.trim().length < 2) {
+        context.addIssue({
+          code: "custom",
+          path: ["centerLicenseNumber"],
+          message: "Center license number is required.",
         });
       }
     }

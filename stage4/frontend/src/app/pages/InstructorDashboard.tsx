@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   CheckCircle,
@@ -11,6 +12,8 @@ import {
   Users,
   X,
 } from "lucide-react";
+import { DIVING_CITIES } from "../data";
+import { updateInstructorCity } from "../features/auth";
 import {
   InstructorBookingsTable,
   useInstructorDashboard,
@@ -21,7 +24,40 @@ import { todayInputValue } from "../lib/validation";
 
 export function InstructorDashboard() {
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const [instructorCity, setInstructorCity] = useState("");
+  const [cityError, setCityError] = useState<string | null>(null);
+  const [citySaved, setCitySaved] = useState(false);
+  const [isSavingCity, setIsSavingCity] = useState(false);
+
+  useEffect(() => {
+    setInstructorCity(user?.instructorProfile?.city ?? "");
+  }, [user?.instructorProfile?.city]);
+
+  async function saveInstructorCity() {
+    if (!token || !instructorCity) {
+      setCitySaved(false);
+      setCityError("Choose a city.");
+      return;
+    }
+
+    setIsSavingCity(true);
+    setCityError(null);
+    setCitySaved(false);
+
+    try {
+      await updateInstructorCity(instructorCity, token);
+      setCitySaved(true);
+    } catch (error) {
+      setCityError(
+        error instanceof Error
+          ? error.message
+          : "Unable to save instructor city.",
+      );
+    } finally {
+      setIsSavingCity(false);
+    }
+  }
   const {
     activeTab,
     bookings,
@@ -320,7 +356,6 @@ export function InstructorDashboard() {
                 { label: "Display Name", value: "Independent Instructor" },
                 { label: "License Number", value: "PADI-OWSI-2026" },
                 { label: "Specialty", value: "Open Water, Advanced, Rescue" },
-                { label: "City", value: "Jeddah" },
               ].map((field) => (
                 <div key={field.label}>
                   <label className="mb-1 block text-xs font-semibold uppercase tracking-widest text-slate-400">
@@ -334,6 +369,37 @@ export function InstructorDashboard() {
               ))}
               <div>
                 <label className="mb-1 block text-xs font-semibold uppercase tracking-widest text-slate-400">
+                  City
+                </label>
+                <select
+                  value={instructorCity}
+                  onChange={(event) => {
+                    setInstructorCity(event.target.value);
+                    setCityError(null);
+                    setCitySaved(false);
+                  }}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-teal-400 focus:outline-none"
+                >
+                  <option value="">No city selected</option>
+                  {DIVING_CITIES.map((city) => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {cityError && (
+                <div role="alert" className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  {cityError}
+                </div>
+              )}
+              {citySaved && (
+                <div className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                  Instructor city saved.
+                </div>
+              )}
+              <div>
+                <label className="mb-1 block text-xs font-semibold uppercase tracking-widest text-slate-400">
                   Bio
                 </label>
                 <textarea
@@ -344,9 +410,11 @@ export function InstructorDashboard() {
               </div>
               <button
                 type="button"
+                onClick={saveInstructorCity}
+                disabled={isSavingCity}
                 className="rounded-xl bg-teal-500 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-teal-600"
               >
-                Save Changes
+                {isSavingCity ? "Saving..." : "Save City"}
               </button>
             </div>
           </div>
