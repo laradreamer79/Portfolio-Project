@@ -1,79 +1,73 @@
-import { Response, NextFunction } from "express";
-import { tripsService } from "./trips.service.js";
-import { AuthRequest } from "../middleware/auth.middleware.js";
+import type { NextFunction, Response } from "express";
+import type { AuthRequest } from "../middleware/auth.middleware.js";
 import { uploadToCloudinary } from "../middleware/upload.middleware.js";
+import { HttpError } from "../utils/http-error.js";
+import { tripsService } from "./trips.service.js";
 import {
   tripCreateSchema,
+  tripIdParamsSchema,
+  tripQuerySchema,
   tripUpdateSchema,
 } from "./trips.validation.js";
 
 export const tripsController = {
   async getAll(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const {
-        city,
-        difficulty,
-        minPrice,
-        maxPrice,
-        search,
-        centerId,
-        instructorId,
-        status,
-      } = req.query;
-
+      const filters = tripQuerySchema.parse(req.query);
       const trips = await tripsService.getAll({
-        city: city as string,
-        difficulty: difficulty as string,
-        minPrice: minPrice ? parseFloat(minPrice as string) : undefined,
-        maxPrice: maxPrice ? parseFloat(maxPrice as string) : undefined,
-        search: search as string,
-        centerId: centerId ? parseInt(centerId as string) : undefined,
-        instructorId: instructorId ? parseInt(instructorId as string) : undefined,
-        status: status as string,
+        ...filters,
         actor: req.user,
       });
 
-      res.json(trips);
-    } catch (err) {
-      next(err);
+      return res.status(200).json(trips);
+    } catch (error) {
+      next(error);
     }
   },
 
   async getById(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(req.params.id as string);
+      const { id } = tripIdParamsSchema.parse(req.params);
       const trip = await tripsService.getById(id, req.user);
 
       if (!trip) {
         return res.status(404).json({ message: "Trip not found" });
       }
 
-      res.json(trip);
-    } catch (err) {
-      next(err);
+      return res.status(200).json(trip);
+    } catch (error) {
+      next(error);
     }
   },
 
   async create(req: AuthRequest, res: Response, next: NextFunction) {
     try {
+      if (!req.user) {
+        throw new HttpError(401, "Unauthorized");
+      }
+
       const body = tripCreateSchema.parse(req.body);
       const imageUrl = req.file
         ? await uploadToCloudinary(req.file, "oyster/trips")
         : undefined;
-      const trip = await tripsService.create(req.user!, {
+      const trip = await tripsService.create(req.user, {
         ...body,
         imageUrl,
       });
 
-      res.status(201).json(trip);
-    } catch (err) {
-      next(err);
+      return res.status(201).json(trip);
+    } catch (error) {
+      next(error);
     }
   },
 
   async update(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(req.params.id as string);
+      if (!req.user) {
+        throw new HttpError(401, "Unauthorized");
+      }
+
+      const { id } = tripIdParamsSchema.parse(req.params);
       const body = tripUpdateSchema.parse(req.body);
 
       const data = {
@@ -83,23 +77,28 @@ export const tripsController = {
         }),
       };
 
-      const trip = await tripsService.update(id, req.user!, data);
+      const trip = await tripsService.update(id, req.user, data);
 
-      res.json(trip);
-    } catch (err) {
-      next(err);
+      return res.status(200).json(trip);
+    } catch (error) {
+      next(error);
     }
   },
 
   async delete(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(req.params.id as string);
+      if (!req.user) {
+        throw new HttpError(401, "Unauthorized");
+      }
 
-      await tripsService.delete(id, req.user!);
+      const { id } = tripIdParamsSchema.parse(req.params);
+      await tripsService.delete(id, req.user);
 
-      res.json({ message: "Trip deleted successfully" });
-    } catch (err) {
-      next(err);
+      return res.status(200).json({
+        message: "Trip deleted successfully",
+      });
+    } catch (error) {
+      next(error);
     }
   },
 };
