@@ -4,6 +4,7 @@ import {
   AuthField,
   AuthSelectField,
   AuthSubmitButton,
+  AUTH_FIELD_LIMITS,
   PasswordField,
   useAuthForm,
 } from "../features/auth";
@@ -156,6 +157,7 @@ export function Auth() {
                   onChange={(value) => updateRegisterField("name", value)}
                   autoComplete="name"
                   minLength={2}
+                  maxLength={AUTH_FIELD_LIMITS.name}
                 />
                 <AuthField
                   label="Email"
@@ -163,6 +165,7 @@ export function Auth() {
                   value={registerForm.email}
                   onChange={(value) => updateRegisterField("email", value)}
                   autoComplete="email"
+                  maxLength={AUTH_FIELD_LIMITS.email}
                 />
                 <PasswordField
                   value={registerForm.password}
@@ -171,6 +174,7 @@ export function Auth() {
                   onToggle={togglePassword}
                   autoComplete="new-password"
                   minLength={8}
+                  maxLength={AUTH_FIELD_LIMITS.password}
                 />
                 {registerForm.role === "instructor" && (
                   <>
@@ -182,6 +186,7 @@ export function Auth() {
                       }
                       autoComplete="off"
                       minLength={2}
+                      maxLength={AUTH_FIELD_LIMITS.license}
                     />
                     <AuthSelectField
                       label="City"
@@ -204,6 +209,7 @@ export function Auth() {
                       }
                       autoComplete="organization"
                       minLength={2}
+                      maxLength={AUTH_FIELD_LIMITS.centerName}
                     />
                     <AuthSelectField
                       label="City"
@@ -222,6 +228,7 @@ export function Auth() {
                       }
                       autoComplete="off"
                       minLength={2}
+                      maxLength={AUTH_FIELD_LIMITS.license}
                     />
                   </div>
                 )}

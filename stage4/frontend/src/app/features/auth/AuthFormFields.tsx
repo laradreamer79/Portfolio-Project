@@ -8,6 +8,7 @@ type AuthFieldProps = {
   type?: string;
   autoComplete?: string;
   minLength?: number;
+  maxLength?: number;
 };
 
 export function AuthField({
@@ -17,6 +18,7 @@ export function AuthField({
   type = "text",
   autoComplete,
   minLength,
+  maxLength,
 }: AuthFieldProps) {
   return (
     <label className="block">
@@ -30,6 +32,7 @@ export function AuthField({
         onChange={(event) => onChange(event.target.value)}
         autoComplete={autoComplete}
         minLength={minLength}
+        maxLength={maxLength}
         className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-800 outline-none transition-colors focus:border-teal-400"
       />
     </label>
@@ -85,6 +88,7 @@ type PasswordFieldProps = {
   onToggle: () => void;
   autoComplete: string;
   minLength?: number;
+  maxLength?: number;
 };
 
 export function PasswordField({
@@ -94,6 +98,7 @@ export function PasswordField({
   onToggle,
   autoComplete,
   minLength,
+  maxLength,
 }: PasswordFieldProps) {
   return (
     <label className="block">
@@ -108,6 +113,7 @@ export function PasswordField({
           onChange={(event) => onChange(event.target.value)}
           autoComplete={autoComplete}
           minLength={minLength}
+          maxLength={maxLength}
           className="w-full rounded-xl border border-slate-200 px-4 py-2.5 pr-11 text-sm text-slate-800 outline-none transition-colors focus:border-teal-400"
         />
         <button
