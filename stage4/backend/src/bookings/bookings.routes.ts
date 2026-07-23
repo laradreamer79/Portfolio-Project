@@ -3,11 +3,10 @@ import { Router } from "express";
 import { bookingsController } from "./bookings.controller.js";
 
 import { authenticate } from "../middleware/auth.middleware.js";
-
 import {
   ROLES,
-  authorizeRoles,
-} from "../common/decorators/roles.js";
+  authorize,
+} from "../middleware/role.middleware.js";
 
 export const bookingsRouter = Router();
 
@@ -32,6 +31,6 @@ bookingsRouter.get(
 bookingsRouter.get(
   "/",
   authenticate,
-  authorizeRoles(ROLES.ADMIN),
+  authorize(ROLES.ADMIN),
   bookingsController.getAll,
 );
