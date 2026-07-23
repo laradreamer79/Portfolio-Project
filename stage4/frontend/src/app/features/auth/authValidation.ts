@@ -11,7 +11,7 @@ export const registerFormSchema = z
   .object({
     name: z.string().trim().min(2, "Name must be at least 2 characters."),
     email: emailSchema,
-    password: z.string().min(6, "Password must be at least 6 characters."),
+    password: z.string().min(8, "Password must be at least 8 characters."),
     role: z.enum(["user", "instructor", "diving_center"]),
     instructorLicenseNumber: z.string(),
     centerName: z.string(),
