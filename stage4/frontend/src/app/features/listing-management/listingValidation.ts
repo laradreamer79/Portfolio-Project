@@ -1,6 +1,9 @@
+import { z } from "zod";
 import {
-  imageValidationError,
-  isTodayOrFuture,
+  dateInputSchema,
+  firstZodError,
+  imageFileSchema,
+  todayOrFutureDateSchema,
 } from "../../lib/validation";
 
 export type ListingForm = {
@@ -35,50 +38,77 @@ type ListingValidationResult =
     };
 
 export function validateListingImage(file: File) {
-  return imageValidationError(file);
+  const result = imageFileSchema.safeParse(file);
+  return result.success ? null : firstZodError(result.error);
+}
+
+function createListingFormSchema(options: ListingValidationOptions) {
+  return z
+    .object({
+      title: z.string().trim().min(1, "Enter a title."),
+      type: z.string(),
+      level: z.string(),
+      price: z
+        .string()
+        .min(1, "Enter a valid non-negative price.")
+        .transform(Number)
+        .refine(
+          (price) => Number.isFinite(price) && price >= 0,
+          "Enter a valid non-negative price.",
+        ),
+      duration: z.string(),
+      depth: z.string(),
+      date: dateInputSchema,
+      slots: z.string().transform((value) => (value ? Number(value) : 0)),
+      description: z.string().trim().min(1, "Enter a description."),
+      image: imageFileSchema.nullable(),
+    })
+    .superRefine((listing, context) => {
+      if (
+        listing.type === "trip" &&
+        (!Number.isInteger(listing.slots) || listing.slots <= 0)
+      ) {
+        context.addIssue({
+          code: "custom",
+          path: ["slots"],
+          message: "Enter a positive whole number of spots.",
+        });
+      }
+
+      if (
+        listing.date !== options.originalDate &&
+        !todayOrFutureDateSchema.safeParse(listing.date).success
+      ) {
+        context.addIssue({
+          code: "custom",
+          path: ["date"],
+          message: "Choose today or a future date.",
+        });
+      }
+
+      if (options.requiresImage && !listing.image) {
+        context.addIssue({
+          code: "custom",
+          path: ["image"],
+          message: "Upload an image before publishing.",
+        });
+      }
+    });
 }
 
 export function validateListingForm(
   form: ListingForm,
   options: ListingValidationOptions,
 ): ListingValidationResult {
-  const title = form.title.trim();
-  const description = form.description.trim();
-  const price = Number(form.price);
-  const slots = Number(form.slots);
+  const result = createListingFormSchema(options).safeParse({
+    ...form,
+    image: options.image,
+  });
 
-  if (!title) return { ok: false, error: "Enter a title." };
-  if (!description) return { ok: false, error: "Enter a description." };
-
-  if (!form.price || !Number.isFinite(price) || price < 0) {
-    return { ok: false, error: "Enter a valid non-negative price." };
+  if (!result.success) {
+    return { ok: false, error: firstZodError(result.error) };
   }
 
-  if (
-    form.type === "trip" &&
-    (!form.slots || !Number.isInteger(slots) || slots <= 0)
-  ) {
-    return { ok: false, error: "Enter a positive whole number of spots." };
-  }
-
-  if (!form.date) return { ok: false, error: "Choose a date." };
-
-  if (form.date !== options.originalDate && !isTodayOrFuture(form.date)) {
-    return { ok: false, error: "Choose today or a future date." };
-  }
-
-  if (options.requiresImage && !options.image) {
-    return { ok: false, error: "Upload an image before publishing." };
-  }
-
-  return {
-    ok: true,
-    data: {
-      title,
-      description,
-      price,
-      slots,
-      date: form.date,
-    },
-  };
+  const { title, description, price, slots, date } = result.data;
+  return { ok: true, data: { title, description, price, slots, date } };
 }
