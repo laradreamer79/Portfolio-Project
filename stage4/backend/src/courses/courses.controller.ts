@@ -1,80 +1,73 @@
-import { Response, NextFunction } from "express";
-import { coursesService } from "./courses.service.js";
-import { AuthRequest } from "../middleware/auth.middleware.js";
+import type { NextFunction, Response } from "express";
+import type { AuthRequest } from "../middleware/auth.middleware.js";
 import { uploadToCloudinary } from "../middleware/upload.middleware.js";
+import { HttpError } from "../utils/http-error.js";
+import { coursesService } from "./courses.service.js";
 import {
   courseCreateSchema,
+  courseIdParamsSchema,
+  courseQuerySchema,
   courseUpdateSchema,
 } from "./courses.validation.js";
 
 export const coursesController = {
   async getAll(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const {
-        city,
-        level,
-        minPrice,
-        maxPrice,
-        search,
-        centerId,
-        instructorId,
-        status,
-      } = req.query;
-
+      const filters = courseQuerySchema.parse(req.query);
       const courses = await coursesService.getAll({
-        city: city as string,
-        level: level as string,
-        minPrice: minPrice ? parseFloat(minPrice as string) : undefined,
-        maxPrice: maxPrice ? parseFloat(maxPrice as string) : undefined,
-        search: search as string,
-        centerId: centerId ? parseInt(centerId as string) : undefined,
-        instructorId: instructorId ? parseInt(instructorId as string) : undefined,
-        status: status as string,
+        ...filters,
         actor: req.user,
       });
 
-      res.json(courses);
-    } catch (err) {
-      next(err);
+      return res.status(200).json(courses);
+    } catch (error) {
+      next(error);
     }
   },
 
   async getById(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(req.params.id as string);
-
+      const { id } = courseIdParamsSchema.parse(req.params);
       const course = await coursesService.getById(id, req.user);
 
       if (!course) {
         return res.status(404).json({ message: "Course not found" });
       }
 
-      res.json(course);
-    } catch (err) {
-      next(err);
+      return res.status(200).json(course);
+    } catch (error) {
+      next(error);
     }
   },
 
   async create(req: AuthRequest, res: Response, next: NextFunction) {
     try {
+      if (!req.user) {
+        throw new HttpError(401, "Unauthorized");
+      }
+
       const body = courseCreateSchema.parse(req.body);
       const imageUrl = req.file
         ? await uploadToCloudinary(req.file, "oyster/courses")
         : undefined;
-      const course = await coursesService.create(req.user!, {
+      const course = await coursesService.create(req.user, {
         ...body,
         imageUrl,
       });
 
-      res.status(201).json(course);
-    } catch (err) {
-      next(err);
+      return res.status(201).json(course);
+    } catch (error) {
+      next(error);
     }
   },
 
   async update(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(req.params.id as string);
+      if (!req.user) {
+        throw new HttpError(401, "Unauthorized");
+      }
+
+      const { id } = courseIdParamsSchema.parse(req.params);
       const body = courseUpdateSchema.parse(req.body);
 
       const data = {
@@ -84,23 +77,28 @@ export const coursesController = {
         }),
       };
 
-      const course = await coursesService.update(id, req.user!, data);
+      const course = await coursesService.update(id, req.user, data);
 
-      res.json(course);
-    } catch (err) {
-      next(err);
+      return res.status(200).json(course);
+    } catch (error) {
+      next(error);
     }
   },
 
   async delete(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(req.params.id as string);
+      if (!req.user) {
+        throw new HttpError(401, "Unauthorized");
+      }
 
-      await coursesService.delete(id, req.user!);
+      const { id } = courseIdParamsSchema.parse(req.params);
+      await coursesService.delete(id, req.user);
 
-      res.json({ message: "Course deleted successfully" });
-    } catch (err) {
-      next(err);
+      return res.status(200).json({
+        message: "Course deleted successfully",
+      });
+    } catch (error) {
+      next(error);
     }
   },
 };

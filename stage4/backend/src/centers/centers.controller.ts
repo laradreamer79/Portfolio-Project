@@ -1,72 +1,91 @@
-import { Response, NextFunction } from "express";
+import type { NextFunction, Response } from "express";
 import { centersService } from "./centers.service.js";
-import { AuthRequest } from "../middleware/auth.middleware.js";
+import type { AuthRequest } from "../middleware/auth.middleware.js";
 import { uploadToCloudinary } from "../middleware/upload.middleware.js";
+import { HttpError } from "../utils/http-error.js";
 import {
   centerCreateSchema,
+  centerIdParamsSchema,
+  centerQuerySchema,
   centerUpdateSchema,
 } from "./centers.validation.js";
 
 export const centersController = {
   async getAll(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const { city, search, status, ownerId } = req.query;
+      const filters = centerQuerySchema.parse(req.query);
       const centers = await centersService.getAll({
-        city: city as string,
-        search: search as string,
-        status: status as string,
-        ownerId: ownerId ? Number(ownerId) : undefined,
+        ...filters,
         actor: req.user,
       });
-      res.json(centers);
-    } catch (err) { next(err); }
+      return res.status(200).json(centers);
+    } catch (error) {
+      next(error);
+    }
   },
 
   async getById(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(req.params.id as string);
+      const { id } = centerIdParamsSchema.parse(req.params);
       const center = await centersService.getById(id, req.user);
       if (!center) return res.status(404).json({ message: "Diving center not found" });
-      res.json(center);
-    } catch (err) { next(err); }
+      return res.status(200).json(center);
+    } catch (error) {
+      next(error);
+    }
   },
 
   async create(req: AuthRequest, res: Response, next: NextFunction) {
     try {
+      if (!req.user) {
+        throw new HttpError(401, "Unauthorized");
+      }
+
       const body = centerCreateSchema.parse(req.body);
-      const ownerId = req.user!.id;
       const imageUrl = req.file
         ? await uploadToCloudinary(req.file, "oyster/centers")
         : undefined;
       const center = await centersService.create({
         ...body,
-        ownerId,
+        ownerId: req.user.id,
         ...(imageUrl && { imageUrl }),
       });
-      res.status(201).json(center);
-    } catch (err) { next(err); }
+      return res.status(201).json(center);
+    } catch (error) {
+      next(error);
+    }
   },
 
   async update(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(req.params.id as string);
+      if (!req.user) {
+        throw new HttpError(401, "Unauthorized");
+      }
+
+      const { id } = centerIdParamsSchema.parse(req.params);
       const body = centerUpdateSchema.parse(req.body);
       const imageUrl = req.file
         ? await uploadToCloudinary(req.file, "oyster/centers")
         : undefined;
-      const center = await centersService.update(id, req.user!, {
+      const center = await centersService.update(id, req.user, {
         ...body,
         ...(imageUrl && { imageUrl }),
       });
-      res.json(center);
-    } catch (err) { next(err); }
+      return res.status(200).json(center);
+    } catch (error) {
+      next(error);
+    }
   },
 
   async delete(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(req.params.id as string);
+      const { id } = centerIdParamsSchema.parse(req.params);
       await centersService.delete(id);
-      res.json({ message: "Diving center deleted successfully" });
-    } catch (err) { next(err); }
+      return res.status(200).json({
+        message: "Diving center deleted successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
   },
 };

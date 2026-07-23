@@ -1,12 +1,10 @@
 import { HttpError } from "../utils/http-error.js";
+import type { CatalogActor } from "../common/catalog/catalog-ownership.js";
+import { Prisma } from "../generated/prisma/client.js";
 import { prisma } from "../prisma/client.js";
+import type { CenterQueryInput } from "./centers.validation.js";
 
-type Actor = {
-  id: number;
-  role: string;
-};
-
-async function assertCenterAccess(id: number, actor: Actor) {
+async function assertCenterAccess(id: number, actor: CatalogActor) {
   const center = await prisma.divingCenter.findUnique({
     where: { id },
     select: { ownerId: true },
@@ -21,7 +19,7 @@ async function assertCenterAccess(id: number, actor: Actor) {
   }
 }
 
-function canReadAllStatuses(actor: Actor | undefined, ownerId?: number) {
+function canReadAllStatuses(actor: CatalogActor | undefined, ownerId?: number) {
   if (!actor) {
     return false;
   }
@@ -29,7 +27,9 @@ function canReadAllStatuses(actor: Actor | undefined, ownerId?: number) {
   return actor.role === "admin" || ownerId === actor.id;
 }
 
-function centerVisibilityWhere(actor: Actor | undefined) {
+function centerVisibilityWhere(
+  actor: CatalogActor | undefined,
+): Prisma.DivingCenterWhereInput {
   if (!actor) {
     return { status: "approved" as const };
   }
@@ -44,30 +44,31 @@ function centerVisibilityWhere(actor: Actor | undefined) {
 }
 
 export const centersService = {
-  async getAll(filters: {
-    city?: string;
-    search?: string;
-    status?: string;
-    ownerId?: number;
-    actor?: Actor;
-  }) {
+  async getAll(
+    filters: CenterQueryInput & { actor?: CatalogActor },
+  ) {
     const { city, search, status, ownerId, actor } = filters;
     const allowAllStatuses = status === "all" && canReadAllStatuses(actor, ownerId);
+    const where: Prisma.DivingCenterWhereInput = {
+      ...(allowAllStatuses ? {} : centerVisibilityWhere(actor)),
+      ...(ownerId !== undefined && { ownerId }),
+      ...(city && { city: { equals: city, mode: "insensitive" } }),
+      ...(search && {
+        AND: [
+          {
+            OR: [
+              { name: { contains: search, mode: "insensitive" } },
+              { description: { contains: search, mode: "insensitive" } },
+              { city: { contains: search, mode: "insensitive" } },
+            ],
+          },
+        ],
+      }),
+      ...(status && status !== "all" && { status }),
+    };
 
     return prisma.divingCenter.findMany({
-      where: {
-        ...(allowAllStatuses ? {} : centerVisibilityWhere(actor)),
-        ...(ownerId !== undefined && { ownerId }),
-        ...(city && { city: { contains: city, mode: "insensitive" } }),
-        ...(search && {
-          OR: [
-            { name: { contains: search, mode: "insensitive" } },
-            { description: { contains: search, mode: "insensitive" } },
-            { city: { contains: search, mode: "insensitive" } },
-          ],
-        }),
-        ...(status && status !== "all" && { status: status as any }),
-      },
+      where,
       include: {
         owner: { select: { id: true, name: true, email: true } },
         _count: { select: { trips: true, courses: true, reviews: true } },
@@ -76,7 +77,7 @@ export const centersService = {
     });
   },
 
-  async getById(id: number, actor?: Actor) {
+  async getById(id: number, actor?: CatalogActor) {
     return prisma.divingCenter.findFirst({
       where: {
         id,
@@ -112,7 +113,7 @@ export const centersService = {
 
   async update(
     id: number,
-    actor: Actor,
+    actor: CatalogActor,
     data: Partial<{
       name: string;
       city: string;
