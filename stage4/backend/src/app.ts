@@ -9,6 +9,7 @@ import { adminRouter } from "./admin/admin.routes.js";
 import { centersRouter } from "./centers/centers.routes.js";
 import { tripsRouter } from "./trips/trips.routes.js";
 import { coursesRouter } from "./courses/courses.routes.js";
+import { instructorsRouter } from "./instructors/instructors.routes.js";
 
 import { bookingsRouter } from "./bookings/bookings.routes.js";
 import { reviewsRouter } from "./reviews/reviews.routes.js";
@@ -27,6 +28,7 @@ app.use("/api/admin", adminRouter);
 app.use("/api/centers", centersRouter);
 app.use("/api/trips", tripsRouter);
 app.use("/api/courses", coursesRouter);
+app.use("/api/instructors", instructorsRouter);
 
 app.use(
   "/api/bookings",

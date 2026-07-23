@@ -13,9 +13,10 @@ import {
   X,
 } from "lucide-react";
 import { DIVING_CITIES } from "../data";
-import { updateInstructorCity } from "../features/auth";
 import {
+  getInstructorProfile,
   InstructorBookingsTable,
+  updateInstructorProfile,
   useInstructorDashboard,
 } from "../features/instructor-dashboard";
 import { listingRoute } from "../features/listing-management";
@@ -25,14 +26,38 @@ import { todayInputValue } from "../lib/validation";
 export function InstructorDashboard() {
   const navigate = useNavigate();
   const { token, user } = useAuth();
+  const [instructorLicense, setInstructorLicense] = useState("");
+  const [instructorStatus, setInstructorStatus] = useState("");
   const [instructorCity, setInstructorCity] = useState("");
   const [cityError, setCityError] = useState<string | null>(null);
   const [citySaved, setCitySaved] = useState(false);
   const [isSavingCity, setIsSavingCity] = useState(false);
 
   useEffect(() => {
-    setInstructorCity(user?.instructorProfile?.city ?? "");
-  }, [user?.instructorProfile?.city]);
+    if (!token) return;
+
+    let active = true;
+
+    getInstructorProfile(token)
+      .then((profile) => {
+        if (!active) return;
+        setInstructorLicense(profile.licenseNumber);
+        setInstructorStatus(profile.status);
+        setInstructorCity(profile.city ?? "");
+      })
+      .catch((error) => {
+        if (!active) return;
+        setCityError(
+          error instanceof Error
+            ? error.message
+            : "Unable to load instructor profile.",
+        );
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [token]);
 
   async function saveInstructorCity() {
     if (!token || !instructorCity) {
@@ -46,7 +71,13 @@ export function InstructorDashboard() {
     setCitySaved(false);
 
     try {
-      await updateInstructorCity(instructorCity, token);
+      const profile = await updateInstructorProfile(
+        instructorCity,
+        token,
+      );
+      setInstructorLicense(profile.licenseNumber);
+      setInstructorStatus(profile.status);
+      setInstructorCity(profile.city ?? "");
       setCitySaved(true);
     } catch (error) {
       setCityError(
@@ -353,17 +384,18 @@ export function InstructorDashboard() {
             </h2>
             <div className="space-y-4 rounded-2xl border border-slate-100 bg-white p-6">
               {[
-                { label: "Display Name", value: "Independent Instructor" },
-                { label: "License Number", value: "PADI-OWSI-2026" },
-                { label: "Specialty", value: "Open Water, Advanced, Rescue" },
+                { label: "Display Name", value: user?.name ?? "" },
+                { label: "License Number", value: instructorLicense },
+                { label: "Status", value: instructorStatus },
               ].map((field) => (
                 <div key={field.label}>
                   <label className="mb-1 block text-xs font-semibold uppercase tracking-widest text-slate-400">
                     {field.label}
                   </label>
                   <input
-                    className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-800 transition-colors focus:border-teal-400 focus:outline-none"
-                    defaultValue={field.value}
+                    readOnly
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800"
+                    value={field.value}
                   />
                 </div>
               ))}
@@ -398,16 +430,6 @@ export function InstructorDashboard() {
                   Instructor city saved.
                 </div>
               )}
-              <div>
-                <label className="mb-1 block text-xs font-semibold uppercase tracking-widest text-slate-400">
-                  Bio
-                </label>
-                <textarea
-                  rows={4}
-                  className="w-full resize-none rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-800 transition-colors focus:border-teal-400 focus:outline-none"
-                  defaultValue="Certified independent instructor offering trips and courses directly to divers."
-                />
-              </div>
               <button
                 type="button"
                 onClick={saveInstructorCity}

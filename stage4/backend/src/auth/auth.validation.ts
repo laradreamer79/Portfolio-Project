@@ -1,8 +1,8 @@
 import { z } from "zod";
 import {
-  CENTER_CITIES,
-  type CenterCity,
-} from "../centers/centers.constants.js";
+  DIVING_CITIES,
+  type DivingCity,
+} from "../common/constants/diving-cities.js";
 
 const optionalTrimmedString = z.string().trim().optional();
 const emailSchema = z
@@ -52,7 +52,7 @@ export const registerSchema = z
           path: ["instructorCity"],
           message: "Instructor city is required",
         });
-      } else if (!CENTER_CITIES.includes(data.instructorCity as CenterCity)) {
+      } else if (!DIVING_CITIES.includes(data.instructorCity as DivingCity)) {
         context.addIssue({
           code: "custom",
           path: ["instructorCity"],
@@ -76,7 +76,7 @@ export const registerSchema = z
           path: ["centerCity"],
           message: "Center city is required",
         });
-      } else if (!CENTER_CITIES.includes(data.centerCity as CenterCity)) {
+      } else if (!DIVING_CITIES.includes(data.centerCity as DivingCity)) {
         context.addIssue({
           code: "custom",
           path: ["centerCity"],
@@ -99,12 +99,5 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
-export const instructorCitySchema = z
-  .object({
-    city: z.enum(CENTER_CITIES),
-  })
-  .strict();
-
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
-export type InstructorCityInput = z.infer<typeof instructorCitySchema>;
