@@ -1,24 +1,63 @@
 import { z } from "zod";
 import { DIVING_CITIES } from "../../data";
-import { emailSchema, firstZodError } from "../../lib/validation";
+import {
+  emailSchema,
+  firstZodError,
+  personNameSchema,
+} from "../../lib/validation";
 import type { LoginPayload } from "./authService";
 
+export const AUTH_FIELD_LIMITS = {
+  name: 100,
+  email: 254,
+  password: 72,
+  centerName: 120,
+  license: 50,
+} as const;
+
+const authEmailSchema = emailSchema.max(
+  AUTH_FIELD_LIMITS.email,
+  "Email must be 254 characters or fewer.",
+);
+const licenseSchema = z
+  .string()
+  .max(
+    AUTH_FIELD_LIMITS.license,
+    "License number must be 50 characters or fewer.",
+  )
+  .refine(
+    (value) => value === "" || /^[0-9]+$/.test(value),
+    "License number may contain only numbers.",
+  );
+
 export const loginFormSchema = z.object({
-  email: emailSchema,
+  email: authEmailSchema,
   password: z.string().min(1, "Password is required."),
 });
 
 export const registerFormSchema = z
   .object({
-    name: z.string().trim().min(2, "Name must be at least 2 characters."),
-    email: emailSchema,
-    password: z.string().min(8, "Password must be at least 8 characters."),
+    name: personNameSchema.max(
+      AUTH_FIELD_LIMITS.name,
+      "Name must be 100 characters or fewer.",
+    ),
+    email: authEmailSchema,
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters.")
+      .max(
+        AUTH_FIELD_LIMITS.password,
+        "Password must be 72 characters or fewer.",
+      ),
     role: z.enum(["user", "instructor", "diving_center"]),
-    instructorLicenseNumber: z.string(),
+    instructorLicenseNumber: licenseSchema,
     instructorCity: z.string(),
-    centerName: z.string(),
+    centerName: z.string().max(
+      AUTH_FIELD_LIMITS.centerName,
+      "Center name must be 120 characters or fewer.",
+    ),
     centerCity: z.string(),
-    centerLicenseNumber: z.string(),
+    centerLicenseNumber: licenseSchema,
   })
   .superRefine((form, context) => {
     if (

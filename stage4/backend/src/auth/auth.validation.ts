@@ -4,34 +4,70 @@ import {
   type DivingCity,
 } from "../common/constants/diving-cities.js";
 
-const optionalTrimmedString = z.string().trim().optional();
+const MAX_NAME_LENGTH = 100;
+const MAX_EMAIL_LENGTH = 254;
+const MAX_PASSWORD_LENGTH = 72;
+const MAX_CENTER_NAME_LENGTH = 120;
+const MAX_LICENSE_LENGTH = 50;
+
 const emailSchema = z
   .string()
   .trim()
+  .max(MAX_EMAIL_LENGTH, "Email must be 254 characters or fewer")
   .email("Invalid email address");
+const optionalCity = z.string().trim().optional();
+const optionalCenterName = z
+  .string()
+  .trim()
+  .max(
+    MAX_CENTER_NAME_LENGTH,
+    "Center name must be 120 characters or fewer",
+  )
+  .optional();
+const optionalLicense = z
+  .string()
+  .trim()
+  .max(
+    MAX_LICENSE_LENGTH,
+    "License number must be 50 characters or fewer",
+  )
+  .refine(
+    (value) => value === "" || /^[0-9]+$/.test(value),
+    "License number may contain only numbers",
+  )
+  .optional();
 
 export const registerSchema = z
   .object({
     name: z
       .string()
       .trim()
-      .min(2, "Name must be at least 2 characters"),
+      .min(2, "Name must be at least 2 characters")
+      .max(MAX_NAME_LENGTH, "Name must be 100 characters or fewer")
+      .regex(
+        /^[\p{L}][\p{L}\s'-]*$/u,
+        "Name may contain letters, spaces, apostrophes, or hyphens",
+      ),
 
     email: emailSchema,
 
     password: z
       .string()
-      .min(8, "Password must be at least 8 characters"),
+      .min(8, "Password must be at least 8 characters")
+      .max(
+        MAX_PASSWORD_LENGTH,
+        "Password must be 72 characters or fewer",
+      ),
 
     role: z
       .enum(["user", "instructor", "diving_center"])
       .default("user"),
 
-    instructorLicenseNumber: optionalTrimmedString,
-    instructorCity: optionalTrimmedString,
-    centerName: optionalTrimmedString,
-    centerCity: optionalTrimmedString,
-    centerLicenseNumber: optionalTrimmedString,
+    instructorLicenseNumber: optionalLicense,
+    instructorCity: optionalCity,
+    centerName: optionalCenterName,
+    centerCity: optionalCity,
+    centerLicenseNumber: optionalLicense,
   })
   .superRefine((data, context) => {
     if (
