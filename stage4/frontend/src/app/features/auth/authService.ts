@@ -5,6 +5,7 @@ export type AuthUser = {
   id: number;
   name: string;
   email: string;
+  phone?: string | null;
   role: UserRole;
 };
 
@@ -22,6 +23,7 @@ export type LoginPayload = {
 export type RegisterPayload = {
   name: string;
   email: string;
+  phone: string;
   password: string;
   role: RegistrationRole;
   instructorLicenseNumber?: string;

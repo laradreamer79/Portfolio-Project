@@ -15,14 +15,9 @@ export const emailSchema = z
 
 export const saudiPhoneSchema = z
   .string()
-  .transform((value) => value.replace(/[\s-]/g, ""))
-  .pipe(
-    z
-      .string()
-      .regex(
-        /^(05\d{8}|\+9665\d{8})$/,
-        "Enter a Saudi phone number such as 05XXXXXXXX or +9665XXXXXXXX.",
-      ),
+  .regex(
+    /^05\d{8}$/,
+    "Phone number must contain 10 digits and start with 05.",
   );
 
 export const personNameSchema = z

@@ -43,6 +43,7 @@ import {
 const validUser = {
   name: "Lara Diver",
   email: "lara@example.com",
+  phone: "0512345678",
   password: "password123",
   role: "user" as const,
 };
@@ -94,6 +95,8 @@ describe("auth form validation", () => {
   it.each([
     [{ ...validUser, name: "1" }, "invalid name"],
     [{ ...validUser, email: "not-an-email" }, "invalid email"],
+    [{ ...validUser, phone: "12345" }, "invalid phone"],
+    [{ ...validUser, phone: "+966512345678" }, "international phone"],
     [{ ...validUser, password: "short" }, "short password"],
     [{ ...validUser, password: "x".repeat(73) }, "long password"],
   ])("rejects %s", (payload) => {
@@ -180,6 +183,11 @@ describe("center form and filter validation", () => {
     [{ ...validCenter, address: " " }, "blank address"],
     [{ ...validCenter, contactEmail: "invalid" }, "invalid email"],
     [{ ...validCenter, contactPhone: "123" }, "invalid phone"],
+    [
+      { ...validCenter, contactPhone: "+966512345678" },
+      "international phone",
+    ],
+    [{ ...validCenter, contactPhone: "0412345678" }, "phone prefix"],
   ])("rejects a center with %s", (payload) => {
     expect(centerCreateSchema.safeParse(payload).success).toBe(false);
   });

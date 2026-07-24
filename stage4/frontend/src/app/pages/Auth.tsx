@@ -167,6 +167,16 @@ export function Auth() {
                   autoComplete="email"
                   maxLength={AUTH_FIELD_LIMITS.email}
                 />
+                <AuthField
+                  label="Phone Number"
+                  type="tel"
+                  value={registerForm.phone}
+                  onChange={(value) => updateRegisterField("phone", value)}
+                  autoComplete="tel"
+                  inputMode="numeric"
+                  minLength={AUTH_FIELD_LIMITS.phone}
+                  maxLength={AUTH_FIELD_LIMITS.phone}
+                />
                 <PasswordField
                   value={registerForm.password}
                   onChange={(value) => updateRegisterField("password", value)}

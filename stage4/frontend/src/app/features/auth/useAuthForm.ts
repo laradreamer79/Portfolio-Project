@@ -18,6 +18,7 @@ const EMPTY_LOGIN_FORM: LoginPayload = { email: "", password: "" };
 const EMPTY_REGISTER_FORM: RegisterFormState = {
   name: "",
   email: "",
+  phone: "",
   password: "",
   role: "user",
   instructorLicenseNumber: "",

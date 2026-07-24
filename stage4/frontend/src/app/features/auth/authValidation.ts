@@ -5,12 +5,14 @@ import {
   emailSchema,
   firstZodError,
   personNameSchema,
+  saudiPhoneSchema,
 } from "../../lib/validation";
 import type { LoginPayload } from "./authService";
 
 export const AUTH_FIELD_LIMITS = {
   name: 100,
   email: 254,
+  phone: 10,
   password: 72,
   centerName: 120,
   license: 50,
@@ -43,6 +45,7 @@ export const registerFormSchema = z
       "Name must be 100 characters or fewer.",
     ),
     email: authEmailSchema,
+    phone: saudiPhoneSchema,
     password: z
       .string()
       .min(8, "Password must be at least 8 characters.")
