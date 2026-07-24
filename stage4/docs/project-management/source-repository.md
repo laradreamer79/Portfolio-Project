@@ -2,7 +2,7 @@
 
 ## Repository
 
-- Repository URL: [Add GitHub repository URL]
+- Repository URL: [Portfolio-Project](https://github.com/laradreamer79/Portfolio-Project)
 - Primary integration branch: `develop`
 - Production branch: `main`
 
@@ -26,7 +26,7 @@ git switch -c feature/task-name
 ## Pull Request Rules
 
 1. Pull Requests target `develop`, not `main`.
-2. The author links the related GitHub Issue.
+2. The author links the related GitHub Issue when available.
 3. The author provides a summary and testing evidence.
 4. At least one team member reviews the changes.
 5. Build, typecheck, lint, and relevant tests must pass.
@@ -41,15 +41,17 @@ Examples:
 feat(frontend): connect login form
 feat(backend): add registration endpoint
 fix(auth): reject expired token
-docs(stage4): add sprint review
+docs(stage4): add feature-based README
 test(api): add authentication tests
 chore(database): configure Prisma
 ```
 
-## Important Pull Requests
+## Important Pull Request Links
 
-| Pull Request | Scope | Sprint | Status |
-|---|---|---|---|
-| [Add link] | Frontend UI pages | Sprint 1 | Merged |
-| [Add link] | Express TypeScript structure | Sprint 2 | Merged |
-| [Add link] | Prisma and User model | Sprint 2 | In Review |
+| Resource | Link |
+|---|---|
+| All pull requests | [Repository pull requests](https://github.com/laradreamer79/Portfolio-Project/pulls) |
+| Open pull requests | [Open pull requests](https://github.com/laradreamer79/Portfolio-Project/pulls?q=is%3Apr+is%3Aopen) |
+| Merged pull requests | [Merged pull requests](https://github.com/laradreamer79/Portfolio-Project/pulls?q=is%3Apr+is%3Amerged) |
+| Issues | [Repository issues](https://github.com/laradreamer79/Portfolio-Project/issues) |
+| Project boards | [Repository projects](https://github.com/laradreamer79/Portfolio-Project/projects) |
