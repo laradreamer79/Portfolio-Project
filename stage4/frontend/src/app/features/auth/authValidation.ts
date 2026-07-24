@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { DIVING_CITIES } from "../../data";
 import {
+  centerNameSchema,
   emailSchema,
   firstZodError,
   personNameSchema,
@@ -92,11 +93,15 @@ export const registerFormSchema = z
     }
 
     if (form.role === "diving_center") {
-      if (form.centerName.trim().length < 2) {
+      const centerNameResult = centerNameSchema.safeParse(form.centerName);
+
+      if (!centerNameResult.success) {
         context.addIssue({
           code: "custom",
           path: ["centerName"],
-          message: "Center name is required.",
+          message:
+            centerNameResult.error.issues[0]?.message ??
+            "Enter a valid center name.",
         });
       }
 

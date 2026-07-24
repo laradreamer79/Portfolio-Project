@@ -4,6 +4,7 @@ import {
   catalogIdSchema,
 } from "../common/catalog/catalog-validation.js";
 import { DIVING_CITIES } from "../common/constants/diving-cities.js";
+import { centerNameSchema } from "../common/validation/center-name.js";
 
 const optionalString = z.string().trim().min(1).optional();
 const requiredString = z.string().trim().min(1);
@@ -14,7 +15,7 @@ const saudiPhone = z
 
 export const centerCreateSchema = z
   .object({
-    name: requiredString,
+    name: centerNameSchema,
     city: z.enum(DIVING_CITIES),
     address: requiredString,
     licenseNumber: requiredString,

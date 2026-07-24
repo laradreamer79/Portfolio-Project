@@ -3,6 +3,7 @@ import {
   DIVING_CITIES,
   type DivingCity,
 } from "../common/constants/diving-cities.js";
+import { centerNameSchema } from "../common/validation/center-name.js";
 
 const MAX_NAME_LENGTH = 100;
 const MAX_EMAIL_LENGTH = 254;
@@ -98,11 +99,15 @@ export const registerSchema = z
     }
 
     if (data.role === "diving_center") {
-      if (!data.centerName || data.centerName.length < 2) {
+      const centerNameResult = centerNameSchema.safeParse(data.centerName);
+
+      if (!centerNameResult.success) {
         context.addIssue({
           code: "custom",
           path: ["centerName"],
-          message: "Center name is required",
+          message:
+            centerNameResult.error.issues[0]?.message ??
+            "Enter a valid center name",
         });
       }
 

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { DIVING_CITIES } from "../../data";
 import {
+  centerNameSchema,
   emailSchema,
   firstZodError,
   imageFileSchema,
@@ -18,7 +19,7 @@ export function validateCenterProfileImage(file: File) {
 }
 
 export const centerProfileSchema = z.object({
-  name: z.string().trim().min(1, "Center name is required."),
+  name: centerNameSchema,
   city: z.enum(DIVING_CITIES, {
     error: "Choose a valid center city.",
   }),
