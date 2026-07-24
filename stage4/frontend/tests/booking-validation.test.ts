@@ -58,6 +58,7 @@ describe("payment details form", () => {
     [{ ...validPayment, expiry: "01 / 20" }, "expired card"],
     [{ ...validPayment, expiry: "13 / 30" }, "expiry format"],
     [{ ...validPayment, cvv: "12A" }, "CVV"],
+    [{ ...validPayment, cvv: "1234" }, "four-digit CVV"],
     [{ ...validPayment, holder: "123" }, "holder name"],
   ])("rejects an invalid %s", (payment) => {
     expect(paymentDetailsSchema.safeParse(payment).success).toBe(false);
@@ -68,6 +69,6 @@ describe("payment details form", () => {
       "4111 1111 1111 1111",
     );
     expect(formatExpiry("1230")).toBe("12 / 30");
-    expect(formatCvv("12a345")).toBe("1234");
+    expect(formatCvv("12a345")).toBe("123");
   });
 });

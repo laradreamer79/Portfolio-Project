@@ -60,7 +60,7 @@ const expirySchema = z
 export const paymentDetailsSchema = z.object({
   card: cardNumberSchema,
   expiry: expirySchema,
-  cvv: z.string().regex(/^\d{3,4}$/, "CVV must contain 3 or 4 digits."),
+  cvv: z.string().regex(/^\d{3}$/, "CVV must contain 3 digits."),
   holder: personNameSchema,
 });
 
@@ -89,5 +89,5 @@ export function formatExpiry(value: string) {
 }
 
 export function formatCvv(value: string) {
-  return value.replace(/\D/g, "").slice(0, 4);
+  return value.replace(/\D/g, "").slice(0, 3);
 }

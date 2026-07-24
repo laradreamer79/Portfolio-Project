@@ -179,7 +179,7 @@ export function Booking() {
                   </div>
                   <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                     <p className="text-xs text-slate-400 font-medium mb-1 uppercase tracking-widest">CVV</p>
-                    <input inputMode="numeric" autoComplete="cc-csc" className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="•••" maxLength={4} type="password" value={payment.cvv} onChange={(event) => setPaymentValue("cvv", formatCvv(event.target.value))} />
+                    <input inputMode="numeric" autoComplete="cc-csc" className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="•••" maxLength={3} type="password" value={payment.cvv} onChange={(event) => setPaymentValue("cvv", formatCvv(event.target.value))} />
                   </div>
                 </div>
                 <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
