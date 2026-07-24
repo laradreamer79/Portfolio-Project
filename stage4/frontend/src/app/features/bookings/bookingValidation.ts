@@ -124,6 +124,16 @@ export function validatePaymentDetails(payment: PaymentFormState) {
   return result.success ? null : firstZodError(result.error);
 }
 
+export function detectCardBrand(cardNumber: string) {
+  const digits = cardNumber.replace(/\D/g, "");
+
+  if (digits.startsWith("4")) {
+    return "visa" as const;
+  }
+
+  return "unknown" as const;
+}
+
 export function formatCardNumber(value: string) {
   return value
     .replace(/\D/g, "")
