@@ -61,7 +61,15 @@ export const paymentDetailsSchema = z.object({
   card: cardNumberSchema,
   expiry: expirySchema,
   cvv: z.string().regex(/^\d{3}$/, "CVV must contain 3 digits."),
-  holder: personNameSchema,
+  holder: z
+  .string()
+  .trim()
+  .min(3, "Cardholder name must contain at least 3 characters.")
+  .max(50, "Cardholder name must not exceed 50 characters.")
+  .regex(
+    /^[\p{L}\s]+$/u,
+    "Cardholder name must contain letters only.",
+  ),
 });
 
 export function validateBookingDetails(form: BookingFormState) {
