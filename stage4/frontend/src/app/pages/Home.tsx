@@ -1,6 +1,15 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, CheckCircle, Search, Waves, Award } from "lucide-react";
+import {
+  Anchor,
+  ArrowRight,
+  Award,
+  CheckCircle,
+  MapPin,
+  Search,
+  ShieldCheck,
+  Waves,
+} from "lucide-react";
 import {
   CenterCard,
   ExperienceCard,
@@ -238,32 +247,47 @@ export function Home() {
       {/* Explore / Experience / Remember */}
       <section className="relative overflow-hidden">
         <img src="https://images.unsplash.com/photo-1573553467420-b2a90be8d317?w=1600&h=700&fit=crop&auto=format" alt="Diver exploring an underwater shipwreck" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/20" />
-        <div className="relative max-w-7xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <p className="text-teal-400 text-sm font-medium tracking-widest uppercase mb-4">Why Oyster</p>
-            <h2 className="font-display text-6xl md:text-7xl font-bold text-white tracking-wide leading-none mb-6">
-              EXPLORE.<br />EXPERIENCE.<br /><span className="text-teal-400">REMEMBER.</span>
-            </h2>
-            <p className="text-white/60 leading-relaxed mb-8 max-w-md">From your first open-water dive to advanced technical expeditions, Oyster connects you with certified dive centers across Saudi Arabia's stunning coastlines.</p>
-            <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-black/65" />
+        <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:gap-6 md:py-24">
+          <div className="order-2 w-full md:order-2 md:justify-self-stretch">
+            <p className="mb-5 text-sm font-medium uppercase tracking-[0.2em] text-teal-300">Oyster at a glance</p>
+            <div className="grid grid-cols-2 gap-3 md:gap-4">
               {[
-                { num: String(centerCount), label: "Certified Centers" },
-                { num: String(cityCount), label: "Saudi Cities" },
-                { num: String(listingCount), label: "Trips & Courses" },
-                { num: "100%", label: "Verified Operators" },
+                { num: String(centerCount), label: "Certified Centers", icon: <Award className="h-5 w-5" /> },
+                { num: String(cityCount), label: "Saudi Cities", icon: <MapPin className="h-5 w-5" /> },
+                { num: String(listingCount), label: "Trips & Courses", icon: <Anchor className="h-5 w-5" /> },
+                { num: "100%", label: "Verified Operators", icon: <ShieldCheck className="h-5 w-5" /> },
               ].map((s) => (
-                <div key={s.label} className="bg-white/10 backdrop-blur border border-white/10 rounded-xl p-4">
-                  <p className="font-display text-3xl font-bold text-teal-400">{s.num}</p>
-                  <p className="text-white/60 text-xs mt-0.5">{s.label}</p>
+                <div
+                  key={s.label}
+                  className="group relative min-h-36 overflow-hidden rounded-2xl border border-white/15 bg-slate-950/45 p-5 shadow-xl backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:border-teal-300/40 hover:bg-slate-900/65"
+                >
+                  <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-teal-400/10 blur-2xl transition group-hover:bg-teal-400/20" />
+                  <div className="relative flex items-start justify-between gap-3">
+                    <p className="font-display text-4xl font-bold leading-none text-teal-300">{s.num}</p>
+                    <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-teal-300/20 bg-teal-400/10 text-teal-200">
+                      {s.icon}
+                    </span>
+                  </div>
+                  <p className="absolute bottom-5 left-5 right-5 text-sm font-medium text-white/75">{s.label}</p>
                 </div>
               ))}
             </div>
-            <div className="flex gap-3">
-              <button onClick={() => navigate("/trips")} className="bg-teal-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-teal-600 transition-colors flex items-center gap-2 text-sm">
+          </div>
+
+          <div className="order-1 max-w-lg md:order-1 md:justify-self-start">
+            <div className="mb-5">
+              <p className="text-sm font-medium uppercase tracking-[0.2em] text-teal-300">Why Oyster</p>
+            </div>
+            <h2 className="mb-6 font-display text-5xl font-bold leading-[0.9] tracking-wide text-white md:text-7xl">
+              EXPLORE.<br />EXPERIENCE.<br /><span className="text-teal-400">REMEMBER.</span>
+            </h2>
+            <p className="mb-8 max-w-md text-lg leading-relaxed text-white/75">From your first open-water dive to advanced technical expeditions, Oyster connects you with certified dive centers across Saudi Arabia&apos;s stunning coastlines.</p>
+            <div className="flex flex-wrap gap-3">
+              <button onClick={() => navigate("/trips")} className="flex items-center gap-2 rounded-xl bg-teal-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-teal-500/20 transition hover:-translate-y-0.5 hover:bg-teal-400">
                 Browse Trips <ArrowRight className="w-4 h-4" />
               </button>
-              <button onClick={() => navigate("/about")} className="border border-white/30 text-white font-semibold px-6 py-3 rounded-xl hover:bg-white/10 transition-colors text-sm">
+              <button onClick={() => navigate("/about")} className="rounded-xl border border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/10">
                 About Us
               </button>
             </div>

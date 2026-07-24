@@ -17,8 +17,6 @@ export function Centers() {
     setCity,
     setMinRating,
     setQuery,
-    setVerifiedOnly,
-    verifiedOnly,
   } = useCentersCatalog(
     params.get("city") || "All Cities",
     params.get("search") || "",
