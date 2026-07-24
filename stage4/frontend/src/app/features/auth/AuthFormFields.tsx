@@ -1,5 +1,5 @@
 import { ChevronDown, Eye, EyeOff, Loader2 } from "lucide-react";
-import type { ReactNode } from "react";
+import type { InputHTMLAttributes, ReactNode } from "react";
 
 type AuthFieldProps = {
   label: string;
@@ -9,6 +9,7 @@ type AuthFieldProps = {
   autoComplete?: string;
   minLength?: number;
   maxLength?: number;
+  inputMode?: InputHTMLAttributes<HTMLInputElement>["inputMode"];
 };
 
 export function AuthField({
@@ -19,6 +20,7 @@ export function AuthField({
   autoComplete,
   minLength,
   maxLength,
+  inputMode,
 }: AuthFieldProps) {
   return (
     <label className="block">
@@ -33,6 +35,7 @@ export function AuthField({
         autoComplete={autoComplete}
         minLength={minLength}
         maxLength={maxLength}
+        inputMode={inputMode}
         className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-800 outline-none transition-colors focus:border-teal-400"
       />
     </label>

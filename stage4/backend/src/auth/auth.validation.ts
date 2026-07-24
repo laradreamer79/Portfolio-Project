@@ -4,6 +4,7 @@ import {
   type DivingCity,
 } from "../common/constants/diving-cities.js";
 import { centerNameSchema } from "../common/validation/center-name.js";
+import { saudiPhoneSchema } from "../common/validation/saudi-phone.js";
 
 const MAX_NAME_LENGTH = 100;
 const MAX_EMAIL_LENGTH = 254;
@@ -51,6 +52,8 @@ export const registerSchema = z
       ),
 
     email: emailSchema,
+
+    phone: saudiPhoneSchema,
 
     password: z
       .string()

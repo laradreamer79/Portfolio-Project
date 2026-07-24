@@ -5,13 +5,10 @@ import {
 } from "../common/catalog/catalog-validation.js";
 import { DIVING_CITIES } from "../common/constants/diving-cities.js";
 import { centerNameSchema } from "../common/validation/center-name.js";
+import { saudiPhoneSchema } from "../common/validation/saudi-phone.js";
 
 const optionalString = z.string().trim().min(1).optional();
 const requiredString = z.string().trim().min(1);
-const saudiPhone = z
-  .string()
-  .trim()
-  .regex(/^(05\d{8}|\+9665\d{8})$/, "Enter a valid Saudi phone number");
 
 export const centerCreateSchema = z
   .object({
@@ -22,7 +19,7 @@ export const centerCreateSchema = z
     description: requiredString,
     priceRange: optionalString,
     contactEmail: z.string().trim().email(),
-    contactPhone: saudiPhone,
+    contactPhone: saudiPhoneSchema,
   })
   .strict();
 

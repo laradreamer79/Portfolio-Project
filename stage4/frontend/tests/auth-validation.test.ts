@@ -18,6 +18,7 @@ const emptyRoleFields = {
 const validUser: RegisterFormState = {
   name: "Lara Diver",
   email: "lara@example.com",
+  phone: "0512345678",
   password: "password123",
   role: "user",
   ...emptyRoleFields,
@@ -59,6 +60,8 @@ describe("registration form", () => {
   it.each([
     [{ ...validUser, name: "1" }, "name"],
     [{ ...validUser, email: "not-an-email" }, "email"],
+    [{ ...validUser, phone: "12345" }, "phone"],
+    [{ ...validUser, phone: "+966512345678" }, "international phone"],
     [{ ...validUser, password: "1234567" }, "password"],
     [{ ...validUser, password: "x".repeat(73) }, "password maximum"],
   ])("rejects an invalid %s", (form) => {

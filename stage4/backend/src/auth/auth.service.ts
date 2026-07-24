@@ -14,6 +14,7 @@ const publicUserSelect = {
   id: true,
   name: true,
   email: true,
+  phone: true,
   role: true,
 } satisfies Prisma.UserSelect;
 
@@ -54,6 +55,7 @@ async function register(data: RegisterInput) {
         data: {
           name: data.name,
           email: data.email,
+          phone: data.phone,
           passwordHash,
           role: data.role,
         },
@@ -86,6 +88,7 @@ async function register(data: RegisterInput) {
             city: data.centerCity,
             licenseNumber: data.centerLicenseNumber,
             contactEmail: data.email,
+            contactPhone: data.phone,
             ownerId: createdUser.id,
           },
         });

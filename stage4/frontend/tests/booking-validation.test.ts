@@ -35,6 +35,8 @@ describe("booking details form", () => {
     [{ ...validDetails, name: "1" }, "name"],
     [{ ...validDetails, email: "invalid" }, "email"],
     [{ ...validDetails, phone: "12345" }, "Saudi phone"],
+    [{ ...validDetails, phone: "+966512345678" }, "international phone"],
+    [{ ...validDetails, phone: "0412345678" }, "phone prefix"],
   ])("rejects an invalid %s", (details) => {
     expect(bookingDetailsSchema.safeParse(details).success).toBe(false);
   });

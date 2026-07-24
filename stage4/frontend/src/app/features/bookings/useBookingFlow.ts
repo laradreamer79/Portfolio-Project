@@ -90,7 +90,7 @@ export function useBookingFlow() {
       ...current,
       name: current.name || user.name,
       email: current.email || user.email,
-      phone: current.phone || savedPhone,
+      phone: current.phone || user.phone || savedPhone,
     }));
   }, [user]);
 

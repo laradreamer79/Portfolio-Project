@@ -86,6 +86,11 @@ describe("center profile form", () => {
     [{ ...validCenter, city: "Unknown City" }, "unknown city"],
     [{ ...validCenter, contactEmail: "invalid" }, "invalid email"],
     [{ ...validCenter, contactPhone: "123" }, "invalid phone"],
+    [
+      { ...validCenter, contactPhone: "+966512345678" },
+      "international phone",
+    ],
+    [{ ...validCenter, contactPhone: "0412345678" }, "phone prefix"],
   ])("rejects a profile with %s", (profile) => {
     expect(centerProfileSchema.safeParse(profile).success).toBe(false);
   });
