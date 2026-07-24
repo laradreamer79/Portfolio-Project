@@ -12,6 +12,15 @@ export const CATALOG_LEVELS = [
 
 type ExperienceKind = "trip" | "course";
 
+function normalizeCityFilter(value: string) {
+  const normalized = value.trim().toLowerCase();
+  return CITIES.find((city) => city.toLowerCase() === normalized) ?? "All Cities";
+}
+
+function normalizeSearchFilter(value: string) {
+  return value.trim();
+}
+
 export function useExperienceCatalog(kind: ExperienceKind) {
   const [city, setCity] = useState("All Cities");
   const [level, setLevel] = useState("All Levels");
@@ -91,20 +100,19 @@ export function useCentersCatalog(
   initialCity = "All Cities",
   initialQuery = "",
 ) {
-  const [city, setCity] = useState(initialCity);
-  const [query, setQuery] = useState(initialQuery);
+  const [city, setCity] = useState(normalizeCityFilter(initialCity));
+  const [query, setQuery] = useState(normalizeSearchFilter(initialQuery));
   const [minRating, setMinRating] = useState(0);
-  const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [centers, setCenters] = useState<Center[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setCity(initialCity);
+    setCity(normalizeCityFilter(initialCity));
   }, [initialCity]);
 
   useEffect(() => {
-    setQuery(initialQuery);
+    setQuery(normalizeSearchFilter(initialQuery));
   }, [initialQuery]);
 
   useEffect(() => {
@@ -138,9 +146,9 @@ export function useCentersCatalog(
     () =>
       centers.filter(
         (center) =>
-          center.rating >= minRating && (!verifiedOnly || center.verified),
+          center.rating >= minRating,
       ),
-    [centers, minRating, verifiedOnly],
+    [centers, minRating],
   );
 
   return {
@@ -154,8 +162,6 @@ export function useCentersCatalog(
     setCity,
     setMinRating,
     setQuery,
-    setVerifiedOnly,
-    verifiedOnly,
   };
 }
 

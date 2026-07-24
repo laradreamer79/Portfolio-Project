@@ -101,7 +101,7 @@ export function About() {
             {[
               { name: "Abdullah Al-Ghamdi", role: "Co-Founder & CEO", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&auto=format", bio: "Certified PADI instructor with 12 years of diving experience across the Red Sea." },
               { name: "Sara Al-Mutairi", role: "Co-Founder & COO", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&auto=format", bio: "Former tourism director with a passion for sustainable marine experiences." },
-              { name: "Faisal Al-Dosari", role: "Head of Partnerships", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&auto=format", bio: "Builds relationships with dive centers from Jizan to NEOM across the Kingdom." },
+              { name: "Faisal Al-Dosari", role: "Head of Partnerships", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&auto=format", bio: "Builds relationships with dive centers from Jazan to NEOM across the Kingdom." },
             ].map((m) => (
               <div key={m.name} className="text-center">
                 <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 border-4 border-white shadow-lg">

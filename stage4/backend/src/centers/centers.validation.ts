@@ -1,7 +1,9 @@
 import { z } from "zod";
 import {
+  approvalStatusQuerySchema,
   catalogIdParamsSchema,
   catalogIdSchema,
+  cityQuerySchema,
 } from "../common/catalog/catalog-validation.js";
 import { DIVING_CITIES } from "../common/constants/diving-cities.js";
 
@@ -35,11 +37,9 @@ export const centerUpdateSchema = centerCreateSchema
 
 export const centerQuerySchema = z
   .object({
-    city: z.enum(DIVING_CITIES).optional(),
+    city: cityQuerySchema.optional(),
     search: z.string().trim().min(1).max(100).optional(),
-    status: z
-      .enum(["pending", "approved", "rejected", "all"])
-      .optional(),
+    status: approvalStatusQuerySchema.optional(),
     ownerId: catalogIdSchema.optional(),
   })
   .strict();

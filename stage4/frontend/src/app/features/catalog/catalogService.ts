@@ -120,8 +120,15 @@ function queryString(filters: CatalogFilters) {
   const params = new URLSearchParams();
 
   Object.entries(filters).forEach(([key, value]) => {
-    if (value && value !== "All Cities" && value !== "All Levels") {
-      params.set(key, String(value));
+    const normalizedValue =
+      typeof value === "string" ? value.trim() : value;
+
+    if (
+      normalizedValue &&
+      normalizedValue !== "All Cities" &&
+      normalizedValue !== "All Levels"
+    ) {
+      params.set(key, String(normalizedValue));
     }
   });
 
