@@ -34,6 +34,7 @@ export function Booking() {
     navigate,
     past,
     payment,
+    paymentErrors,
     setDivers,
     setFormField,
     setPaymentField,
