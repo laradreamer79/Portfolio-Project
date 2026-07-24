@@ -134,7 +134,7 @@ export function AdminOverview({
       </div>
 
       {pendingCount > 0 && (
-        <div className="flex items-center justify-between rounded-2xl border border-amber-200 bg-amber-50 p-5">
+        <div className="flex flex-col items-start gap-4 rounded-2xl border border-amber-200 bg-amber-50 p-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <AlertCircle className="h-5 w-5 flex-shrink-0 text-amber-600" />
             <div>
@@ -189,7 +189,7 @@ export function AdminOverview({
       </div>
 
       <div>
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-display text-2xl font-bold tracking-wide text-slate-900">
             RECENT BOOKINGS
           </h2>
@@ -200,8 +200,8 @@ export function AdminOverview({
             View all →
           </button>
         </div>
-        <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto rounded-2xl border border-slate-100 bg-white">
+          <table className="min-w-[720px] w-full text-sm">
             <thead className="border-b border-slate-100 bg-slate-50">
               <tr>
                 {["ID", "Center", "Trip", "Customer", "Divers", "Total"].map(
@@ -282,8 +282,8 @@ export function AdminCenters({
 
   return (
     <div>
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row">
-        <div className="flex flex-1 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <div className="flex flex-1 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 sm:min-w-64">
           <Search className="h-4 w-4 text-slate-400" />
           <input
             className="flex-1 bg-transparent text-sm text-slate-700 placeholder-slate-400 focus:outline-none"
@@ -312,8 +312,8 @@ export function AdminCenters({
         ))}
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto rounded-2xl border border-slate-100 bg-white">
+        <table className="min-w-[900px] w-full text-sm">
           <thead className="border-b border-slate-100 bg-slate-50">
             <tr>
               {[
@@ -468,7 +468,7 @@ export function AdminBookings({
 }: AdminBookingsProps) {
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="font-display text-2xl font-bold tracking-wide text-slate-900">
           ALL BOOKINGS
         </h2>
@@ -482,8 +482,8 @@ export function AdminBookings({
           </span>
         </div>
       </div>
-      <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto rounded-2xl border border-slate-100 bg-white">
+        <table className="min-w-[1100px] w-full text-sm">
           <thead className="border-b border-slate-100 bg-slate-50">
             <tr>
               {[
