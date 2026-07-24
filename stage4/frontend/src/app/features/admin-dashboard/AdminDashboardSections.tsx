@@ -398,7 +398,15 @@ export function AdminCenters({
                     </button>
                     {center.status === "pending" && (
                       <button
-                        onClick={() => onVerify(center.id)}
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              "Are you sure you want to approve this center?",
+                            )
+                          ) {
+                            onVerify(center.id);
+                          }
+                        }}
                         className="flex items-center gap-1 rounded-lg border border-teal-200 bg-teal-50 px-2.5 py-1.5 text-xs font-medium text-teal-700 transition-colors hover:bg-teal-100"
                       >
                         <Shield className="h-3.5 w-3.5" /> Approve
@@ -406,7 +414,15 @@ export function AdminCenters({
                     )}
                     {center.status === "active" && (
                       <button
-                        onClick={() => onSuspend(center.id)}
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              "Are you sure you want to suspend this center?",
+                            )
+                          ) {
+                            onSuspend(center.id);
+                          }
+                        }}
                         className="flex items-center gap-1 rounded-lg border border-red-100 bg-red-50 px-2.5 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-100"
                       >
                         <ShieldOff className="h-3.5 w-3.5" /> Suspend
@@ -414,7 +430,15 @@ export function AdminCenters({
                     )}
                     {center.status === "suspended" && (
                       <button
-                        onClick={() => onVerify(center.id)}
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              "Are you sure you want to reinstate this center?",
+                            )
+                          ) {
+                            onVerify(center.id);
+                          }
+                        }}
                         className="flex items-center gap-1 rounded-lg border border-emerald-100 bg-emerald-50 px-2.5 py-1.5 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-100"
                       >
                         <CheckCircle className="h-3.5 w-3.5" /> Reinstate
@@ -532,7 +556,7 @@ export function AdminBookings({
                       onClick={() => {
                         if (
                           window.confirm(
-                            "Cancel this booking? This will not issue a refund.",
+                            "Are you sure you want to cancel this booking?",
                           )
                         ) {
                           onCancel(booking.id);
