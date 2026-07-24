@@ -19,6 +19,7 @@ import { InstructorDashboard } from "./pages/InstructorDashboard";
 import { UserDashboard } from "./pages/UserDashboard";
 import { NotFound } from "./pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { BookingRoleGuard } from "./features/bookings";
 
 export const router = createBrowserRouter([
   {
@@ -38,7 +39,9 @@ export const router = createBrowserRouter([
         path: "booking/:type/:id",
         element: (
           <ProtectedRoute>
-            <Booking />
+            <BookingRoleGuard>
+              <Booking />
+            </BookingRoleGuard>
           </ProtectedRoute>
         ),
       },

@@ -13,6 +13,7 @@ export const bookingsRouter = Router();
 bookingsRouter.post(
   "/",
   authenticate,
+  authorize(ROLES.USER),
   bookingsController.create,
 );
 
