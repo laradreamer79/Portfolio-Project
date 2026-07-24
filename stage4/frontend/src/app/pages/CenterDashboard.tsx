@@ -46,7 +46,7 @@ export function CenterDashboard() {
     <div className="min-h-screen bg-slate-50">
       {/* Dashboard header */}
       <div className="bg-white border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
+        <div className="mx-auto flex max-w-7xl flex-col items-start gap-4 px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div>
             <p className="text-teal-600 text-sm font-medium tracking-widest uppercase mb-1">Center Portal</p>
             <h1 className="font-display text-3xl font-bold text-slate-900 tracking-wide">{center?.name ?? "Diving Center Dashboard"}</h1>
@@ -58,17 +58,17 @@ export function CenterDashboard() {
         </div>
 
         {/* Tabs */}
-        <div className="max-w-7xl mx-auto px-6 flex gap-1">
+        <div className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 sm:px-6">
           {(["overview", "bookings", "trips", "profile"] as const).map((t) => (
             <button key={t} onClick={() => setActiveTab(t)}
-              className={`px-4 py-3 text-sm font-semibold capitalize border-b-2 transition-colors ${activeTab === t ? "border-teal-500 text-teal-600" : "border-transparent text-slate-400 hover:text-slate-700"}`}>
+              className={`flex-shrink-0 whitespace-nowrap px-4 py-3 text-sm font-semibold capitalize border-b-2 transition-colors ${activeTab === t ? "border-teal-500 text-teal-600" : "border-transparent text-slate-400 hover:text-slate-700"}`}>
               {t}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
 
         {/* Overview */}
         {activeTab === "overview" && (
@@ -98,12 +98,12 @@ export function CenterDashboard() {
 
             {/* Recent bookings */}
             <div>
-              <div className="flex items-center justify-between mb-4">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide">RECENT BOOKINGS</h2>
                 <button onClick={() => setActiveTab("bookings")} className="text-sm text-teal-600 hover:text-teal-800">View all →</button>
               </div>
-              <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-                <table className="w-full text-sm">
+              <div className="overflow-x-auto rounded-2xl border border-slate-100 bg-white">
+                <table className="min-w-[880px] w-full text-sm">
                   <thead className="bg-slate-50 border-b border-slate-100">
                     <tr>
                       {["Booking ID", "Trip", "Customer", "Divers", "Total", "Date", "Status", ""].map((h) => (
@@ -141,7 +141,7 @@ export function CenterDashboard() {
 
             {/* Active trips */}
             <div>
-              <div className="flex items-center justify-between mb-4">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide">ACTIVE TRIPS</h2>
                 <button onClick={() => setActiveTab("trips")} className="text-sm text-teal-600 hover:text-teal-800">Manage →</button>
               </div>
@@ -167,8 +167,8 @@ export function CenterDashboard() {
         {activeTab === "bookings" && (
           <div>
             <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide mb-6">ALL BOOKINGS</h2>
-            <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-              <table className="w-full text-sm">
+            <div className="overflow-x-auto rounded-2xl border border-slate-100 bg-white">
+              <table className="min-w-[1000px] w-full text-sm">
                 <thead className="bg-slate-50 border-b border-slate-100">
                   <tr>
                     {["Booking ID", "Trip", "Customer", "Contact", "Divers", "Total", "Date", "Status", "Action"].map((h) => (
@@ -210,7 +210,7 @@ export function CenterDashboard() {
         {/* Trips tab */}
         {activeTab === "trips" && (
           <div>
-            <div className="flex items-center justify-between mb-6">
+            <div className="mb-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
               <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide">MY TRIPS & COURSES</h2>
               <button onClick={openCreateModal} className="bg-teal-500 text-white font-semibold px-4 py-2 rounded-xl hover:bg-teal-600 transition-colors flex items-center gap-1.5 text-sm">
                 <Plus className="w-4 h-4" /> Add Trip / Course
@@ -218,19 +218,19 @@ export function CenterDashboard() {
             </div>
             <div className="space-y-3">
               {listings.map((trip) => (
-                <div key={trip.id} className="bg-white rounded-2xl border border-slate-100 p-4 flex gap-4 items-center">
+                <div key={trip.id} className="flex flex-col gap-4 rounded-2xl border border-slate-100 bg-white p-4 sm:flex-row sm:items-center">
                   <div className="w-20 h-16 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
                     <img src={trip.img} alt={trip.title} className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <h3 className="font-semibold text-slate-900">{trip.title}</h3>
+                    <div className="mb-0.5 flex flex-wrap items-center gap-2">
+                      <h3 className="break-words font-semibold text-slate-900">{trip.title}</h3>
                       <span className={`text-xs px-2 py-0.5 rounded-full ${trip.type === "course" ? "bg-purple-50 text-purple-700" : "bg-teal-50 text-teal-700"}`}>{trip.type}</span>
                     </div>
                     <p className="text-xs text-slate-400">SAR {trip.price} · {trip.duration} · {trip.depth} · {trip.level} · {trip.date}</p>
                     <p className="text-xs text-slate-400">{trip.slots} spots available</p>
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="flex flex-shrink-0 items-center gap-2 self-end sm:self-auto">
                     <button onClick={() => navigate(listingRoute(trip))} className="p-2 text-slate-400 hover:text-teal-600 rounded-lg hover:bg-teal-50 transition-colors"><Eye className="w-4 h-4" /></button>
                     <button onClick={() => openEditModal(trip)} className="p-2 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"><Edit3 className="w-4 h-4" /></button>
                     <button onClick={() => handleDeleteListing(trip)} className="p-2 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"><Trash2 className="w-4 h-4" /></button>
@@ -360,7 +360,7 @@ export function CenterDashboard() {
                   <label className="text-sm font-medium text-slate-600 block mb-1.5">Trip Title *</label>
                   <input className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400" placeholder="e.g. Abu Madafi Reef Morning Dive" value={form.title} onChange={set("title")} />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Type</label>
                     <select className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-teal-400 bg-white disabled:bg-slate-50 disabled:text-slate-400" value={form.type} onChange={set("type")} disabled={Boolean(editingListing)}>

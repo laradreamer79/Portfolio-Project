@@ -13,8 +13,8 @@ export function InstructorBookingsTable({
   onDecline,
 }: InstructorBookingsTableProps) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white">
-      <table className="w-full text-sm">
+    <div className="overflow-x-auto rounded-2xl border border-slate-100 bg-white">
+      <table className="min-w-[900px] w-full text-sm">
         <thead className="border-b border-slate-100 bg-slate-50">
           <tr>
             {[

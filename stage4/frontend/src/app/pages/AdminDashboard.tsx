@@ -42,13 +42,13 @@ export function AdminDashboard() {
   return (
     <div className="min-h-screen bg-slate-50">
       {toast && (
-        <div className="fixed right-6 top-20 z-50 flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white shadow-xl">
+        <div className="fixed left-4 right-4 top-20 z-50 flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white shadow-xl sm:left-auto sm:right-6">
           <CheckCircle className="h-4 w-4 text-teal-400" /> {toast}
         </div>
       )}
 
       <div className="border-b border-slate-100 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
+        <div className="mx-auto flex max-w-7xl flex-col items-start gap-4 px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div>
             <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-red-500">
               Admin Access
@@ -68,12 +68,12 @@ export function AdminDashboard() {
           </button>
         </div>
 
-        <div className="mx-auto flex max-w-7xl gap-1 px-6">
+        <div className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 sm:px-6">
           {ADMIN_TABS.map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`border-b-2 px-4 py-3 text-sm font-semibold transition-colors ${
+              className={`flex-shrink-0 whitespace-nowrap border-b-2 px-4 py-3 text-sm font-semibold transition-colors ${
                 activeTab === tab.key
                   ? "border-teal-500 text-teal-600"
                   : "border-transparent text-slate-400 hover:text-slate-700"
@@ -88,7 +88,7 @@ export function AdminDashboard() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-6 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         {activeTab === "overview" && (
           <AdminOverview
             bookings={bookings}
