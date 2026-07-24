@@ -118,7 +118,7 @@ export function InstructorDashboard() {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="border-b border-slate-100 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
+        <div className="mx-auto flex max-w-7xl flex-col items-start gap-4 px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div>
             <p className="mb-1 text-sm font-medium uppercase tracking-widest text-teal-600">
               Instructor Portal
@@ -139,14 +139,14 @@ export function InstructorDashboard() {
           </button>
         </div>
 
-        <div className="mx-auto flex max-w-7xl gap-1 px-6">
+        <div className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 sm:px-6">
           {(["overview", "bookings", "listings", "profile"] as const).map(
             (tab) => (
               <button
                 key={tab}
                 type="button"
                 onClick={() => setActiveTab(tab)}
-                className={`border-b-2 px-4 py-3 text-sm font-semibold capitalize transition-colors ${
+                className={`flex-shrink-0 whitespace-nowrap border-b-2 px-4 py-3 text-sm font-semibold capitalize transition-colors ${
                   activeTab === tab
                     ? "border-teal-500 text-teal-600"
                     : "border-transparent text-slate-400 hover:text-slate-700"
@@ -159,7 +159,7 @@ export function InstructorDashboard() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-6 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         {activeTab === "overview" && (
           <div className="space-y-8">
             <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
@@ -217,7 +217,7 @@ export function InstructorDashboard() {
             </div>
 
             <div>
-              <div className="mb-4 flex items-center justify-between">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <h2 className="font-display text-2xl font-bold tracking-wide text-slate-900">
                   RECENT BOOKINGS
                 </h2>
@@ -236,7 +236,7 @@ export function InstructorDashboard() {
             </div>
 
             <div>
-              <div className="mb-4 flex items-center justify-between">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <h2 className="font-display text-2xl font-bold tracking-wide text-slate-900">
                   MY ACTIVE TRIPS & COURSES
                 </h2>
@@ -300,7 +300,7 @@ export function InstructorDashboard() {
 
         {activeTab === "listings" && (
           <div>
-            <div className="mb-6 flex items-center justify-between">
+            <div className="mb-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
               <h2 className="font-display text-2xl font-bold tracking-wide text-slate-900">
                 MY TRIPS & COURSES
               </h2>
@@ -316,7 +316,7 @@ export function InstructorDashboard() {
               {listings.map((trip) => (
                 <div
                   key={trip.id}
-                  className="flex items-center gap-4 rounded-2xl border border-slate-100 bg-white p-4"
+                  className="flex flex-col gap-4 rounded-2xl border border-slate-100 bg-white p-4 sm:flex-row sm:items-center"
                 >
                   <div className="h-16 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-slate-100">
                     <img
@@ -326,8 +326,8 @@ export function InstructorDashboard() {
                     />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="mb-0.5 flex items-center gap-2">
-                      <h3 className="font-semibold text-slate-900">
+                    <div className="mb-0.5 flex flex-wrap items-center gap-2">
+                      <h3 className="break-words font-semibold text-slate-900">
                         {trip.title}
                       </h3>
                       <span
@@ -348,7 +348,7 @@ export function InstructorDashboard() {
                       {trip.slots} spots available
                     </p>
                   </div>
-                  <div className="flex flex-shrink-0 items-center gap-2">
+                  <div className="flex flex-shrink-0 items-center gap-2 self-end sm:self-auto">
                     <button
                       type="button"
                       onClick={() => navigate(listingRoute(trip))}
@@ -498,7 +498,7 @@ export function InstructorDashboard() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <label className="mb-1.5 block text-sm font-medium text-slate-600">
                       Type
