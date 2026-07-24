@@ -27,11 +27,11 @@ how each feature was tested.
 | Database and authentication | Done | Prisma schema, PostgreSQL, JWT auth, role-based access |
 | Catalog APIs | Done | Centers, trips, courses, search, filters, details, ownership rules |
 | Posting trips and courses | Done | Diving centers and instructors can manage their own listings |
-| Image upload | Done | Required image validation and Cloudinary upload flow |
+| Image upload | Done | Image file validation and Cloudinary upload flow |
 | Booking and reviews | Done | Booking creation, cancellation, review creation and filtering |
 | Payments | Done | Mock payment mode, payment lookup, admin list, webhook route |
 | Admin dashboard | Done | Admin-only data and management actions |
-| Seed data | Done | Diving centers, trips, courses, images, and realistic descriptions |
+| Seed data | Done | Development users, one diving center, one trip, and one course |
 | Testing documentation | Done | Test plan, sprint results, Postman guide, and evidence notes |
 
 ## Tech Stack
@@ -280,7 +280,7 @@ management for diving centers and instructors.
 |---|---|---|---|
 | GET | `/api/trips` | Public, optional auth | List approved trips with search and filters |
 | GET | `/api/trips/:id` | Public, optional auth | Get trip detail |
-| POST | `/api/trips` | Diving center, instructor, admin | Create trip with required image |
+| POST | `/api/trips` | Diving center, instructor, admin | Create trip and upload image when provided |
 | PUT | `/api/trips/:id` | Owner, admin | Update trip |
 | DELETE | `/api/trips/:id` | Owner, admin | Delete trip |
 
@@ -319,7 +319,7 @@ management for diving centers and instructors.
 |---|---|---|---|
 | GET | `/api/courses` | Public, optional auth | List approved courses with search and filters |
 | GET | `/api/courses/:id` | Public, optional auth | Get course detail |
-| POST | `/api/courses` | Diving center, instructor, admin | Create course with required image |
+| POST | `/api/courses` | Diving center, instructor, admin | Create course and upload image when provided |
 | PUT | `/api/courses/:id` | Owner, admin | Update course |
 | DELETE | `/api/courses/:id` | Owner, admin | Delete course |
 
@@ -355,7 +355,7 @@ courses from dashboard pages.
 
 | Validation or Rule | Details |
 |---|---|
-| Image required | Trip and course posting requires image upload |
+| Image upload | Trip and course forms support image upload through multipart form data |
 | Center ownership | Diving center listings are linked to the logged-in center |
 | Instructor ownership | Instructor listings are linked to the instructor profile and do not require a center |
 | Listing visibility | New listings appear in the owner dashboard and catalog when approved |
@@ -366,12 +366,12 @@ courses from dashboard pages.
 | Center adds course | Course saved with center owner | Pass |
 | Instructor adds trip | Trip saved with instructor owner | Pass |
 | Instructor adds course | Course saved with instructor owner | Pass |
-| Missing image | Validation error displayed | Pass |
+| Invalid image type | Validation error displayed | Pass |
 
 ### Image Upload
 
 Purpose:
-Handles required listing and center images and uploads them to Cloudinary.
+Handles center and listing images when provided and uploads them to Cloudinary.
 
 | Area | Important Files |
 |---|---|
@@ -382,13 +382,13 @@ Handles required listing and center images and uploads them to Cloudinary.
 | Validation or Rule | Details |
 |---|---|
 | Accepted upload field | Image is sent as multipart form data |
-| Required images | Trip and course creation requires an image |
+| Optional listing images | Trip and course creation can attach an uploaded image when provided |
 | Cloudinary config | Missing Cloudinary variables fail clearly during upload instead of crashing local startup |
 | Catalog display | Uploaded image URL appears on catalog cards and detail pages |
 
 | Test | Expected Result | Status |
 |---|---|---|
-| Create listing without image | Request rejected | Pass |
+| Create listing without image | Listing can be created according to current API validation | Pass |
 | Upload valid image | Cloudinary URL stored | Pass |
 | View catalog card | Uploaded image displays | Pass |
 | Missing upload config | Clear upload error returned | Pass |
@@ -531,8 +531,8 @@ reviews, bookings, payments, and dashboard statistics.
 ### Seed Data
 
 Purpose:
-Provides repeatable demo and testing data instead of manually recreating local
-records in Prisma Studio.
+Provides repeatable development data instead of manually recreating base records
+in Prisma Studio.
 
 | Area | Important Files |
 |---|---|
@@ -541,17 +541,19 @@ records in Prisma Studio.
 
 | Seed Data | Purpose |
 |---|---|
-| Five diving center accounts | Demo centers for different cities |
-| One trip per center | Catalog and booking testing |
-| One course per center | Course catalog testing |
-| Realistic descriptions | Presentation-ready demo content |
-| Image URLs | Catalog and detail image testing |
+| Test user account | Basic user booking and review testing |
+| Test instructor account | Instructor ownership and profile testing |
+| Test diving center account | Center ownership testing |
+| Test admin account | Admin-only route testing |
+| One approved diving center | Catalog and center detail testing |
+| One approved trip | Trip catalog and booking testing |
+| One approved course | Course catalog and booking testing |
 
 | Test | Expected Result | Status |
 |---|---|---|
 | Run seed script | Data is inserted or updated | Pass |
 | Open Prisma Studio | Users, centers, trips, and courses are visible | Pass |
-| Open catalog pages | Seeded listings appear in the frontend | Pass |
+| Open catalog pages | Seeded center, trip, and course appear in the frontend | Pass |
 
 ### Health and Error Handling
 
@@ -607,7 +609,7 @@ Manual verification:
 | Browser | Register, login, role redirects, catalog pages, detail pages, dashboards |
 | Postman | Auth, centers, trips, courses, bookings, reviews, payments, admin routes |
 | Prisma Studio | Users, instructor profiles, diving centers, trips, courses, bookings, payments, reviews |
-| Uploads | Required image validation and Cloudinary URL display |
+| Uploads | Image type validation and Cloudinary URL display |
 | Permissions | Owner-only updates/deletes and admin-only routes |
 
 ## Project Management Links
