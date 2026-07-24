@@ -1,5 +1,6 @@
 import { z } from "zod";
 import {
+  approvalStatusQuerySchema,
   catalogIdParamsSchema,
   catalogIdSchema,
   catalogQueryShape,
@@ -10,6 +11,10 @@ const requiredString = z.string().trim().min(1);
 const money = z.coerce.number().nonnegative();
 const positiveInt = z.coerce.number().int().positive();
 const date = z.coerce.date();
+const difficultyQuerySchema = z.preprocess((value) => {
+  if (typeof value !== "string") return value;
+  return value.trim().toLowerCase();
+}, z.enum(["beginner", "intermediate", "advanced"]));
 
 export const tripCreateSchema = z
   .object({
@@ -36,9 +41,8 @@ export const tripUpdateSchema = tripCreateSchema
 export const tripQuerySchema = z
   .object({
     ...catalogQueryShape,
-    difficulty: z
-      .enum(["beginner", "intermediate", "advanced"])
-      .optional(),
+    difficulty: difficultyQuerySchema.optional(),
+    status: approvalStatusQuerySchema.optional(),
   })
   .strict()
   .superRefine(validatePriceRange);

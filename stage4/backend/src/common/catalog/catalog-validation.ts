@@ -7,16 +7,32 @@ export const catalogIdParamsSchema = z
   .object({ id: catalogIdSchema })
   .strict();
 
+function normalizeEnumValue<T extends readonly string[]>(values: T) {
+  return z.preprocess((value) => {
+    if (typeof value !== "string") return value;
+
+    const normalized = value.trim().toLowerCase();
+    return values.find((option) => option.toLowerCase() === normalized) ?? value;
+  }, z.enum(values));
+}
+
+export const cityQuerySchema = normalizeEnumValue(DIVING_CITIES);
+
+export const approvalStatusQuerySchema = normalizeEnumValue([
+  "pending",
+  "approved",
+  "rejected",
+  "all",
+] as const);
+
 export const catalogQueryShape = {
-  city: z.enum(DIVING_CITIES).optional(),
+  city: cityQuerySchema.optional(),
   minPrice: z.coerce.number().nonnegative().optional(),
   maxPrice: z.coerce.number().nonnegative().optional(),
   search: z.string().trim().min(1).max(100).optional(),
   centerId: catalogIdSchema.optional(),
   instructorId: catalogIdSchema.optional(),
-  status: z
-    .enum(["pending", "approved", "rejected", "all"])
-    .optional(),
+  status: approvalStatusQuerySchema.optional(),
 };
 
 export function validatePriceRange(
