@@ -78,6 +78,42 @@ export const paymentDetailsSchema = z.object({
   ),
 });
 
+export type PaymentFieldErrors = {
+  card?: string;
+  expiry?: string;
+  cvv?: string;
+  holder?: string;
+};
+
+export function getPaymentFieldErrors(
+  payment: PaymentFormState,
+): PaymentFieldErrors {
+  const result = paymentDetailsSchema.safeParse(payment);
+
+  if (result.success) {
+    return {};
+  }
+
+  const errors: PaymentFieldErrors = {};
+
+  for (const issue of result.error.issues) {
+    const field = issue.path[0];
+
+    if (
+      field === "card" ||
+      field === "expiry" ||
+      field === "cvv" ||
+      field === "holder"
+    ) {
+      if (!errors[field]) {
+        errors[field] = issue.message;
+      }
+    }
+  }
+
+  return errors;
+}
+
 export function validateBookingDetails(form: BookingFormState) {
   const result = bookingDetailsSchema.safeParse(form);
   return result.success ? null : firstZodError(result.error);
