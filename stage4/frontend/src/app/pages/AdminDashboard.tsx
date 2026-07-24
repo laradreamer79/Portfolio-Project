@@ -5,6 +5,7 @@ import {
   AdminBookings,
   AdminCenters,
   AdminOverview,
+  AdminProfilePanel,
   AdminReviews,
   useAdminDashboard,
 } from "../features/admin-dashboard";
@@ -19,10 +20,15 @@ export function AdminDashboard() {
     cancelAdminBooking,
     centerQuery,
     centers,
+    dashboard,
     filteredCenters,
+    isSavingProfile,
     pendingCount,
+    profile,
+    profileError,
     removeReview,
     reviews,
+    saveProfile,
     setActiveTab,
     setCenterQuery,
     setStatusFilter,
@@ -87,6 +93,7 @@ export function AdminDashboard() {
           <AdminOverview
             bookings={bookings}
             centers={centers}
+            dashboard={dashboard}
             pendingCount={pendingCount}
             totalRevenue={totalRevenue}
             onOpenTab={setActiveTab}
@@ -121,6 +128,15 @@ export function AdminDashboard() {
             reviews={reviews}
             onRemove={removeReview}
             onViewCenter={(id) => navigate(`/centers/${id}`)}
+          />
+        )}
+
+        {activeTab === "profile" && (
+          <AdminProfilePanel
+            profile={profile}
+            error={profileError}
+            isSaving={isSavingProfile}
+            onSave={saveProfile}
           />
         )}
       </div>

@@ -1,18 +1,27 @@
+import { useEffect, useState, type FormEvent } from "react";
 import {
   AlertCircle,
   Building2,
   CheckCircle,
   ChevronRight,
   Eye,
+  Mail,
+  Save,
   Search,
   Shield,
   ShieldOff,
   Star,
   TrendingUp,
+  UserRound,
   Waves,
   X,
 } from "lucide-react";
 import type { BookingCard } from "../bookings";
+import type {
+  AdminDashboardSummary,
+  AdminProfile,
+} from "./adminService";
+import type { UpdateAdminProfileInput } from "./adminValidation";
 import type {
   AdminTab,
   CenterRow,
@@ -32,6 +41,7 @@ const ADMIN_CITIES = [
 type AdminOverviewProps = {
   bookings: BookingCard[];
   centers: CenterRow[];
+  dashboard: AdminDashboardSummary | null;
   pendingCount: number;
   totalRevenue: number;
   onOpenTab: (tab: AdminTab) => void;
@@ -40,6 +50,7 @@ type AdminOverviewProps = {
 export function AdminOverview({
   bookings,
   centers,
+  dashboard,
   pendingCount,
   totalRevenue,
   onOpenTab,
@@ -50,22 +61,38 @@ export function AdminOverview({
 
   const stats = [
     {
+      label: "Total Users",
+      value: dashboard?.totalUsers ?? 0,
+      sub: "Registered accounts",
+      icon: <UserRound className="h-5 w-5" />,
+      color: "bg-violet-50 text-violet-600",
+    },
+    {
       label: "Total Centers",
-      value: centers.length,
+      value: dashboard?.totalCenters ?? centers.length,
       sub: `${activeCenters} active`,
       icon: <Building2 className="h-5 w-5" />,
       color: "bg-teal-50 text-teal-600",
     },
     {
       label: "Total Bookings",
-      value: bookings.length,
-      sub: "This month",
+      value: dashboard?.totalBookings ?? bookings.length,
+      sub: `${dashboard?.confirmedBookings ?? 0} confirmed`,
       icon: <Waves className="h-5 w-5" />,
       color: "bg-blue-50 text-blue-600",
     },
     {
+      label: "Total Reviews",
+      value: dashboard?.totalReviews ?? 0,
+      sub: "Platform reviews",
+      icon: <Star className="h-5 w-5" />,
+      color: "bg-amber-50 text-amber-600",
+    },
+    {
       label: "Platform Revenue",
-      value: `SAR ${(totalRevenue * 0.08).toLocaleString()}`,
+      value: `SAR ${(
+        (dashboard?.totalRevenue ?? totalRevenue) * 0.08
+      ).toLocaleString()}`,
       sub: "8% commission",
       icon: <TrendingUp className="h-5 w-5" />,
       color: "bg-emerald-50 text-emerald-600",
@@ -84,7 +111,7 @@ export function AdminOverview({
 
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-5 md:grid-cols-3 xl:grid-cols-6">
         {stats.map((stat) => (
           <div
             key={stat.label}
@@ -634,6 +661,122 @@ export function AdminReviews({
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+type AdminProfilePanelProps = {
+  profile: AdminProfile | null;
+  error: string | null;
+  isSaving: boolean;
+  onSave: (data: UpdateAdminProfileInput) => Promise<void>;
+};
+
+export function AdminProfilePanel({
+  profile,
+  error,
+  isSaving,
+  onSave,
+}: AdminProfilePanelProps) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    if (!profile) return;
+    setName(profile.name);
+    setEmail(profile.email);
+  }, [profile]);
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    void onSave({ name, email });
+  }
+
+  if (!profile) {
+    return (
+      <div className="rounded-2xl border border-slate-100 bg-white p-8 text-sm text-slate-500">
+        {error ?? "Loading admin profile..."}
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-2xl">
+      <div className="mb-6">
+        <h2 className="font-display text-2xl font-bold tracking-wide text-slate-900">
+          ADMIN PROFILE
+        </h2>
+        <p className="mt-1 text-sm text-slate-500">
+          Update your account name and email address.
+        </p>
+      </div>
+
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-5 rounded-2xl border border-slate-100 bg-white p-6"
+      >
+        {error && (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
+        <div>
+          <label
+            htmlFor="admin-name"
+            className="mb-2 block text-sm font-semibold text-slate-700"
+          >
+            Name
+          </label>
+          <div className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 focus-within:border-teal-500">
+            <UserRound className="h-4 w-4 text-slate-400" />
+            <input
+              id="admin-name"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              maxLength={100}
+              className="flex-1 bg-transparent text-sm text-slate-800 outline-none"
+              autoComplete="name"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label
+            htmlFor="admin-email"
+            className="mb-2 block text-sm font-semibold text-slate-700"
+          >
+            Email
+          </label>
+          <div className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 focus-within:border-teal-500">
+            <Mail className="h-4 w-4 text-slate-400" />
+            <input
+              id="admin-email"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              maxLength={254}
+              className="flex-1 bg-transparent text-sm text-slate-800 outline-none"
+              autoComplete="email"
+            />
+          </div>
+        </div>
+
+        <div className="rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-500">
+          Role: <span className="font-semibold capitalize">{profile.role}</span>
+          <span className="mx-2">·</span>
+          Member since {new Date(profile.createdAt).toLocaleDateString()}
+        </div>
+
+        <button
+          type="submit"
+          disabled={isSaving}
+          className="flex items-center gap-2 rounded-xl bg-teal-500 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-teal-600 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <Save className="h-4 w-4" />
+          {isSaving ? "Saving..." : "Save Changes"}
+        </button>
+      </form>
     </div>
   );
 }
