@@ -9,7 +9,12 @@ import type { BookingFormState, PaymentFormState } from "./useBookingFlow";
 
 export const bookingDetailsSchema = z.object({
   name: personNameSchema,
-  email: emailSchema,
+  email: z
+  .string()
+  .trim()
+  .min(1, "Email is required.")
+  .email("Enter a valid email address.")
+  .max(100, "Email must not exceed 100 characters."),
   phone: saudiPhoneSchema,
   notes: z.string(),
 });
@@ -33,8 +38,9 @@ const cardNumberSchema = z
   .pipe(
     z
       .string()
-      .length(16, "Card number must contain 16 digits.")
-      .refine(passesLuhnCheck, "Enter a valid card number."),
+      .min(1, "Card number is required.")
+      .length(16, "Card number must contain exactly 16 digits.")
+      .regex(/^\d{16}$/, "Card number must contain numbers only."),
   );
 
 const expirySchema = z
