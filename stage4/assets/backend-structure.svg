@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="760" viewBox="0 0 980 760" role="img" aria-labelledby="title desc">
+  <title id="title">Oyster Stage 4 Backend Project Structure</title>
+  <desc id="desc">Current backend folder structure for the Stage 4 Oyster project.</desc>
+  <rect width="980" height="760" fill="#f8fafc"/>
+  <rect x="28" y="28" width="924" height="704" rx="18" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="56" y="78" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700" fill="#0f172a">Backend Structure</text>
+  <text x="56" y="108" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#475569">stage4/Backend</text>
+
+  <g font-family="Consolas, 'Courier New', monospace" font-size="18" fill="#0f172a">
+    <text x="64" y="158">stage4/Backend</text>
+    <text x="84" y="190">|-- prisma/</text>
+    <text x="124" y="222">|-- schema.prisma</text>
+    <text x="124" y="254">|-- seed.ts</text>
+    <text x="124" y="286">`-- migrations/</text>
+    <text x="84" y="326">|-- src/</text>
+    <text x="124" y="358">|-- admin/</text>
+    <text x="124" y="390">|-- auth/</text>
+    <text x="124" y="422">|-- bookings/</text>
+    <text x="124" y="454">|-- centers/</text>
+    <text x="124" y="486">|-- common/</text>
+    <text x="164" y="518">|-- catalog/</text>
+    <text x="164" y="550">`-- constants/</text>
+    <text x="124" y="582">|-- config/</text>
+    <text x="124" y="614">|-- courses/</text>
+    <text x="124" y="646">|-- health/</text>
+    <text x="500" y="358">|-- instructors/</text>
+    <text x="500" y="390">|-- middleware/</text>
+    <text x="500" y="422">|-- payments/</text>
+    <text x="500" y="454">|-- prisma/</text>
+    <text x="500" y="486">|-- reviews/</text>
+    <text x="500" y="518">|-- trips/</text>
+    <text x="500" y="550">|-- utils/</text>
+    <text x="500" y="582">|-- app.ts</text>
+    <text x="500" y="614">`-- server.ts</text>
+    <text x="84" y="686">|-- docker-compose.yml</text>
+    <text x="500" y="686">|-- package.json</text>
+    <text x="500" y="718">`-- tsconfig.json</text>
+  </g>
+</svg>
