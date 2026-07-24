@@ -39,40 +39,23 @@ export function Centers() {
               <input className="flex-1 text-sm text-slate-700 placeholder-slate-400 focus:outline-none bg-transparent" placeholder="Search centers..." value={query} onChange={(e) => setQuery(e.target.value)} />
             </div>
             <div className="flex items-center gap-2">
-              <SlidersHorizontal className="w-4 h-4 text-slate-400" />
+              <select className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-teal-400" value={city} onChange={(e) => setCity(e.target.value)}>
+                {CITIES.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
               <select className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-teal-400" value={minRating} onChange={(e) => setMinRating(Number(e.target.value))}>
                 <option value={0}>Any Rating</option>
                 <option value={4}>4+ Stars</option>
                 <option value={4.5}>4.5+ Stars</option>
               </select>
-              <label className="flex items-center gap-2 text-sm text-slate-600 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 cursor-pointer">
-                <input type="checkbox" checked={verifiedOnly} onChange={(e) => setVerifiedOnly(e.target.checked)} className="accent-teal-500" />
-                Verified only
-              </label>
             </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8 flex gap-8">
-        {/* City sidebar */}
-        <aside className="hidden lg:block w-52 flex-shrink-0">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">City</p>
-          <div className="space-y-1">
-            {CITIES.map((c) => (
-              <button key={c} onClick={() => setCity(c)}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${city === c ? "bg-teal-50 text-teal-700 border border-teal-200" : "text-slate-600 hover:bg-slate-100"}`}>
-                <span className="flex items-center justify-between">
-                  {c}
-                  {c !== "All Cities" && <span className="text-xs text-slate-400">{centers.filter((x) => x.city === c).length}</span>}
-                </span>
-              </button>
-            ))}
-          </div>
-        </aside>
-
-        {/* Mobile city pills */}
-        <div className="lg:hidden" />
+        {/* Sidebar removed in favor of header city select */}
 
         {/* Results */}
         <div className="flex-1">

@@ -94,7 +94,6 @@ export function useCentersCatalog(
   const [city, setCity] = useState(initialCity);
   const [query, setQuery] = useState(initialQuery);
   const [minRating, setMinRating] = useState(0);
-  const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [centers, setCenters] = useState<Center[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -135,12 +134,8 @@ export function useCentersCatalog(
   }, [city, query]);
 
   const filteredCenters = useMemo(
-    () =>
-      centers.filter(
-        (center) =>
-          center.rating >= minRating && (!verifiedOnly || center.verified),
-      ),
-    [centers, minRating, verifiedOnly],
+    () => centers.filter((center) => center.rating >= minRating),
+    [centers, minRating],
   );
 
   return {
@@ -154,8 +149,7 @@ export function useCentersCatalog(
     setCity,
     setMinRating,
     setQuery,
-    setVerifiedOnly,
-    verifiedOnly,
+    
   };
 }
 
