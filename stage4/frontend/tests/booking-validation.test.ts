@@ -8,6 +8,7 @@ import {
   validateBookingDetails,
   validatePaymentDetails,
 } from "../src/app/features/bookings/bookingValidation";
+import { canCreateBooking } from "../src/app/features/bookings/bookingAccess";
 
 function futureExpiry() {
   const date = new Date();
@@ -36,6 +37,15 @@ describe("booking details form", () => {
     [{ ...validDetails, phone: "12345" }, "Saudi phone"],
   ])("rejects an invalid %s", (details) => {
     expect(bookingDetailsSchema.safeParse(details).success).toBe(false);
+  });
+});
+
+describe("booking role access", () => {
+  it("allows only customer users to create bookings", () => {
+    expect(canCreateBooking("user")).toBe(true);
+    expect(canCreateBooking("admin")).toBe(false);
+    expect(canCreateBooking("instructor")).toBe(false);
+    expect(canCreateBooking("diving_center")).toBe(false);
   });
 });
 
