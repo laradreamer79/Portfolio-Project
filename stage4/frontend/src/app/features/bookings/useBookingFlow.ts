@@ -11,8 +11,9 @@ import { createPayment, type ApiPayment } from "../payments";
 import { useAuth } from "../../hooks/useAuth";
 import { createBooking, type ApiBooking } from "./bookingService";
 import {
+  getPaymentFieldErrors,
   validateBookingDetails,
-  validatePaymentDetails,
+  type PaymentFieldErrors,
 } from "./bookingValidation";
 
 export type BookingStep = "details" | "payment" | "success";
@@ -54,12 +55,14 @@ export function useBookingFlow() {
 
   const [step, setStep] = useState<BookingStep>("details");
   const [divers, setDivers] = useState(1);
+
   const [form, setForm] = useState<BookingFormState>({
     name: "",
     email: "",
     phone: "",
     notes: "",
   });
+
   const [payment, setPayment] = useState<PaymentFormState>({
     card: "",
     expiry: "",
@@ -67,24 +70,34 @@ export function useBookingFlow() {
     holder: "",
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [validationError, setValidationError] = useState<string | null>(null);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [confirmedBooking, setConfirmedBooking] = useState<ApiBooking | null>(
-    null,
-  );
-  const [confirmedPayment, setConfirmedPayment] = useState<ApiPayment | null>(
-    null,
-  );
+  const [paymentErrors, setPaymentErrors] =
+    useState<PaymentFieldErrors>({});
 
-  const experienceType = isExperienceType(type) ? type : undefined;
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationError, setValidationError] =
+    useState<string | null>(null);
+  const [submitError, setSubmitError] =
+    useState<string | null>(null);
+
+  const [confirmedBooking, setConfirmedBooking] =
+    useState<ApiBooking | null>(null);
+
+  const [confirmedPayment, setConfirmedPayment] =
+    useState<ApiPayment | null>(null);
+
+  const experienceType = isExperienceType(type)
+    ? type
+    : undefined;
+
   const experienceId = Number(id);
 
   useEffect(() => {
     if (!user) return;
 
     const savedPhone =
-      window.localStorage.getItem(bookingPhoneStorageKey(user.id)) ?? "";
+      window.localStorage.getItem(
+        bookingPhoneStorageKey(user.id),
+      ) ?? "";
 
     setForm((current) => ({
       ...current,
@@ -95,13 +108,17 @@ export function useBookingFlow() {
   }, [user]);
 
   useEffect(() => {
-    if (!experienceType || !Number.isInteger(experienceId)) {
+    if (
+      !experienceType ||
+      !Number.isInteger(experienceId)
+    ) {
       setLoadError("This booking link is invalid.");
       setLoading(false);
       return;
     }
 
     let active = true;
+
     setLoading(true);
     setLoadError(null);
 
@@ -114,10 +131,16 @@ export function useBookingFlow() {
       .then((data) => {
         if (!active) return;
 
-        if (experienceType === "course" && "course" in data) {
+        if (
+          experienceType === "course" &&
+          "course" in data
+        ) {
           setExperience(data.course);
           setCenter(data.center);
-        } else if (experienceType === "trip" && "trip" in data) {
+        } else if (
+          experienceType === "trip" &&
+          "trip" in data
+        ) {
           setExperience(data.trip);
           setCenter(data.center);
         }
@@ -126,13 +149,18 @@ export function useBookingFlow() {
         if (!active) return;
 
         setLoadError(
-          err instanceof Error ? err.message : "Unable to load this listing.",
+          err instanceof Error
+            ? err.message
+            : "Unable to load this listing.",
         );
+
         setExperience(null);
         setCenter(undefined);
       })
       .finally(() => {
-        if (active) setLoading(false);
+        if (active) {
+          setLoading(false);
+        }
       });
 
     return () => {
@@ -140,15 +168,31 @@ export function useBookingFlow() {
     };
   }, [experienceType, experienceId, token]);
 
-  const total = experience ? experience.price * divers : 0;
-  const past = experience ? isPastExperience(experience) : false;
-  const steps: BookingStep[] = ["details", "payment", "success"];
+  const total = experience
+    ? experience.price * divers
+    : 0;
+
+  const past = experience
+    ? isPastExperience(experience)
+    : false;
+
+  const steps: BookingStep[] = [
+    "details",
+    "payment",
+    "success",
+  ];
+
   const stepIdx = steps.indexOf(step);
 
   const setFormField =
     (key: keyof BookingFormState) =>
-    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    (
+      event: ChangeEvent<
+        HTMLInputElement | HTMLTextAreaElement
+      >,
+    ) => {
       setValidationError(null);
+
       setForm((current) => ({
         ...current,
         [key]: event.target.value,
@@ -159,14 +203,29 @@ export function useBookingFlow() {
     (key: keyof PaymentFormState) =>
     (event: ChangeEvent<HTMLInputElement>) => {
       setSubmitError(null);
+
+      setPaymentErrors((current) => ({
+        ...current,
+        [key]: undefined,
+      }));
+
       setPayment((current) => ({
         ...current,
         [key]: event.target.value,
       }));
     };
 
-  const setPaymentValue = (key: keyof PaymentFormState, value: string) => {
+  const setPaymentValue = (
+    key: keyof PaymentFormState,
+    value: string,
+  ) => {
     setSubmitError(null);
+
+    setPaymentErrors((current) => ({
+      ...current,
+      [key]: undefined,
+    }));
+
     setPayment((current) => ({
       ...current,
       [key]: value,
@@ -175,6 +234,7 @@ export function useBookingFlow() {
 
   function handleDetailsContinue() {
     const error = validateBookingDetails(form);
+
     setValidationError(error);
 
     if (!error && !past) {
@@ -184,25 +244,45 @@ export function useBookingFlow() {
           form.phone,
         );
       }
+
       setStep("payment");
     }
   }
 
   async function handlePay() {
-    if (isSubmitting || !experienceType || !Number.isInteger(experienceId)) {
+    if (
+      isSubmitting ||
+      !experienceType ||
+      !Number.isInteger(experienceId)
+    ) {
       return;
     }
 
-    const paymentError = validatePaymentDetails(payment);
-    if (paymentError) {
-      setSubmitError(paymentError);
+    /*
+     * Validate every payment field separately.
+     * Each error will be displayed under its own input.
+     */
+    const fieldErrors =
+      getPaymentFieldErrors(payment);
+
+    setPaymentErrors(fieldErrors);
+
+    if (Object.keys(fieldErrors).length > 0) {
+      /*
+       * Do not show one generic validation message.
+       * The individual errors are shown under the fields.
+       */
+      setSubmitError(null);
       return;
     }
 
     if (!token) {
       navigate("/auth", {
-        state: { from: `/booking/${experienceType}/${experienceId}` },
+        state: {
+          from: `/booking/${experienceType}/${experienceId}`,
+        },
       });
+
       return;
     }
 
@@ -215,6 +295,7 @@ export function useBookingFlow() {
           ...(experienceType === "course"
             ? { courseId: experienceId }
             : { tripId: experienceId }),
+
           numberOfPeople: divers,
         },
         token,
@@ -233,12 +314,18 @@ export function useBookingFlow() {
           "oyster_pending_payment_id",
           String(paymentResult.payment.id),
         );
-        window.location.assign(paymentResult.transactionUrl);
+
+        window.location.assign(
+          paymentResult.transactionUrl,
+        );
+
         return;
       }
 
       setConfirmedBooking(booking);
-      setConfirmedPayment(paymentResult.payment);
+      setConfirmedPayment(
+        paymentResult.payment,
+      );
       setStep("success");
     } catch (err) {
       setSubmitError(
@@ -268,6 +355,10 @@ export function useBookingFlow() {
     navigate,
     past,
     payment,
+
+    // أخطاء مستقلة لكل حقل دفع
+    paymentErrors,
+
     setDivers,
     setFormField,
     setPaymentField,
