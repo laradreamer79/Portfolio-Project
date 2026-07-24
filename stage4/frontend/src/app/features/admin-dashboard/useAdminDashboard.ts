@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { ZodError } from "zod";
 import type { Center } from "../../data";
+import { ApiError } from "../../lib/apiClient";
 import {
   cancelBooking,
   getAllBookings,
@@ -7,8 +9,21 @@ import {
 } from "../bookings";
 import { getCenters, updateCenterStatus } from "../catalog";
 import { deleteReview, getAllReviews, toReview } from "../reviews";
+import {
+  getAdminDashboard,
+  getAdminProfile,
+  updateAdminProfile,
+  type AdminDashboardSummary,
+  type AdminProfile,
+} from "./adminService";
+import type { UpdateAdminProfileInput } from "./adminValidation";
 
-export type AdminTab = "overview" | "centers" | "bookings" | "reviews";
+export type AdminTab =
+  | "overview"
+  | "centers"
+  | "bookings"
+  | "reviews"
+  | "profile";
 export type CenterStatus = "active" | "pending" | "suspended";
 
 export type CenterRow = Center & {
@@ -33,10 +48,16 @@ export const ADMIN_TABS: ReadonlyArray<{
   { key: "centers", label: "Centers" },
   { key: "bookings", label: "Bookings" },
   { key: "reviews", label: "Reviews" },
+  { key: "profile", label: "Profile" },
 ];
 
 export function useAdminDashboard(token: string | null) {
   const [activeTab, setActiveTab] = useState<AdminTab>("overview");
+  const [dashboard, setDashboard] =
+    useState<AdminDashboardSummary | null>(null);
+  const [profile, setProfile] = useState<AdminProfile | null>(null);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [centers, setCenters] = useState<CenterRow[]>([]);
   const [bookings, setBookings] = useState<BookingCard[]>([]);
   const [reviews, setReviews] = useState<ReviewRow[]>([]);
@@ -54,6 +75,25 @@ export function useAdminDashboard(token: string | null) {
     if (!token) return;
 
     let active = true;
+
+    getAdminDashboard(token)
+      .then((summary) => {
+        if (active) setDashboard(summary);
+      })
+      .catch(() => {
+        if (active) setDashboard(null);
+      });
+
+    getAdminProfile(token)
+      .then((adminProfile) => {
+        if (active) setProfile(adminProfile);
+      })
+      .catch(() => {
+        if (active) {
+          setProfile(null);
+          setProfileError("Unable to load the admin profile.");
+        }
+      });
 
     getCenters({ status: "all" }, token)
       .then((centerData) => {
@@ -96,6 +136,16 @@ export function useAdminDashboard(token: string | null) {
     window.setTimeout(() => setToast(null), 3000);
   }
 
+  async function refreshDashboard() {
+    if (!token) return;
+
+    try {
+      setDashboard(await getAdminDashboard(token));
+    } catch {
+      // Existing table data remains usable if the summary request fails.
+    }
+  }
+
   async function verifyCenter(id: number) {
     if (!token) return;
 
@@ -110,6 +160,7 @@ export function useAdminDashboard(token: string | null) {
 
     try {
       await updateCenterStatus(id, "approved", token);
+      await refreshDashboard();
       showToast("Center verified and activated.");
     } catch {
       setCenters(previousCenters);
@@ -131,6 +182,7 @@ export function useAdminDashboard(token: string | null) {
 
     try {
       await updateCenterStatus(id, "rejected", token);
+      await refreshDashboard();
       showToast("Center suspended.");
     } catch {
       setCenters(previousCenters);
@@ -146,6 +198,7 @@ export function useAdminDashboard(token: string | null) {
 
     try {
       await deleteReview(id, token);
+      await refreshDashboard();
       showToast("Review removed.");
     } catch {
       setReviews(previousReviews);
@@ -167,6 +220,7 @@ export function useAdminDashboard(token: string | null) {
 
     try {
       await cancelBooking(id, token);
+      await refreshDashboard();
       showToast("Booking cancelled.");
     } catch {
       setBookings(previousBookings);
@@ -197,9 +251,34 @@ export function useAdminDashboard(token: string | null) {
     [bookings],
   );
   const pendingCount = useMemo(
-    () => centers.filter((center) => center.status === "pending").length,
-    [centers],
+    () =>
+      dashboard?.pendingCenters ??
+      centers.filter((center) => center.status === "pending").length,
+    [centers, dashboard],
   );
+
+  async function saveProfile(data: UpdateAdminProfileInput) {
+    if (!token) return;
+
+    setIsSavingProfile(true);
+    setProfileError(null);
+
+    try {
+      const updatedProfile = await updateAdminProfile(data, token);
+      setProfile(updatedProfile);
+      showToast("Profile updated.");
+    } catch (error) {
+      const message =
+        error instanceof ZodError
+          ? error.issues[0]?.message
+          : error instanceof ApiError
+            ? error.message
+            : "Unable to update the profile.";
+      setProfileError(message ?? "Unable to update the profile.");
+    } finally {
+      setIsSavingProfile(false);
+    }
+  }
 
   return {
     activeTab,
@@ -207,10 +286,15 @@ export function useAdminDashboard(token: string | null) {
     cancelAdminBooking,
     centerQuery,
     centers,
+    dashboard,
     filteredCenters,
+    isSavingProfile,
     pendingCount,
+    profile,
+    profileError,
     removeReview,
     reviews,
+    saveProfile,
     setActiveTab,
     setCenterQuery,
     setStatusFilter,
