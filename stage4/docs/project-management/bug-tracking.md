@@ -4,7 +4,8 @@ GitHub Issues are the source of truth for all bugs.
 
 ## Issue Link
 
-- Bug tracker: [Add GitHub Issues URL filtered by the `bug` label]
+- Bug tracker: [GitHub Issues](https://github.com/laradreamer79/Portfolio-Project/issues)
+- Open pull requests: [GitHub Pull Requests](https://github.com/laradreamer79/Portfolio-Project/pulls)
 
 ## Labels
 
