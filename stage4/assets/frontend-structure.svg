@@ -1,12 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="920" viewBox="0 0 1200 920" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1020" viewBox="0 0 1200 1020" role="img" aria-labelledby="title desc">
   <title id="title">Oyster Stage 4 Frontend Project Structure</title>
   <desc id="desc">Current React frontend folder structure for the Stage 4 Oyster project.</desc>
   <defs>
     <g id="folder"><path fill="#2563eb" d="M0 3.5A2.5 2.5 0 0 1 2.5 1h5l2.1 2.4h8.9A2.5 2.5 0 0 1 21 5.9v9.6A2.5 2.5 0 0 1 18.5 18h-16A2.5 2.5 0 0 1 0 15.5z"/></g>
     <g id="file"><path fill="#94a3b8" d="M2 0h9l5 5v14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/><path fill="#f8fafc" d="M11 0v5h5z"/></g>
   </defs>
-  <rect width="1200" height="920" fill="#f8fafc"/>
-  <rect x="30" y="28" width="1140" height="864" rx="22" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+  <rect width="1200" height="1020" fill="#f8fafc"/>
+  <rect x="30" y="28" width="1140" height="964" rx="22" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
   <text x="70" y="86" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" fill="#0f172a">Frontend</text>
   <text x="70" y="119" font-family="Segoe UI, Arial, sans-serif" font-size="17" fill="#64748b">Current frontend folder structure for the Stage 4 Oyster project.</text>
   <line x1="70" y1="142" x2="1130" y2="142" stroke="#e2e8f0" stroke-width="2"/>
@@ -32,10 +32,12 @@
     <use href="#folder" x="156" y="784"/><text x="184" y="802">pages/</text>
     <use href="#folder" x="126" y="824"/><text x="154" y="842">styles/</text>
   </g>
+  <line x1="70" y1="870" x2="1130" y2="870" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="70" y="905" font-family="Segoe UI, Arial, sans-serif" font-size="17" font-weight="700" fill="#64748b">ROOT CONFIGURATION</text>
   <g font-family="Consolas, 'Courier New', monospace" font-size="18" fill="#475569">
-    <use href="#file" x="98" y="864"/><text x="124" y="882">index.html</text>
-    <use href="#file" x="300" y="864"/><text x="326" y="882">package.json</text>
-    <use href="#file" x="510" y="864"/><text x="536" y="882">vite.config.js</text>
-    <use href="#file" x="730" y="864"/><text x="756" y="882">vitest.config.ts</text>
+    <use href="#file" x="98" y="925"/><text x="124" y="943">index.html</text>
+    <use href="#file" x="390" y="925"/><text x="416" y="943">package.json</text>
+    <use href="#file" x="680" y="925"/><text x="706" y="943">vite.config.js</text>
+    <use href="#file" x="98" y="957"/><text x="124" y="975">vitest.config.ts</text>
   </g>
 </svg>
