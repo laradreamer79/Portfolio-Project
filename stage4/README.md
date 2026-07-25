@@ -214,7 +214,7 @@ current logged-in user, and protects role-specific pages and API routes.
 |---|---|
 | Backend routes and logic | `backend/src/auth/auth.routes.ts`, `auth.controller.ts`, `auth.service.ts`, `auth.validation.ts`, `auth.token.ts` |
 | Backend protection | `backend/src/middleware/auth.middleware.ts`, `role.middleware.ts` |
-| Frontend auth | `frontend/src/app/features/auth/`, `frontend/src/app/context/`, `frontend/src/app/lib/authService.ts` |
+| Frontend auth | `frontend/src/app/features/auth/`, `frontend/src/app/context/`, `frontend/src/app/hooks/useAuth.ts` |
 
 | Method | Route | Access | Purpose |
 |---|---|---|---|
