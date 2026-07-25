@@ -651,4 +651,4 @@ Sprint documentation:
 - [Team How-To Guide](docs/team-how-to-guide.md)
 - [Architecture Notes](docs/architecture.md)
 - [Production Environment](docs/deployment/production-environment.md)
-- [Mock Image Links](docs/mock-image-links.md)
+
