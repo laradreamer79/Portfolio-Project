@@ -39,6 +39,17 @@ export function CenterDetail() {
   if (error) return <div className="flex items-center justify-center h-96 text-red-500">{error}</div>;
   if (!center) return <div className="flex items-center justify-center h-96 text-slate-400">Center not found.</div>;
 
+  const reviewCount = reviews.length;
+  const centerRating =
+    reviewCount > 0
+      ? Number(
+          (
+            reviews.reduce((sum, review) => sum + review.rating, 0) /
+            reviewCount
+          ).toFixed(1),
+        )
+      : 0;
+
   return (
     <div className="bg-white min-h-screen">
       {/* Hero image */}
@@ -66,9 +77,9 @@ export function CenterDetail() {
             {/* Rating summary */}
             <div className="flex items-center gap-4 mb-6 pb-6 border-b border-slate-100">
               <div className="text-center">
-                <p className="font-display text-5xl font-bold text-slate-900">{center.rating}</p>
-                <StarRow rating={center.rating} />
-                <p className="text-xs text-slate-400 mt-1">{center.reviews} reviews</p>
+                <p className="font-display text-5xl font-bold text-slate-900">{centerRating}</p>
+                <StarRow rating={centerRating} />
+                <p className="text-xs text-slate-400 mt-1">{reviewCount} reviews</p>
               </div>
               <div className="h-16 w-px bg-slate-100" />
               <div className="flex flex-wrap gap-2">

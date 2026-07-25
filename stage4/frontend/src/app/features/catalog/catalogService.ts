@@ -29,6 +29,7 @@ export type ApiCenter = {
   imageUrl?: string | null;
   status?: string;
   createdAt?: string;
+  rating?: number | null;
   _count?: ApiCount;
   trips?: ApiTrip[];
   courses?: ApiCourse[];
@@ -156,7 +157,7 @@ export function toCenter(center: ApiCenter): Center {
     longDescription:
       center.description ?? "Explore diving experiences, courses, and trips from this diving provider.",
     priceRange: center.priceRange ?? "Contact for pricing",
-    rating: 0,
+    rating: center.rating ?? 0,
     reviews: center._count?.reviews ?? 0,
     phone: center.contactPhone ?? "Not provided",
     email: center.contactEmail ?? "Not provided",

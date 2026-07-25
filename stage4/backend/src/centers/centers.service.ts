@@ -43,6 +43,15 @@ function centerVisibilityWhere(
   };
 }
 
+function averageRating(
+  reviews: Array<{ rating: number }>,
+) {
+  if (reviews.length === 0) return 0;
+
+  const total = reviews.reduce((sum, review) => sum + review.rating, 0);
+  return Number((total / reviews.length).toFixed(1));
+}
+
 export const centersService = {
   async getAll(
     filters: CenterQueryInput & { actor?: CatalogActor },
@@ -67,7 +76,7 @@ export const centersService = {
       ...(status && status !== "all" && { status }),
     };
 
-    return prisma.divingCenter.findMany({
+    const centers = await prisma.divingCenter.findMany({
       where,
       include: {
         owner: { select: { id: true, name: true, email: true } },
@@ -75,10 +84,31 @@ export const centersService = {
       },
       orderBy: { createdAt: "desc" },
     });
+
+    if (centers.length === 0) return [];
+
+    const ratings = await prisma.review.groupBy({
+      by: ["centerId"],
+      where: {
+        centerId: { in: centers.map((center) => center.id) },
+      },
+      _avg: { rating: true },
+    });
+    const ratingByCenter = new Map(
+      ratings.map((rating) => [
+        rating.centerId,
+        Number((rating._avg.rating ?? 0).toFixed(1)),
+      ]),
+    );
+
+    return centers.map((center) => ({
+      ...center,
+      rating: ratingByCenter.get(center.id) ?? 0,
+    }));
   },
 
   async getById(id: number, actor?: CatalogActor) {
-    return prisma.divingCenter.findFirst({
+    const center = await prisma.divingCenter.findFirst({
       where: {
         id,
         ...centerVisibilityWhere(actor),
@@ -94,6 +124,13 @@ export const centersService = {
         _count: { select: { trips: true, courses: true, reviews: true } },
       },
     });
+
+    if (!center) return null;
+
+    return {
+      ...center,
+      rating: averageRating(center.reviews),
+    };
   },
 
   async create(data: {
