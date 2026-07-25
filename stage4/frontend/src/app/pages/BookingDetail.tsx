@@ -7,7 +7,6 @@ import {
   MapPin,
   Users,
   Waves,
-  X,
 } from "lucide-react";
 import { useBookingDetail } from "../features/bookings";
 import { ReviewForm, useReviewSubmission } from "../features/reviews";
@@ -35,10 +34,7 @@ export function BookingDetail() {
   const { token } = useAuth();
   const {
     booking,
-    cancelError,
     error,
-    handleCancel,
-    isCancelling,
     loading,
   } = useBookingDetail(token, id);
   const reviewTarget = booking?.trip ? "trip" : "course";
@@ -119,12 +115,6 @@ export function BookingDetail() {
               </p>
             )}
 
-            {cancelError && (
-              <div className="mb-5 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
-                {cancelError}
-              </div>
-            )}
-
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <div className="text-center p-3 bg-slate-50 rounded-xl">
                 <div className="flex justify-center text-teal-500 mb-2"><Calendar className="w-5 h-5" /></div>
@@ -166,16 +156,7 @@ export function BookingDetail() {
                 <AlertTriangle className="w-4 h-4 flex-shrink-0" />
                 This booking has been cancelled.
               </div>
-            ) : (
-              <button
-                onClick={handleCancel}
-                disabled={isCancelling}
-                className="flex items-center justify-center gap-1.5 rounded-xl border border-red-200 px-5 py-2.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 disabled:opacity-40"
-              >
-                <X className="w-3.5 h-3.5" />
-                {isCancelling ? "Cancelling..." : "Cancel Booking"}
-              </button>
-            )}
+            ) : null}
 
             {booking.status === "confirmed" && (
               <ReviewForm
