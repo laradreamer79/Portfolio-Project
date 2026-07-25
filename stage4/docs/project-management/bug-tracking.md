@@ -4,7 +4,9 @@ GitHub Issues are the source of truth for all bugs.
 
 ## Issue Link
 
-- Bug tracker: [Add GitHub Issues URL filtered by the `bug` label]
+- Bug tracker: [GitHub Issues filtered by the `bug` label](https://github.com/laradreamer79/Portfolio-Project/issues?q=is%3Aissue+label%3Abug)
+- All issues: [Repository issues](https://github.com/laradreamer79/Portfolio-Project/issues)
+- Open pull requests: [GitHub Pull Requests](https://github.com/laradreamer79/Portfolio-Project/pulls)
 
 ## Labels
 
@@ -30,7 +32,7 @@ GitHub Issues are the source of truth for all bugs.
 ## Bug Lifecycle
 
 ```text
-Open → Assigned → In Progress → Pull Request → Verified → Closed
+Open -> Assigned -> In Progress -> Pull Request -> Verified -> Closed
 ```
 
 ## Required Bug Report
@@ -60,4 +62,4 @@ Open → Assigned → In Progress → Pull Request → Verified → Closed
 
 | Issue | Priority | Owner | Sprint | Status | Fix PR |
 |---|---|---|---|---|---|
-| [Add issue] | [Priority] | [Owner] | [Sprint] | [Status] | [Add link] |
+| [Repository issues](https://github.com/laradreamer79/Portfolio-Project/issues) | Tracked per issue | Assigned in GitHub | Sprint label | GitHub status | Linked PR |
