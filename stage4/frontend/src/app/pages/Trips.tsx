@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Waves, Search } from "lucide-react";
+import { ChevronDown, Waves, Search } from "lucide-react";
 import { CITIES } from "../data";
 import {
   CATALOG_LEVELS,
@@ -35,12 +35,18 @@ export function Trips() {
               <Search className="w-4 h-4 text-slate-400" />
               <input className="flex-1 text-sm text-slate-700 placeholder-slate-400 focus:outline-none bg-transparent" placeholder="Search dive trips..." value={query} onChange={(e) => setQuery(e.target.value)} />
             </div>
-            <select className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-teal-400" value={city} onChange={(e) => setCity(e.target.value)}>
-              {CITIES.map((c) => <option key={c}>{c}</option>)}
-            </select>
-            <select className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-teal-400" value={level} onChange={(e) => setLevel(e.target.value)}>
-              {CATALOG_LEVELS.map((l) => <option key={l}>{l}</option>)}
-            </select>
+            <div className="relative">
+              <select className="appearance-none bg-slate-50 border border-slate-200 rounded-xl pl-3 pr-10 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-teal-400" value={city} onChange={(e) => setCity(e.target.value)}>
+                {CITIES.map((c) => <option key={c}>{c}</option>)}
+              </select>
+              <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            </div>
+            <div className="relative">
+              <select className="appearance-none bg-slate-50 border border-slate-200 rounded-xl pl-3 pr-10 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-teal-400" value={level} onChange={(e) => setLevel(e.target.value)}>
+                {CATALOG_LEVELS.map((l) => <option key={l}>{l}</option>)}
+              </select>
+              <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            </div>
           </div>
         </div>
       </div>
