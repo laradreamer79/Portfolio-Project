@@ -139,7 +139,9 @@ describe("trip and course listing forms", () => {
       }),
     ).toEqual({
       ok: false,
-      error: "Upload an image before publishing.",
+      errors: {
+        image: "Upload an image before publishing.",
+      },
     });
   });
 
@@ -182,9 +184,13 @@ describe("review form", () => {
       reviewSchema.safeParse({ rating: 5, comment: "Excellent trip" })
         .success,
     ).toBe(true);
-    expect(validateReview(5, "Excellent trip")).toBeNull();
-    expect(validateReview(0, "Excellent trip")).not.toBeNull();
-    expect(validateReview(5, " ")).not.toBeNull();
+    expect(validateReview(5, "Excellent trip")).toEqual({});
+    expect(validateReview(0, "Excellent trip")).toEqual({
+      rating: "Choose a rating between 1 and 5.",
+    });
+    expect(validateReview(5, " ")).toEqual({
+      comment: "Enter a review comment.",
+    });
   });
 });
 

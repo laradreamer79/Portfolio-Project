@@ -1,6 +1,11 @@
 import { useEffect, useState, type ChangeEvent } from "react";
 import type { Trip } from "../../data";
 import {
+  decimalOnly,
+  digitsOnly,
+  type FieldErrors,
+} from "../../lib/validation";
+import {
   validateListingForm,
   validateListingImage,
   type ListingForm,
@@ -75,6 +80,9 @@ export function useListingManagement({
   const [listings, setListings] = useState<Trip[]>([]);
   const [form, setForm] = useState<ListingForm>(EMPTY_FORM);
   const [postDone, setPostDone] = useState(false);
+  const [postFieldErrors, setPostFieldErrors] = useState<
+    FieldErrors<keyof ListingForm | "image">
+  >({});
   const [postError, setPostError] = useState<string | null>(null);
   const [isPosting, setIsPosting] = useState(false);
   const [image, setImage] = useState<File | null>(null);
@@ -108,9 +116,18 @@ export function useListingManagement({
         HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
       >,
     ) => {
+      setPostFieldErrors((current) => ({
+        ...current,
+        [key]: undefined,
+      }));
       setForm((current) => ({
         ...current,
-        [key]: event.target.value,
+        [key]:
+          key === "price"
+            ? decimalOnly(event.target.value)
+            : key === "slots"
+              ? digitsOnly(event.target.value)
+              : event.target.value,
       }));
     };
 
@@ -118,6 +135,7 @@ export function useListingManagement({
     setForm(EMPTY_FORM);
     setImage(null);
     setPostDone(false);
+    setPostFieldErrors({});
     setPostError(null);
     setIsPosting(false);
     setEditingListing(null);
@@ -158,6 +176,10 @@ export function useListingManagement({
   function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0] ?? null;
     setPostError(null);
+    setPostFieldErrors((current) => ({
+      ...current,
+      image: undefined,
+    }));
 
     if (!file) {
       setImage(null);
@@ -167,7 +189,10 @@ export function useListingManagement({
     const error = validateListingImage(file);
     if (error) {
       setImage(null);
-      setPostError(error);
+      setPostFieldErrors((current) => ({
+        ...current,
+        image: error,
+      }));
       event.target.value = "";
       return;
     }
@@ -183,7 +208,7 @@ export function useListingManagement({
     });
 
     if (!validation.ok) {
-      setPostError(validation.error);
+      setPostFieldErrors(validation.errors);
       return;
     }
 
@@ -195,6 +220,7 @@ export function useListingManagement({
     }
 
     setIsPosting(true);
+    setPostFieldErrors({});
     setPostError(null);
 
     try {
@@ -331,6 +357,7 @@ export function useListingManagement({
     openCreateModal,
     openEditModal,
     postDone,
+    postFieldErrors,
     postError,
     setFormField,
     showPostModal,

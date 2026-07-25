@@ -79,6 +79,44 @@ export function firstZodError(error: z.ZodError) {
   return error.issues[0]?.message ?? "Enter valid information.";
 }
 
+export type FieldErrors<Field extends string = string> = Partial<
+  Record<Field, string>
+>;
+
+export function zodFieldErrors<Field extends string = string>(
+  error: z.ZodError,
+): FieldErrors<Field> {
+  const errors: FieldErrors<Field> = {};
+
+  for (const issue of error.issues) {
+    const field = issue.path[0];
+    if (typeof field !== "string" || errors[field as Field]) continue;
+    errors[field as Field] = issue.message;
+  }
+
+  return errors;
+}
+
+export function hasFieldErrors(errors: FieldErrors) {
+  return Object.keys(errors).length > 0;
+}
+
+export function digitsOnly(value: string, maxLength?: number) {
+  const digits = value.replace(/[^0-9]/g, "");
+  return maxLength === undefined ? digits : digits.slice(0, maxLength);
+}
+
+export function decimalOnly(value: string) {
+  const sanitized = value.replace(/[^0-9.]/g, "");
+  const decimalIndex = sanitized.indexOf(".");
+
+  if (decimalIndex === -1) return sanitized;
+
+  return `${sanitized.slice(0, decimalIndex + 1)}${sanitized
+    .slice(decimalIndex + 1)
+    .replace(/\./g, "")}`;
+}
+
 export function todayInputValue() {
   const today = new Date();
   const localDate = new Date(
