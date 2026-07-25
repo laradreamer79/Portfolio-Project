@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { MapPin, Star, Shield, Phone, Mail, Clock, Waves, Users, ArrowRight, ChevronLeft, Calendar } from "lucide-react";
+import { MapPin, Star, Phone, Mail, Clock, Waves, Users, ArrowRight, ChevronLeft, Calendar } from "lucide-react";
 import { useCenterDetail } from "../features/catalog";
 import { ReviewForm, useReviewSubmission } from "../features/reviews";
 import { useAuth } from "../hooks/useAuth";
@@ -48,11 +48,6 @@ export function CenterDetail() {
         <button onClick={() => navigate("/centers")} className="absolute top-6 left-6 flex items-center gap-1.5 text-white/80 hover:text-white bg-black/30 backdrop-blur rounded-xl px-3 py-2 text-sm transition-colors">
           <ChevronLeft className="w-4 h-4" /> All Centers
         </button>
-        {center.verified && (
-          <div className="absolute top-6 right-6 bg-teal-500 text-white text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow">
-            <Shield className="w-3.5 h-3.5" /> Verified Center
-          </div>
-        )}
         <div className="absolute bottom-6 left-6">
           <h1 className="font-display text-4xl md:text-5xl font-bold text-white tracking-wide">{center.name}</h1>
           <p className="text-white/70 flex items-center gap-1 mt-1"><MapPin className="w-4 h-4 text-teal-400" />{center.address}</p>
@@ -194,9 +189,6 @@ export function CenterDetail() {
                 <p>Operating since <span className="font-semibold text-slate-700">{center.since}</span></p>
                 <p>Price range: <span className="font-semibold text-slate-700">{center.priceRange}</span></p>
               </div>
-              <button onClick={() => trips[0] && navigate(`/booking/${trips[0].type}/${trips[0].id}`)} className="w-full mt-5 bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors text-sm">
-                Book a Trip →
-              </button>
             </div>
           </div>
         </div>
