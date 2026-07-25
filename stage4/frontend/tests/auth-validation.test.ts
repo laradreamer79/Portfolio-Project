@@ -6,6 +6,8 @@ import {
   validateRegisterForm,
   type RegisterFormState,
 } from "../src/app/features/auth/authValidation";
+import { registrationConflictErrors } from "../src/app/features/auth/authService";
+import { ApiError } from "../src/app/lib/apiClient";
 
 const emptyRoleFields = {
   instructorLicenseNumber: "",
@@ -129,6 +131,51 @@ describe("registration form", () => {
       name: "Enter a name using at least two letters.",
       email: "Enter a valid email address.",
       phone: "Phone number must contain 10 digits and start with 05.",
+    });
+  });
+
+  it("maps duplicate license conflicts to the active role field", () => {
+    expect(
+      registrationConflictErrors(
+        new ApiError(
+          "Instructor license number already exists",
+          409,
+          { field: "instructorLicenseNumber" },
+        ),
+        "instructor",
+      ),
+    ).toEqual({
+      instructorLicenseNumber:
+        "Instructor license number already exists",
+    });
+
+    expect(
+      registrationConflictErrors(
+        new ApiError("Diving center license number already exists", 409),
+        "diving_center",
+      ),
+    ).toEqual({
+      centerLicenseNumber:
+        "Diving center license number already exists",
+    });
+  });
+
+  it("returns duplicate email and license errors together", () => {
+    expect(
+      registrationConflictErrors(
+        new ApiError("Email already exists", 409, {
+          fieldErrors: {
+            email: "Email already exists",
+            centerLicenseNumber:
+              "Diving center license number already exists",
+          },
+        }),
+        "diving_center",
+      ),
+    ).toEqual({
+      email: "Email already exists",
+      centerLicenseNumber:
+        "Diving center license number already exists",
     });
   });
 });

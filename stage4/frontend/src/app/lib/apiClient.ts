@@ -3,13 +3,13 @@ const API_BASE_URL =
 
 export class ApiError extends Error {
   status: number;
-  errors?: unknown;
+  details?: unknown;
 
-  constructor(message: string, status: number, errors?: unknown) {
+  constructor(message: string, status: number, details?: unknown) {
     super(message);
     this.name = "ApiError";
     this.status = status;
-    this.errors = errors;
+    this.details = details;
   }
 }
 
@@ -31,6 +31,11 @@ function errorMessage(payload: unknown): string {
 
   return data.errors?.[0]?.message ?? data.message ??
     "Something went wrong. Please try again.";
+}
+
+function errorDetails(payload: unknown): unknown {
+  if (!payload || typeof payload !== "object") return undefined;
+  return (payload as { details?: unknown }).details;
 }
 
 export async function apiRequest<T>(
@@ -62,7 +67,11 @@ export async function apiRequest<T>(
       : null;
 
     if (!response.ok) {
-      throw new ApiError(errorMessage(payload), response.status);
+      throw new ApiError(
+        errorMessage(payload),
+        response.status,
+        errorDetails(payload),
+      );
     }
 
     return payload as T;
