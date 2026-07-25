@@ -2,9 +2,10 @@
 
 ## Repository
 
-- Repository URL: [Add GitHub repository URL]
+- Repository URL: [laradreamer79/Portfolio-Project](https://github.com/laradreamer79/Portfolio-Project)
 - Primary integration branch: `develop`
-- Production branch: `main`
+- Release branch: `main`
+- Current Render deployment branch: `develop`
 
 ## Branching Strategy
 
@@ -50,6 +51,7 @@ chore(database): configure Prisma
 
 | Pull Request | Scope | Sprint | Status |
 |---|---|---|---|
-| [Add link] | Frontend UI pages | Sprint 1 | Merged |
-| [Add link] | Express TypeScript structure | Sprint 2 | Merged |
-| [Add link] | Prisma and User model | Sprint 2 | In Review |
+| [PR #131](https://github.com/laradreamer79/Portfolio-Project/pull/131) | Frontend and backend validation test coverage | Sprint 4 | Merged |
+| [PR #132](https://github.com/laradreamer79/Portfolio-Project/pull/132) | Booking phone autofill and CVV validation | Sprint 4 | Merged |
+| [PR #133](https://github.com/laradreamer79/Portfolio-Project/pull/133) | Restrict booking creation to customer accounts | Sprint 4 | Merged |
+| [PR #134](https://github.com/laradreamer79/Portfolio-Project/pull/134) | Persist phone numbers during account registration | Sprint 4 | Merged |
