@@ -14,6 +14,7 @@ how each feature was tested.
 - [Tech Stack](#tech-stack)
 - [Run the Project](#run-the-project)
 - [Project Structure](#project-structure)
+- [Project Delivery Evidence](#project-delivery-evidence)
 - [Feature Documentation](#feature-documentation)
 - [Testing and Quality](#testing-and-quality)
 - [Project Management Links](#project-management-links)
@@ -34,6 +35,18 @@ how each feature was tested.
 | Seed data | Done | Development users, one diving center, one trip, and one course |
 | Testing documentation | Done | Test plan, sprint results, Postman guide, and evidence notes |
 
+## Project Delivery Evidence
+
+| Evidence | Documentation |
+|---|---|
+| Sprint planning | [Sprint 1](docs/project-management/sprint-01/planning.md) · [Sprint 2](docs/project-management/sprint-02/planning.md) · [Sprint 3](docs/project-management/sprint-03/planning.md) · [Sprint 4](docs/project-management/sprint-04/planning.md) |
+| Sprint reviews | [Sprint 1](docs/project-management/sprint-01/review.md) · [Sprint 2](docs/project-management/sprint-02/review.md) · [Sprint 3](docs/project-management/sprint-03/review.md) · [Sprint 4](docs/project-management/sprint-04/review.md) |
+| Retrospectives | [Sprint 1](docs/project-management/sprint-01/retrospective.md) · [Sprint 2](docs/project-management/sprint-02/retrospective.md) · [Sprint 3](docs/project-management/sprint-03/retrospective.md) · [Sprint 4](docs/project-management/sprint-04/retrospective.md) |
+| Source repository | [Repository workflow](docs/project-management/source-repository.md) · [Pull requests](https://github.com/laradreamer79/Portfolio-Project/pulls) · [develop history](https://github.com/laradreamer79/Portfolio-Project/commits/develop) |
+| Bug tracking | [Bug process](docs/project-management/bug-tracking.md) · [GitHub Issues](https://github.com/laradreamer79/Portfolio-Project/issues) |
+| Testing evidence and results | [Test plan](docs/testing/test-plan.md) · [Evidence index](docs/testing/evidence/README.md) · [GitHub Actions](https://github.com/laradreamer79/Portfolio-Project/actions) |
+| Production environment | [Deployment configuration and verification](docs/deployment/production-environment.md) · [Frontend](https://zeroyster.onrender.com) · [API health](https://oyster-kwn3.onrender.com/api/health) |
+
 ## Tech Stack
 
 | Layer | Technology |
@@ -51,14 +64,14 @@ how each feature was tested.
 Start Docker and the database:
 
 ```bash
-cd stage4/Backend
+cd stage4/backend
 docker compose up -d
 ```
 
 Start the backend API:
 
 ```bash
-cd stage4/Backend
+cd stage4/backend
 npm install
 npm run dev
 ```
@@ -66,7 +79,7 @@ npm run dev
 Start the frontend:
 
 ```bash
-cd stage4/Frontend
+cd stage4/frontend
 npm install
 npm run dev
 ```
@@ -78,12 +91,12 @@ Useful local URLs:
 | Frontend | `http://localhost:5173` |
 | Backend API | `http://localhost:3000` |
 | Health check | `http://localhost:3000/api/health` |
-| Prisma Studio | Run `npx prisma studio` from `stage4/Backend` |
+| Prisma Studio | Run `npx prisma studio` from `stage4/backend` |
 
 Seed the database:
 
 ```bash
-cd stage4/Backend
+cd stage4/backend
 npm run seed
 ```
 
@@ -112,7 +125,7 @@ and show the current Stage 4 layout.
 ### Backend
 
 ```text
-stage4/Backend
+stage4/backend
 |-- prisma/
 |   |-- schema.prisma
 |   |-- seed.ts
@@ -145,7 +158,7 @@ stage4/Backend
 ### Frontend
 
 ```text
-stage4/Frontend
+stage4/frontend
 |-- src/
 |   |-- app/
 |   |   |-- components/
@@ -199,9 +212,9 @@ current logged-in user, and protects role-specific pages and API routes.
 
 | Area | Important Files |
 |---|---|
-| Backend routes and logic | `Backend/src/auth/auth.routes.ts`, `auth.controller.ts`, `auth.service.ts`, `auth.validation.ts`, `auth.token.ts` |
-| Backend protection | `Backend/src/middleware/auth.middleware.ts`, `role.middleware.ts` |
-| Frontend auth | `Frontend/src/app/features/auth/`, `Frontend/src/app/context/`, `Frontend/src/app/lib/authService.ts` |
+| Backend routes and logic | `backend/src/auth/auth.routes.ts`, `auth.controller.ts`, `auth.service.ts`, `auth.validation.ts`, `auth.token.ts` |
+| Backend protection | `backend/src/middleware/auth.middleware.ts`, `role.middleware.ts` |
+| Frontend auth | `frontend/src/app/features/auth/`, `frontend/src/app/context/`, `frontend/src/app/lib/authService.ts` |
 
 | Method | Route | Access | Purpose |
 |---|---|---|---|
@@ -233,9 +246,9 @@ owners or admins to manage center data.
 
 | Area | Important Files |
 |---|---|
-| Backend | `Backend/src/centers/centers.routes.ts`, `centers.controller.ts`, `centers.service.ts`, `centers.validation.ts` |
-| Shared catalog helpers | `Backend/src/common/catalog/`, `Backend/src/common/constants/diving-cities.ts` |
-| Frontend | `Frontend/src/app/pages/Centers.tsx`, `CenterDetail.tsx`, `Frontend/src/app/features/catalog/` |
+| Backend | `backend/src/centers/centers.routes.ts`, `centers.controller.ts`, `centers.service.ts`, `centers.validation.ts` |
+| Shared catalog helpers | `backend/src/common/catalog/`, `backend/src/common/constants/diving-cities.ts` |
+| Frontend | `frontend/src/app/pages/Centers.tsx`, `CenterDetail.tsx`, `frontend/src/app/features/catalog/` |
 
 | Method | Route | Access | Purpose |
 |---|---|---|---|
@@ -271,10 +284,10 @@ management for diving centers and instructors.
 
 | Area | Important Files |
 |---|---|
-| Backend | `Backend/src/trips/` |
-| Ownership helpers | `Backend/src/common/catalog/catalog-ownership.ts` |
-| Validation helpers | `Backend/src/common/catalog/catalog-validation.ts` |
-| Frontend | `Frontend/src/app/pages/Trips.tsx`, `TripDetail.tsx`, `Frontend/src/app/features/catalog/` |
+| Backend | `backend/src/trips/` |
+| Ownership helpers | `backend/src/common/catalog/catalog-ownership.ts` |
+| Validation helpers | `backend/src/common/catalog/catalog-validation.ts` |
+| Frontend | `frontend/src/app/pages/Trips.tsx`, `TripDetail.tsx`, `frontend/src/app/features/catalog/` |
 
 | Method | Route | Access | Purpose |
 |---|---|---|---|
@@ -311,9 +324,9 @@ management for diving centers and instructors.
 
 | Area | Important Files |
 |---|---|
-| Backend | `Backend/src/courses/` |
-| Ownership helpers | `Backend/src/common/catalog/catalog-ownership.ts` |
-| Frontend | `Frontend/src/app/pages/Courses.tsx`, `CourseDetail.tsx`, `Frontend/src/app/features/catalog/` |
+| Backend | `backend/src/courses/` |
+| Ownership helpers | `backend/src/common/catalog/catalog-ownership.ts` |
+| Frontend | `frontend/src/app/pages/Courses.tsx`, `CourseDetail.tsx`, `frontend/src/app/features/catalog/` |
 
 | Method | Route | Access | Purpose |
 |---|---|---|---|
@@ -348,10 +361,10 @@ courses from dashboard pages.
 
 | Area | Important Files |
 |---|---|
-| Center dashboard | `Frontend/src/app/pages/CenterDashboard.tsx`, `Frontend/src/app/features/center-dashboard/` |
-| Instructor dashboard | `Frontend/src/app/pages/InstructorDashboard.tsx`, `Frontend/src/app/features/instructor-dashboard/` |
-| Listing forms | `Frontend/src/app/features/listing-management/` |
-| Backend catalog APIs | `Backend/src/trips/`, `Backend/src/courses/`, `Backend/src/common/catalog/` |
+| Center dashboard | `frontend/src/app/pages/CenterDashboard.tsx`, `frontend/src/app/features/center-dashboard/` |
+| Instructor dashboard | `frontend/src/app/pages/InstructorDashboard.tsx`, `frontend/src/app/features/instructor-dashboard/` |
+| Listing forms | `frontend/src/app/features/listing-management/` |
+| Backend catalog APIs | `backend/src/trips/`, `backend/src/courses/`, `backend/src/common/catalog/` |
 
 | Validation or Rule | Details |
 |---|---|
@@ -375,9 +388,9 @@ Handles center and listing images when provided and uploads them to Cloudinary.
 
 | Area | Important Files |
 |---|---|
-| Upload middleware | `Backend/src/middleware/upload.middleware.ts` |
-| Cloudinary config | `Backend/src/config/cloudinary.ts` |
-| Listing forms | `Frontend/src/app/features/listing-management/` |
+| Upload middleware | `backend/src/middleware/upload.middleware.ts` |
+| Cloudinary config | `backend/src/config/cloudinary.ts` |
+| Listing forms | `frontend/src/app/features/listing-management/` |
 
 | Validation or Rule | Details |
 |---|---|
@@ -401,8 +414,8 @@ their own bookings, and lets admins list bookings.
 
 | Area | Important Files |
 |---|---|
-| Backend | `Backend/src/bookings/` |
-| Frontend | `Frontend/src/app/features/bookings/`, `Frontend/src/app/pages/Booking.tsx`, `BookingDetail.tsx` |
+| Backend | `backend/src/bookings/` |
+| Frontend | `frontend/src/app/features/bookings/`, `frontend/src/app/pages/Booking.tsx`, `BookingDetail.tsx` |
 
 | Method | Route | Access | Purpose |
 |---|---|---|---|
@@ -433,9 +446,9 @@ course. Admins can manage review records.
 
 | Area | Important Files |
 |---|---|
-| Backend | `Backend/src/reviews/` |
-| Frontend | `Frontend/src/app/features/reviews/` |
-| Admin UI | `Frontend/src/app/features/admin-dashboard/` |
+| Backend | `backend/src/reviews/` |
+| Frontend | `frontend/src/app/features/reviews/` |
+| Admin UI | `frontend/src/app/features/admin-dashboard/` |
 
 | Method | Route | Access | Purpose |
 |---|---|---|---|
@@ -469,9 +482,9 @@ mode for local testing, and webhook handling.
 
 | Area | Important Files |
 |---|---|
-| Backend | `Backend/src/payments/` |
-| Payment gateway | `Backend/src/payments/moyasar.gateway.ts` |
-| Frontend | `Frontend/src/app/features/payments/`, `Frontend/src/app/pages/PaymentCallback.tsx` |
+| Backend | `backend/src/payments/` |
+| Payment gateway | `backend/src/payments/moyasar.gateway.ts` |
+| Frontend | `frontend/src/app/features/payments/`, `frontend/src/app/pages/PaymentCallback.tsx` |
 
 | Method | Route | Access | Purpose |
 |---|---|---|---|
@@ -503,8 +516,8 @@ reviews, bookings, payments, and dashboard statistics.
 
 | Area | Important Files |
 |---|---|
-| Backend | `Backend/src/admin/`, `Backend/src/middleware/role.middleware.ts` |
-| Frontend | `Frontend/src/app/pages/AdminDashboard.tsx`, `Frontend/src/app/features/admin-dashboard/` |
+| Backend | `backend/src/admin/`, `backend/src/middleware/role.middleware.ts` |
+| Frontend | `frontend/src/app/pages/AdminDashboard.tsx`, `frontend/src/app/features/admin-dashboard/` |
 
 | Method | Route | Access | Purpose |
 |---|---|---|---|
@@ -536,8 +549,8 @@ in Prisma Studio.
 
 | Area | Important Files |
 |---|---|
-| Prisma seed | `Backend/prisma/seed.ts` |
-| Schema | `Backend/prisma/schema.prisma` |
+| Prisma seed | `backend/prisma/seed.ts` |
+| Schema | `backend/prisma/schema.prisma` |
 
 | Seed Data | Purpose |
 |---|---|
@@ -563,9 +576,9 @@ validation failures, authorization failures, and unexpected server errors.
 
 | Area | Important Files |
 |---|---|
-| App setup | `Backend/src/app.ts`, `Backend/src/server.ts` |
-| Health | `Backend/src/health/` |
-| Errors | `Backend/src/middleware/error.middleware.ts`, `not-found.middleware.ts`, `Backend/src/utils/http-error.ts` |
+| App setup | `backend/src/app.ts`, `backend/src/server.ts` |
+| Health | `backend/src/health/` |
+| Errors | `backend/src/middleware/error.middleware.ts`, `not-found.middleware.ts`, `backend/src/utils/http-error.ts` |
 
 | Method | Route | Access | Purpose |
 |---|---|---|---|
@@ -593,11 +606,11 @@ validation failures, authorization failures, and unexpected server errors.
 Recommended verification before opening a pull request:
 
 ```bash
-cd stage4/Backend
+cd stage4/backend
 npm run typecheck
 npm run build
 
-cd ../Frontend
+cd ../frontend
 npm run typecheck
 npm run build
 ```

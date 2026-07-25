@@ -2,9 +2,10 @@
 
 ## Repository
 
-- Repository URL: [Portfolio-Project](https://github.com/laradreamer79/Portfolio-Project)
+- Repository URL: [laradreamer79/Portfolio-Project](https://github.com/laradreamer79/Portfolio-Project)
 - Primary integration branch: `develop`
-- Production branch: `main`
+- Release branch: `main`
+- Current Render deployment branch: `develop`
 
 ## Branching Strategy
 
@@ -55,3 +56,12 @@ chore(database): configure Prisma
 | Merged pull requests | [Merged pull requests](https://github.com/laradreamer79/Portfolio-Project/pulls?q=is%3Apr+is%3Amerged) |
 | Issues | [Repository issues](https://github.com/laradreamer79/Portfolio-Project/issues) |
 | Project boards | [Repository projects](https://github.com/laradreamer79/Portfolio-Project/projects) |
+
+### Sprint 4 Delivery Pull Requests
+
+| Pull Request | Scope | Sprint | Status |
+|---|---|---|---|
+| [PR #131](https://github.com/laradreamer79/Portfolio-Project/pull/131) | Frontend and backend validation test coverage | Sprint 4 | Merged |
+| [PR #132](https://github.com/laradreamer79/Portfolio-Project/pull/132) | Booking phone autofill and CVV validation | Sprint 4 | Merged |
+| [PR #133](https://github.com/laradreamer79/Portfolio-Project/pull/133) | Restrict booking creation to customer accounts | Sprint 4 | Merged |
+| [PR #134](https://github.com/laradreamer79/Portfolio-Project/pull/134) | Persist phone numbers during account registration | Sprint 4 | Merged |
