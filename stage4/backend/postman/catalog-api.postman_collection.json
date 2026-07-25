@@ -1,0 +1,473 @@
+{
+  "info": {
+    "name": "Oyster Catalog API",
+    "description": "Postman tests for diving centers, trips, courses, search, filters, details, CRUD, and image uploads.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Diving Centers",
+      "item": [
+        {
+          "name": "List centers with search and filters",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('returns an array', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/centers?search=sea&city=Jeddah&status=approved",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "centers"],
+              "query": [
+                { "key": "search", "value": "sea" },
+                { "key": "city", "value": "Jeddah" },
+                { "key": "status", "value": "approved" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create center with image",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('returns 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('stores center id', function () { pm.collectionVariables.set('centerId', pm.response.json().id); });",
+                  "pm.test('has image url when file is sent', function () { pm.expect(pm.response.json()).to.have.property('imageUrl'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "Blue Lagoon Diving Center", "type": "text" },
+                { "key": "city", "value": "Jeddah", "type": "text" },
+                { "key": "address", "value": "North Obhur", "type": "text" },
+                { "key": "licenseNumber", "value": "LIC-POSTMAN-{{$timestamp}}", "type": "text" },
+                { "key": "description", "value": "Catalog API test center", "type": "text" },
+                { "key": "priceRange", "value": "250-700 SAR", "type": "text" },
+                { "key": "contactEmail", "value": "catalog@example.com", "type": "text" },
+                { "key": "contactPhone", "value": "+966500000001", "type": "text" },
+                { "key": "image", "type": "file", "src": "" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/centers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "centers"]
+            }
+          }
+        },
+        {
+          "name": "Get center detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('includes related counts', function () { pm.expect(pm.response.json()).to.have.property('_count'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/centers/{{centerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "centers", "{{centerId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update center",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('updates name', function () { pm.expect(pm.response.json().name).to.include('Updated'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "PUT",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "Updated Blue Lagoon Diving Center", "type": "text" },
+                { "key": "city", "value": "Jeddah", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/centers/{{centerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "centers", "{{centerId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Trips",
+      "item": [
+        {
+          "name": "List trips with search and filters",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('returns an array', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/trips?search=reef&city=Jeddah&difficulty=beginner&minPrice=0&maxPrice=500&status=approved",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "trips"],
+              "query": [
+                { "key": "search", "value": "reef" },
+                { "key": "city", "value": "Jeddah" },
+                { "key": "difficulty", "value": "beginner" },
+                { "key": "minPrice", "value": "0" },
+                { "key": "maxPrice", "value": "500" },
+                { "key": "status", "value": "approved" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create trip",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('returns 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('stores trip id', function () { pm.collectionVariables.set('tripId', pm.response.json().id); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "title", "value": "Postman Reef Trip", "type": "text" },
+                { "key": "description", "value": "Created by Postman catalog tests", "type": "text" },
+                { "key": "durationHours", "value": "3", "type": "text" },
+                { "key": "difficultyLevel", "value": "beginner", "type": "text" },
+                { "key": "pricePerPerson", "value": "350", "type": "text" },
+                { "key": "maxCapacity", "value": "8", "type": "text" },
+                { "key": "scheduleDate", "value": "2026-09-15T09:00:00.000Z", "type": "text" },
+                { "key": "centerId", "value": "{{centerId}}", "type": "text" },
+                { "key": "image", "type": "file", "src": "" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/trips",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "trips"]
+            }
+          }
+        },
+        {
+          "name": "Get trip detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('includes center', function () { pm.expect(pm.response.json()).to.have.property('center'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/trips/{{tripId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "trips", "{{tripId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update trip",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('updates capacity', function () { pm.expect(pm.response.json().maxCapacity).to.eql(10); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "PUT",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "maxCapacity", "value": "10", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/trips/{{tripId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "trips", "{{tripId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete trip",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('returns success message', function () { pm.expect(pm.response.json()).to.have.property('message'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }] },
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/trips/{{tripId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "trips", "{{tripId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Courses",
+      "item": [
+        {
+          "name": "List courses with search and filters",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('returns an array', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/courses?search=water&city=Jeddah&level=beginner&minPrice=0&maxPrice=2500&status=approved",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "courses"],
+              "query": [
+                { "key": "search", "value": "water" },
+                { "key": "city", "value": "Jeddah" },
+                { "key": "level", "value": "beginner" },
+                { "key": "minPrice", "value": "0" },
+                { "key": "maxPrice", "value": "2500" },
+                { "key": "status", "value": "approved" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create course",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('returns 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('stores course id', function () { pm.collectionVariables.set('courseId', pm.response.json().id); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "title", "value": "Postman Open Water", "type": "text" },
+                { "key": "description", "value": "Created by Postman catalog tests", "type": "text" },
+                { "key": "level", "value": "beginner", "type": "text" },
+                { "key": "price", "value": "1800", "type": "text" },
+                { "key": "startDate", "value": "2026-09-20T09:00:00.000Z", "type": "text" },
+                { "key": "centerId", "value": "{{centerId}}", "type": "text" },
+                { "key": "image", "type": "file", "src": "" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/courses",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "courses"]
+            }
+          }
+        },
+        {
+          "name": "Get course detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('includes center', function () { pm.expect(pm.response.json()).to.have.property('center'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{courseId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "courses", "{{courseId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update course",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('updates price', function () { pm.expect(Number(pm.response.json().price)).to.eql(1900); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "PUT",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "price", "value": "1900", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{courseId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "courses", "{{courseId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete course",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('returns success message', function () { pm.expect(pm.response.json()).to.have.property('message'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }] },
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{courseId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "courses", "{{courseId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cleanup",
+      "item": [
+        {
+          "name": "Delete center",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('returns success message', function () { pm.expect(pm.response.json()).to.have.property('message'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }] },
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/centers/{{centerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "centers", "{{centerId}}"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "token", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "centerId", "value": "1" },
+    { "key": "tripId", "value": "1" },
+    { "key": "courseId", "value": "1" }
+  ]
+}

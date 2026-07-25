@@ -119,7 +119,7 @@ flowchart TB
 | **Database** | PostgreSQL | Stores all application data: users, diving centers, trips, bookings, and reviews. Uses relational tables with foreign key constraints to enforce data integrity. |
 | **Auth Layer** | JWT (JSON Web Tokens) | Manages stateless authentication. Issues tokens on login, verifies identity on protected routes. Supports 3 roles: Diver, Diving Center, Admin. |
 | **Image Storage** | Cloudinary | Stores and serves images for diving centers and trips. Provides CDN delivery and automatic optimization. |
-| **Payment Gateway** | Moyasar / Stripe | Processes online payments for bookings securely. Handles payment confirmation and links it to the corresponding booking record. |
+| **Payment Gateway** | Moyasar | Processes online payments for bookings securely. Handles payment confirmation and links it to the corresponding booking record. |
 
 ### Data Flow
 
@@ -276,7 +276,7 @@ class Booking {
     numberOfPeople int
     totalPrice decimal
     status string
-    paymentIntentId string
+    paymentId string
     createdAt datetime
 
     +confirmPayment() void
@@ -290,7 +290,7 @@ class Payment {
     amount decimal
     status string
     paymentMethod string
-    stripePaymentId string
+    moyasarPaymentId string
     createdAt datetime
 
     +processPayment() void
@@ -424,7 +424,7 @@ Access and permissions are controlled using the role attribute:
 | numberOfPeople : int | Participants |
 | totalPrice : decimal | Total price |
 | status : string | pending, confirmed, cancelled |
-| paymentIntentId : string | Stripe payment ID |
+| paymentId : string | Moyasar payment ID |
 | createdAt : datetime | Timestamp |
 | confirmPayment() | Confirm booking |
 | cancel() | Cancel booking |
@@ -439,7 +439,7 @@ Access and permissions are controlled using the role attribute:
 | amount : decimal | Amount |
 | status : string | Payment status |
 | paymentMethod : string | Payment method |
-| stripePaymentId : string | Stripe transaction |
+| moyasarPaymentId : string | Moyasar transaction |
 | createdAt : datetime | Timestamp |
 | processPayment() | Process payment |
 | refund() | Refund payment |
@@ -519,7 +519,7 @@ bookings {
     INT number_of_people
     DECIMAL total_price
     ENUM status
-    VARCHAR payment_intent_id
+    VARCHAR payment_id
     TIMESTAMP created_at
 }
 
@@ -529,7 +529,7 @@ payments {
     DECIMAL amount
     VARCHAR status
     VARCHAR payment_method
-    VARCHAR stripe_payment_id
+    VARCHAR moyasar_payment_id
     TIMESTAMP created_at
 }
 
@@ -641,7 +641,7 @@ bookings ||--o| payments : has
 | number_of_people | INT | CHECK > 0 | Participants |
 | total_price | DECIMAL(10,2) | CHECK >= 0 | Total cost |
 | status | ENUM | DEFAULT 'pending' | Booking status |
-| payment_intent_id | VARCHAR(255) | NULLABLE | Stripe ID |
+| payment_id | VARCHAR(255) | NULLABLE | Moyasar payment ID |
 | created_at | TIMESTAMP | DEFAULT NOW() | Booking timestamp |
 
 ### Additional Constraint
@@ -667,7 +667,7 @@ Ensures a booking belongs to either a trip or a course, but not both.
 | amount | DECIMAL(10,2) | CHECK >= 0 | Amount paid |
 | status | VARCHAR(20) | NOT NULL | pending, succeeded, failed, refunded |
 | payment_method | VARCHAR(50) | NOT NULL | Payment method |
-| stripe_payment_id | VARCHAR(255) | UNIQUE | Stripe transaction ID |
+| moyasar_payment_id | VARCHAR(255) | UNIQUE | Moyasar transaction ID |
 | created_at | TIMESTAMP | DEFAULT NOW() | Payment timestamp |
 
 ---
@@ -705,20 +705,25 @@ Prevents duplicate reviews for the same course.
 | Component | Route / Page | Responsibility |
 |------------|------------|------------|
 | Navbar | Global | Navigation and user menu |
+| Footer | Global | Shared platform, exploration, and operator links |
+| CenterCard | Reusable | Displays a diving center in featured and catalog layouts |
+| ExperienceCard | Reusable | Displays trips and courses in featured and catalog layouts |
 | HomePage | / | Hero section, featured trips, statistics, and platform overview |
 | CenterList | /centers | Browse diving centers with city and rating filters |
 | CenterDetails | /centers/:id | Center details, gallery, trips, courses, and reviews |
 | TripsList | /trips | Browse all diving trips with filters and search |
 | TripDetail | /trips/:id | Trip details, reviews, availability, and similar trips |
 | CoursesList | /courses | Browse all diving courses with filters |
+| CourseDetail | /courses/:id | Course details, requirements, availability, and enrollment |
 | AboutPage | /about | Platform information, mission, and team |
 | BookingForm | /booking/:tripId | Create a booking for a selected trip |
 | AuthPage | /auth | User login and registration |
-| PaymentModal | Global | Stripe payment processing popup |
-| ReviewForm | /centers/:id/review | Submit reviews for centers, trips, or courses |
+| PaymentStep | /booking/:tripId | Embedded Moyasar payment step within the booking flow |
+| ReviewForm | /centers/:id | Embedded review form within the center details page |
 | UserDashboard | /dashboard | User bookings, payments, and history |
-| CenterDashboard | /dashboard | Diving center management dashboard |
+| CenterDashboard | /center/dashboard | Diving center management dashboard |
 | AdminPanel | /admin | Manage users, centers, trips, courses, and reviews |
+| NotFoundPage | * | Handles unknown frontend routes |
 | ProtectedRoute | Wrapper | Authentication and authorization guard |
 
 ---
@@ -736,7 +741,7 @@ Prevents duplicate reviews for the same course.
 | UNIQUE (user_id, trip_id) | Prevents duplicate trip reviews |
 | UNIQUE (user_id, course_id) | Prevents duplicate course reviews |
 | One-to-zero-or-one Booking–Payment | Booking may exist before payment |
-| Stripe IDs | Supports secure payment processing and refunds |
+| Moyasar payment IDs | Supports secure payment processing and refunds |
 | Separate Trip and Course tables | Improves scalability and maintainability |
 | Instructor Assignment | Allows instructors to manage trips and courses |
 | Owner Relationship | Links diving centers to their owners clearly |
@@ -928,7 +933,7 @@ The backend exposes RESTful API endpoints that allow the frontend to communicate
 
 | Route | Page | Responsibility |
 |---------|------|---------------|
-| `/dashboard` | Center Dashboard | Allows diving center owners to manage bookings, trips, courses, and center information. |
+| `/center/dashboard` | Center Dashboard | Allows diving center owners to manage bookings, trips, courses, and center information. |
 
 ##### Get Center Dashboard Data
 
