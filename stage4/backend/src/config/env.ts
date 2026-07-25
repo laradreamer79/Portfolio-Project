@@ -2,7 +2,7 @@ const DEFAULT_PORT = 3000;
 const DEFAULT_MOYASAR_BASE_URL =
   "https://api.moyasar.com/v1";
 const DEFAULT_PAYMENT_CALLBACK_URL =
-  "http://localhost:5173/payment/callback";
+  "http://localhost:5173/payments/callback";
 
 function getPort(value: string | undefined): number {
   if (!value) {
@@ -52,7 +52,4 @@ export const env = {
 
   moyasarWebhookSecret:
     getOptionalEnv("MOYASAR_WEBHOOK_SECRET"),
-
-  moyasarPublishableKey:
-    getOptionalEnv("MOYASAR_PUBLISHABLE_KEY"),
 };

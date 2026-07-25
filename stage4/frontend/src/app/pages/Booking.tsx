@@ -188,7 +188,7 @@ export function Booking() {
                 </div>
                 <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-50 rounded-xl p-3 border border-slate-100">
                   <Lock className="w-3.5 h-3.5" />
-                  Demo payment form — card details are not sent from this form. Confirming creates a real booking and payment record.
+                  Card details are securely tokenized by Moyasar and are never sent to Oyster.
                 </div>
                 <div className="flex gap-3">
                   <button onClick={() => setStep("details")} disabled={isSubmitting} className="flex-1 border border-slate-200 text-slate-500 font-medium py-3 rounded-xl hover:border-slate-300 transition-colors text-sm disabled:opacity-40">← Back</button>
