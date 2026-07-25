@@ -7,7 +7,12 @@ import {
   getTripById,
   isPastExperience,
 } from "../catalog";
-import { createPayment, type ApiPayment } from "../payments";
+import {
+  createMoyasarToken,
+  createPayment,
+  MoyasarTokenError,
+  type ApiPayment,
+} from "../payments";
 import { useAuth } from "../../hooks/useAuth";
 import { createBooking, type ApiBooking } from "./bookingService";
 import {
@@ -210,6 +215,8 @@ export function useBookingFlow() {
     setSubmitError(null);
 
     try {
+      const sourceToken = await createMoyasarToken(payment);
+
       const booking = await createBooking(
         {
           ...(experienceType === "course"
@@ -224,6 +231,7 @@ export function useBookingFlow() {
         {
           bookingId: booking.id,
           paymentMethod: "creditcard",
+          sourceToken,
         },
         token,
       );
@@ -242,7 +250,7 @@ export function useBookingFlow() {
       setStep("success");
     } catch (err) {
       setSubmitError(
-        err instanceof ApiError
+        err instanceof ApiError || err instanceof MoyasarTokenError
           ? err.message
           : "Unable to complete this booking. Please try again.",
       );
