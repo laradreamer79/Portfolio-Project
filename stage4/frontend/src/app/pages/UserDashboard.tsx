@@ -1,4 +1,4 @@
-import { Calendar, Clock, MapPin, Waves, X } from "lucide-react";
+import { Calendar, Clock, GraduationCap, MapPin, Waves, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useMyBookings } from "../features/bookings";
 import { useAuth } from "../hooks/useAuth";
@@ -79,7 +79,7 @@ export function UserDashboard() {
           </div>
         )}
 
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {!loading &&
             bookings.map((booking) => {
               const isCourse = Boolean(booking.course);
@@ -91,63 +91,80 @@ export function UserDashboard() {
               const reference = `OYS-${String(booking.id).padStart(6, "0")}`;
 
               return (
-                <article key={booking.id} className="overflow-hidden rounded-2xl border border-slate-100 bg-white md:flex">
-                  <img
-                    src={item.imageUrl ?? fallbackImage}
-                    alt={item.title}
-                    className="h-48 w-full object-cover md:h-auto md:w-64"
-                  />
-                  <div className="flex flex-1 flex-col p-5">
-                    <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
-                      <div>
-                        <p className="text-xs font-medium uppercase tracking-wider text-slate-400">{reference}</p>
-                        <h2 className="font-display text-2xl font-bold tracking-wide text-slate-900">{item.title}</h2>
-                      </div>
-                      <span
-                        className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${
-                          booking.status === "confirmed"
-                            ? "bg-emerald-50 text-emerald-700"
-                            : booking.status === "pending"
-                              ? "bg-amber-50 text-amber-700"
-                              : "bg-slate-100 text-slate-600"
-                        }`}
-                      >
-                        {booking.status}
-                      </span>
-                    </div>
+                <article key={booking.id} className="group flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/${isCourse ? "courses" : "trips"}/${item.id}`)}
+                    className="relative h-48 w-full overflow-hidden bg-slate-100 text-left"
+                  >
+                    <img
+                      src={item.imageUrl ?? fallbackImage}
+                      alt={item.title}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                    <span className={`absolute left-3 top-3 flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold text-white ${isCourse ? "bg-purple-500" : "bg-teal-500"}`}>
+                      {isCourse && <GraduationCap className="h-3 w-3" />}
+                      {isCourse ? "Course" : "Trip"}
+                    </span>
+                    <span
+                      className={`absolute right-3 top-3 rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${
+                        booking.status === "confirmed"
+                          ? "bg-emerald-100 text-emerald-700"
+                          : booking.status === "pending"
+                            ? "bg-amber-100 text-amber-700"
+                            : "bg-slate-100 text-slate-600"
+                      }`}
+                    >
+                      {booking.status}
+                    </span>
+                    <span className="absolute bottom-3 left-3 text-xs font-medium text-white/85">{reference}</span>
+                  </button>
 
-                    <div className="mb-5 flex flex-wrap gap-4 text-sm text-slate-500">
-                      {center && (
-                        <span className="flex items-center gap-1">
-                          <MapPin className="h-4 w-4 text-teal-500" />
-                          {center.name} · {center.city}
-                        </span>
-                      )}
+                  <div className="flex flex-1 flex-col p-4">
+                    <button
+                      type="button"
+                      onClick={() => navigate(`/${isCourse ? "courses" : "trips"}/${item.id}`)}
+                      className="mb-1 text-left"
+                    >
+                      <h2 className={`font-display text-xl font-bold leading-tight tracking-wide text-slate-900 transition-colors ${isCourse ? "hover:text-purple-600" : "hover:text-teal-600"}`}>
+                        {item.title}
+                      </h2>
+                    </button>
+                    {center && (
+                      <p className="mb-3 flex items-center gap-1 text-xs font-medium text-teal-600">
+                        <MapPin className="h-3 w-3 text-teal-500" />
+                        {center.name} · {center.city}
+                      </p>
+                    )}
+
+                    <div className="mb-4 flex flex-wrap gap-3 text-xs text-slate-500">
                       <span className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4 text-slate-300" />
+                        <Calendar className="h-3.5 w-3.5 text-slate-300" />
                         {formatDate(dateValue)}
                       </span>
                       {!isCourse && (
                         <span className="flex items-center gap-1">
-                          <Clock className="h-4 w-4 text-slate-300" />
+                          <Clock className="h-3.5 w-3.5 text-slate-300" />
                           {(booking.trip as { durationHours: number }).durationHours} hours
                         </span>
                       )}
                       <span className="flex items-center gap-1">
-                        <Waves className="h-4 w-4 text-slate-300" />
+                        <Waves className="h-3.5 w-3.5 text-slate-300" />
                         {booking.numberOfPeople} diver{booking.numberOfPeople > 1 ? "s" : ""}
                       </span>
                     </div>
 
-                    <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
-                      <p className="font-semibold text-slate-800">
-                        SAR {Number(booking.totalPrice).toLocaleString()}
-                      </p>
+                    <div className="mt-auto border-t border-slate-100 pt-3">
+                      <div className="mb-3 flex items-center justify-between">
+                        <span className="text-xs text-slate-400">Total</span>
+                        <span className="font-semibold text-slate-800">SAR {Number(booking.totalPrice).toLocaleString()}</span>
+                      </div>
                       <div className="flex gap-2">
                         <button
                           type="button"
-                          onClick={() => navigate(`/bookings/${booking.id}`)}
-                          className="rounded-xl bg-teal-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-teal-600"
+                          onClick={() => navigate(`/${isCourse ? "courses" : "trips"}/${item.id}`)}
+                          className={`flex-1 rounded-xl px-4 py-2 text-sm font-semibold text-white transition-colors ${isCourse ? "bg-purple-500 hover:bg-purple-600" : "bg-teal-500 hover:bg-teal-600"}`}
                         >
                           View details
                         </button>
@@ -156,7 +173,7 @@ export function UserDashboard() {
                             type="button"
                             onClick={() => handleCancel(booking.id)}
                             disabled={cancellingId === booking.id}
-                            className="flex items-center gap-1 rounded-xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 disabled:opacity-40"
+                            className="flex items-center gap-1 rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 disabled:opacity-40"
                           >
                             <X className="h-3.5 w-3.5" />
                             {cancellingId === booking.id ? "Cancelling..." : "Cancel"}

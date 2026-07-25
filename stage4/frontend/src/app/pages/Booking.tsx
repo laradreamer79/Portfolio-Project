@@ -100,9 +100,9 @@ export function Booking() {
           </div>
         )}
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className={`grid gap-8 ${step === "success" ? "lg:grid-cols-1" : "lg:grid-cols-3"}`}>
           {/* Form */}
-          <div className="lg:col-span-2">
+          <div className={step === "success" ? "lg:col-span-1 mx-auto max-w-3xl" : "lg:col-span-2"}>
             {step === "details" && (
               <div className="bg-white rounded-2xl border border-slate-100 p-6 space-y-5">
                 <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide">Your Details</h2>

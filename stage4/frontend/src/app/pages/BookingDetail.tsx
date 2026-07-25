@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { useBookingDetail } from "../features/bookings";
+import { ReviewForm, useReviewSubmission } from "../features/reviews";
 import { useAuth } from "../hooks/useAuth";
 
 const fallbackImage =
@@ -40,6 +41,14 @@ export function BookingDetail() {
     isCancelling,
     loading,
   } = useBookingDetail(token, id);
+  const reviewTarget = booking?.trip ? "trip" : "course";
+  const reviewTargetId = booking?.trip?.id ?? booking?.course?.id ?? 0;
+  const handleReviewSubmit = useReviewSubmission({
+    token,
+    target: reviewTarget,
+    targetId: reviewTargetId,
+    onCreated: () => undefined,
+  });
 
   if (loading) {
     return <div className="flex items-center justify-center h-96 text-slate-400">Loading booking...</div>;
@@ -166,6 +175,13 @@ export function BookingDetail() {
                 <X className="w-3.5 h-3.5" />
                 {isCancelling ? "Cancelling..." : "Cancel Booking"}
               </button>
+            )}
+
+            {booking.status === "confirmed" && (
+              <ReviewForm
+                onSubmit={handleReviewSubmit}
+                label={item.title}
+              />
             )}
           </div>
         </div>

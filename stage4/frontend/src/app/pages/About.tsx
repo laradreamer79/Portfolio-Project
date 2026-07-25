@@ -1,5 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import { Anchor, Shield, Users, MapPin, CheckCircle, ArrowRight } from "lucide-react";
+import {
+  Anchor,
+  ArrowRight,
+  CheckCircle,
+  MapPin,
+  Shield,
+  UserRound,
+  Users,
+} from "lucide-react";
 
 export function About() {
   const navigate = useNavigate();
@@ -97,19 +105,35 @@ export function About() {
             <p className="text-teal-600 text-sm font-medium tracking-widest uppercase mb-2">The people behind Oyster</p>
             <h2 className="font-display text-4xl font-bold text-slate-900 tracking-wide">OUR TEAM</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { name: "Abdullah Al-Ghamdi", role: "Co-Founder & CEO", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&auto=format", bio: "Certified PADI instructor with 12 years of diving experience across the Red Sea." },
-              { name: "Sara Al-Mutairi", role: "Co-Founder & COO", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&auto=format", bio: "Former tourism director with a passion for sustainable marine experiences." },
-              { name: "Faisal Al-Dosari", role: "Head of Partnerships", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&auto=format", bio: "Builds relationships with dive centers from Jizan to NEOM across the Kingdom." },
+              {
+                name: "Lara Alzannan",
+                role: "Project Manager",
+                icon: <UserRound className="h-10 w-10" />,
+              },
+              {
+                name: "Ebtihal Alomari",
+                role: "Frontend Developer",
+                icon: <UserRound className="h-10 w-10" />,
+              },
+              {
+                name: "Maryam Alessa",
+                role: "Backend Developer",
+                icon: <UserRound className="h-10 w-10" />,
+              },
+              {
+                name: "Solaf Alessa",
+                role: "Backend Developer",
+                icon: <UserRound className="h-10 w-10" />,
+              },
             ].map((m) => (
               <div key={m.name} className="text-center">
-                <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 border-4 border-white shadow-lg">
-                  <img src={m.img} alt={m.name} className="w-full h-full object-cover" />
+                <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-teal-50 text-teal-600 shadow-lg">
+                  {m.icon}
                 </div>
-                <h3 className="font-semibold text-slate-900 text-base">{m.name}</h3>
-                <p className="text-teal-600 text-sm font-medium mb-2">{m.role}</p>
-                <p className="text-slate-400 text-sm leading-relaxed max-w-xs mx-auto">{m.bio}</p>
+                <h3 className="text-base font-semibold text-slate-900">{m.name}</h3>
+                <p className="mb-2 text-sm font-medium text-teal-600">{m.role}</p>
               </div>
             ))}
           </div>
