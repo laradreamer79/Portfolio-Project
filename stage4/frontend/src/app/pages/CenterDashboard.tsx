@@ -4,7 +4,8 @@ import { DIVING_CITIES } from "../data";
 import { listingRoute } from "../features/listing-management";
 import { useCenterDashboard } from "../features/center-dashboard";
 import { useAuth } from "../hooks/useAuth";
-import { todayInputValue } from "../lib/validation";
+import { digitsOnly, todayInputValue } from "../lib/validation";
+import { FormFieldError } from "../components/FormFieldError";
 
 export function CenterDashboard() {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ export function CenterDashboard() {
     activeTab,
     bookings,
     center,
+    clearProfileFieldError,
     closePostModal,
     confirmBooking,
     declineBooking,
@@ -32,6 +34,8 @@ export function CenterDashboard() {
     pending,
     postDone,
     postError,
+    postFieldErrors,
+    profileFieldErrors,
     profileError,
     profileImage,
     profileImagePreview,
@@ -246,6 +250,12 @@ export function CenterDashboard() {
           <div className="max-w-2xl space-y-6">
             <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide">CENTER PROFILE</h2>
             <form key={center?.id ?? "empty"} onSubmit={handleProfileSubmit} noValidate className="bg-white rounded-2xl border border-slate-100 p-6 space-y-4">
+              {profileError && (
+                <div role="alert" className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">{profileError}</div>
+              )}
+              {profileSuccess && (
+                <div className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{profileSuccess}</div>
+              )}
               <div>
                 <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest block mb-2">Center Image</label>
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -266,6 +276,8 @@ export function CenterDashboard() {
                       type="file"
                       accept="image/jpeg,image/png,image/webp"
                       onChange={handleProfileImageChange}
+                      aria-invalid={Boolean(profileFieldErrors.image)}
+                      aria-describedby={profileFieldErrors.image ? "center-image-error" : undefined}
                       className="sr-only"
                     />
                     <label htmlFor="center-profile-image" className="inline-flex cursor-pointer rounded-lg bg-teal-50 px-3 py-2 text-sm font-semibold text-teal-700 transition-colors hover:bg-teal-100">
@@ -277,12 +289,7 @@ export function CenterDashboard() {
                     )}
                   </div>
                 </div>
-                {profileError && (
-                  <div className="mt-3 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">{profileError}</div>
-                )}
-                {profileSuccess && (
-                  <div className="mt-3 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{profileSuccess}</div>
-                )}
+                <FormFieldError id="center-image-error" message={profileFieldErrors.image} />
               </div>
               <div className="border-t border-slate-100" />
               {([
@@ -299,6 +306,9 @@ export function CenterDashboard() {
                     <select
                       name={field.key}
                       required
+                      onChange={() => clearProfileFieldError(field.key)}
+                      aria-invalid={Boolean(profileFieldErrors[field.key])}
+                      aria-describedby={profileFieldErrors[field.key] ? `center-${field.key}-error` : undefined}
                       className="w-full border border-slate-200 rounded-xl bg-white px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-teal-400 transition-colors"
                       defaultValue={field.value}
                     >
@@ -316,9 +326,25 @@ export function CenterDashboard() {
                       maxLength={field.key === "contactPhone" ? 10 : undefined}
                       name={field.key}
                       required={field.key === "name"}
+                      onChange={(event) => {
+                        if (field.key === "contactPhone") {
+                          event.target.value = digitsOnly(
+                            event.target.value,
+                            10,
+                          );
+                        }
+                        clearProfileFieldError(field.key);
+                      }}
+                      aria-invalid={Boolean(profileFieldErrors[field.key])}
+                      aria-describedby={profileFieldErrors[field.key] ? `center-${field.key}-error` : undefined}
                       className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-teal-400 transition-colors"
                       defaultValue={field.value}
                     />
+                  )}
+                  {profileFieldErrors[field.key] && (
+                    <p id={`center-${field.key}-error`} className="mt-1.5 text-xs text-red-600">
+                      {profileFieldErrors[field.key]}
+                    </p>
                   )}
                 </div>
               ))}
@@ -358,9 +384,15 @@ export function CenterDashboard() {
               </div>
             ) : (
               <div className="p-6 space-y-4">
+                {postError && (
+                  <div role="alert" className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {postError}
+                  </div>
+                )}
                 <div>
                   <label className="text-sm font-medium text-slate-600 block mb-1.5">Trip Title *</label>
-                  <input className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400" placeholder="e.g. Abu Madafi Reef Morning Dive" value={form.title} onChange={set("title")} />
+                  <input aria-invalid={Boolean(postFieldErrors.title)} aria-describedby={postFieldErrors.title ? "listing-title-error" : undefined} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400" placeholder="e.g. Abu Madafi Reef Morning Dive" value={form.title} onChange={set("title")} />
+                  <FormFieldError id="listing-title-error" message={postFieldErrors.title} />
                 </div>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
@@ -380,11 +412,13 @@ export function CenterDashboard() {
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Price (SAR) *</label>
-                    <input type="number" inputMode="decimal" min="0" step="0.01" className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400" placeholder="e.g. 320" value={form.price} onChange={set("price")} />
+                    <input type="text" inputMode="decimal" aria-invalid={Boolean(postFieldErrors.price)} aria-describedby={postFieldErrors.price ? "listing-price-error" : undefined} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400" placeholder="e.g. 320" value={form.price} onChange={set("price")} />
+                    <FormFieldError id="listing-price-error" message={postFieldErrors.price} />
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Max Spots {form.type === "trip" ? "*" : "(trips only)"}</label>
-                    <input type="number" inputMode="numeric" min="1" step="1" disabled={form.type === "course"} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 disabled:bg-slate-50 disabled:text-slate-400" placeholder="e.g. 8" value={form.slots} onChange={set("slots")} />
+                    <input type="text" inputMode="numeric" disabled={form.type === "course"} aria-invalid={Boolean(postFieldErrors.slots)} aria-describedby={postFieldErrors.slots ? "listing-slots-error" : undefined} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 disabled:bg-slate-50 disabled:text-slate-400" placeholder="e.g. 8" value={form.slots} onChange={set("slots")} />
+                    <FormFieldError id="listing-slots-error" message={postFieldErrors.slots} />
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Duration</label>
@@ -399,11 +433,13 @@ export function CenterDashboard() {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-600 block mb-1.5">Date *</label>
-                  <input type="date" min={todayInputValue()} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-teal-400" value={form.date} onChange={set("date")} />
+                  <input type="date" min={todayInputValue()} aria-invalid={Boolean(postFieldErrors.date)} aria-describedby={postFieldErrors.date ? "listing-date-error" : undefined} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-teal-400" value={form.date} onChange={set("date")} />
+                  <FormFieldError id="listing-date-error" message={postFieldErrors.date} />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-600 block mb-1.5">Description *</label>
-                  <textarea rows={3} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 resize-none" placeholder="Describe the dive site, conditions, and what participants will experience..." value={form.description} onChange={set("description")} />
+                  <textarea rows={3} aria-invalid={Boolean(postFieldErrors.description)} aria-describedby={postFieldErrors.description ? "listing-description-error" : undefined} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 resize-none" placeholder="Describe the dive site, conditions, and what participants will experience..." value={form.description} onChange={set("description")} />
+                  <FormFieldError id="listing-description-error" message={postFieldErrors.description} />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-600 block mb-1.5">
@@ -413,6 +449,8 @@ export function CenterDashboard() {
                     type="file"
                     accept="image/jpeg,image/png,image/webp"
                     onChange={handleImageChange}
+                    aria-invalid={Boolean(postFieldErrors.image)}
+                    aria-describedby={postFieldErrors.image ? "listing-image-error" : undefined}
                     className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-teal-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-teal-700 hover:file:bg-teal-100"
                   />
                   {image && (
@@ -427,8 +465,9 @@ export function CenterDashboard() {
                         : "Required for publishing."}
                     </p>
                   )}
+                  <FormFieldError id="listing-image-error" message={postFieldErrors.image} />
                 </div>
-                <button onClick={handlePostSubmit} disabled={!form.title || !form.price || (!editingListing && !image) || isPosting} className="w-full bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                <button onClick={handlePostSubmit} disabled={isPosting} className="w-full bg-teal-500 text-white font-semibold py-3 rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
                   {isPosting
                     ? editingListing
                       ? "Saving..."
@@ -439,11 +478,6 @@ export function CenterDashboard() {
                         ? "Publish Course"
                         : "Publish Trip"}
                 </button>
-                {postError && (
-                  <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
-                    {postError}
-                  </div>
-                )}
               </div>
             )}
           </div>

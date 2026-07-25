@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { firstZodError } from "../../lib/validation";
+import {
+  zodFieldErrors,
+  type FieldErrors,
+} from "../../lib/validation";
 
 export const reviewSchema = z.object({
   rating: z
@@ -10,7 +13,10 @@ export const reviewSchema = z.object({
   comment: z.string().trim().min(1, "Enter a review comment."),
 });
 
-export function validateReview(rating: number, comment: string) {
+export function validateReview(
+  rating: number,
+  comment: string,
+): FieldErrors<"rating" | "comment"> {
   const result = reviewSchema.safeParse({ rating, comment });
-  return result.success ? null : firstZodError(result.error);
+  return result.success ? {} : zodFieldErrors(result.error);
 }

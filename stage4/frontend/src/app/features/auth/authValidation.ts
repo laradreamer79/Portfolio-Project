@@ -3,9 +3,10 @@ import { DIVING_CITIES } from "../../data";
 import {
   centerNameSchema,
   emailSchema,
-  firstZodError,
   personNameSchema,
   saudiPhoneSchema,
+  zodFieldErrors,
+  type FieldErrors,
 } from "../../lib/validation";
 import type { LoginPayload } from "./authService";
 
@@ -138,12 +139,16 @@ export const registerFormSchema = z
 
 export type RegisterFormState = z.input<typeof registerFormSchema>;
 
-export function validateLoginForm(form: LoginPayload): string | null {
+export function validateLoginForm(
+  form: LoginPayload,
+): FieldErrors<keyof LoginPayload> {
   const result = loginFormSchema.safeParse(form);
-  return result.success ? null : firstZodError(result.error);
+  return result.success ? {} : zodFieldErrors(result.error);
 }
 
-export function validateRegisterForm(form: RegisterFormState): string | null {
+export function validateRegisterForm(
+  form: RegisterFormState,
+): FieldErrors<keyof RegisterFormState> {
   const result = registerFormSchema.safeParse(form);
-  return result.success ? null : firstZodError(result.error);
+  return result.success ? {} : zodFieldErrors(result.error);
 }

@@ -6,11 +6,16 @@ import {
   firstZodError,
   imageFileSchema,
   saudiPhoneSchema,
+  zodFieldErrors,
+  type FieldErrors,
 } from "../../lib/validation";
 import type { UpdateCenterPayload } from "../catalog";
 
 type CenterProfileValidationResult =
-  | { ok: false; error: string }
+  | {
+      ok: false;
+      errors: FieldErrors<keyof UpdateCenterPayload>;
+    }
   | { ok: true; data: UpdateCenterPayload };
 
 export function validateCenterProfileImage(file: File) {
@@ -32,7 +37,7 @@ export function validateCenterProfile(
 ): CenterProfileValidationResult {
   const result = centerProfileSchema.safeParse(payload);
   if (!result.success) {
-    return { ok: false, error: firstZodError(result.error) };
+    return { ok: false, errors: zodFieldErrors(result.error) };
   }
 
   return {

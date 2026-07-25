@@ -28,7 +28,7 @@ describe("booking details form", () => {
 
   it("accepts valid contact details", () => {
     expect(bookingDetailsSchema.safeParse(validDetails).success).toBe(true);
-    expect(validateBookingDetails(validDetails)).toBeNull();
+    expect(validateBookingDetails(validDetails)).toEqual({});
   });
 
   it.each([
@@ -61,7 +61,7 @@ describe("payment details form", () => {
 
   it("accepts valid test-card details", () => {
     expect(paymentDetailsSchema.safeParse(validPayment).success).toBe(true);
-    expect(validatePaymentDetails(validPayment)).toBeNull();
+    expect(validatePaymentDetails(validPayment)).toEqual({});
   });
 
   it.each([
@@ -82,5 +82,21 @@ describe("payment details form", () => {
     );
     expect(formatExpiry("1230")).toBe("12 / 30");
     expect(formatCvv("12a345")).toBe("123");
+  });
+
+  it("returns all payment errors by field", () => {
+    expect(
+      validatePaymentDetails({
+        card: "",
+        expiry: "",
+        cvv: "",
+        holder: "",
+      }),
+    ).toEqual({
+      card: "Card number must contain 16 digits.",
+      expiry: "Enter the expiry date as MM / YY.",
+      cvv: "CVV must contain 3 digits.",
+      holder: "Enter a name using at least two letters.",
+    });
   });
 });

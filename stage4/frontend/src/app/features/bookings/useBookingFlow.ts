@@ -3,6 +3,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { Center, Trip } from "../../data";
 import { ApiError } from "../../lib/apiClient";
 import {
+  digitsOnly,
+  hasFieldErrors,
+  type FieldErrors,
+} from "../../lib/validation";
+import {
   getCourseById,
   getTripById,
   isPastExperience,
@@ -73,7 +78,12 @@ export function useBookingFlow() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [validationError, setValidationError] = useState<string | null>(null);
+  const [bookingErrors, setBookingErrors] = useState<
+    FieldErrors<keyof BookingFormState>
+  >({});
+  const [paymentErrors, setPaymentErrors] = useState<
+    FieldErrors<keyof PaymentFormState>
+  >({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [confirmedBooking, setConfirmedBooking] = useState<ApiBooking | null>(
     null,
@@ -153,10 +163,13 @@ export function useBookingFlow() {
   const setFormField =
     (key: keyof BookingFormState) =>
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setValidationError(null);
+      setBookingErrors((current) => ({ ...current, [key]: undefined }));
       setForm((current) => ({
         ...current,
-        [key]: event.target.value,
+        [key]:
+          key === "phone"
+            ? digitsOnly(event.target.value, 10)
+            : event.target.value,
       }));
     };
 
@@ -164,6 +177,7 @@ export function useBookingFlow() {
     (key: keyof PaymentFormState) =>
     (event: ChangeEvent<HTMLInputElement>) => {
       setSubmitError(null);
+      setPaymentErrors((current) => ({ ...current, [key]: undefined }));
       setPayment((current) => ({
         ...current,
         [key]: event.target.value,
@@ -172,6 +186,7 @@ export function useBookingFlow() {
 
   const setPaymentValue = (key: keyof PaymentFormState, value: string) => {
     setSubmitError(null);
+    setPaymentErrors((current) => ({ ...current, [key]: undefined }));
     setPayment((current) => ({
       ...current,
       [key]: value,
@@ -179,10 +194,10 @@ export function useBookingFlow() {
   };
 
   function handleDetailsContinue() {
-    const error = validateBookingDetails(form);
-    setValidationError(error);
+    const errors = validateBookingDetails(form);
+    setBookingErrors(errors);
 
-    if (!error && !past) {
+    if (!hasFieldErrors(errors) && !past) {
       if (user) {
         window.localStorage.setItem(
           bookingPhoneStorageKey(user.id),
@@ -198,9 +213,9 @@ export function useBookingFlow() {
       return;
     }
 
-    const paymentError = validatePaymentDetails(payment);
-    if (paymentError) {
-      setSubmitError(paymentError);
+    const errors = validatePaymentDetails(payment);
+    setPaymentErrors(errors);
+    if (hasFieldErrors(errors)) {
       return;
     }
 
@@ -261,6 +276,7 @@ export function useBookingFlow() {
 
   return {
     center,
+    bookingErrors,
     confirmedBooking,
     confirmedPayment,
     divers,
@@ -276,6 +292,7 @@ export function useBookingFlow() {
     navigate,
     past,
     payment,
+    paymentErrors,
     setDivers,
     setFormField,
     setPaymentField,
@@ -285,6 +302,5 @@ export function useBookingFlow() {
     stepIdx,
     submitError,
     total,
-    validationError,
   };
 }
