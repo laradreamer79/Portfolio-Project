@@ -1,12 +1,16 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { ApiError } from "../../lib/apiClient";
 import {
   hasFieldErrors,
   type FieldErrors,
 } from "../../lib/validation";
 import type { RegistrationRole } from "../../lib/roles";
-import type { LoginPayload } from "./authService";
+import {
+  registrationConflictErrors,
+  type LoginPayload,
+} from "./authService";
 import {
   validateLoginForm,
   validateRegisterForm,
@@ -121,22 +125,39 @@ export function useAuthForm() {
 
     const name = registerForm.name.trim();
     const email = registerForm.email.trim();
+    const instructorLicenseNumber =
+      registerForm.instructorLicenseNumber.trim();
+    const centerLicenseNumber =
+      registerForm.centerLicenseNumber.trim();
 
     try {
       await register({
         ...registerForm,
         name,
         email,
-        instructorLicenseNumber:
-          registerForm.instructorLicenseNumber.trim(),
+        instructorLicenseNumber,
         instructorCity: registerForm.instructorCity.trim(),
         centerName: registerForm.centerName.trim(),
         centerCity: registerForm.centerCity.trim(),
-        centerLicenseNumber: registerForm.centerLicenseNumber.trim(),
+        centerLicenseNumber,
       });
       finishAuthentication();
-    } catch {
-      // AuthProvider exposes the request error.
+    } catch (requestError) {
+      const conflictErrors = registrationConflictErrors(
+        requestError,
+        registerForm.role,
+      );
+
+      if (
+        requestError instanceof ApiError &&
+        hasFieldErrors(conflictErrors)
+      ) {
+        clearError();
+        setRegisterErrors((current) => ({
+          ...current,
+          ...conflictErrors,
+        }));
+      }
     }
   }
 
