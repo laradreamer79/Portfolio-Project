@@ -2,7 +2,7 @@ export const DIVING_CITIES = [
   "Jeddah",
   "Yanbu",
   "Dammam",
-  "Al Khobar",
+  "Khobar",
   "NEOM",
   "Jazan",
 ] as const;

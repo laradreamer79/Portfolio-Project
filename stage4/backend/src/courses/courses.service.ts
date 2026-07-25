@@ -90,11 +90,11 @@ async function getAll(filters: CourseFilters) {
     }),
     ...(city && {
       OR: [
-        { center: { city: { equals: city, mode: "insensitive" } } },
+        { center: { city: { equals: city } } },
         {
           instructor: {
             instructorProfile: {
-              city: { equals: city, mode: "insensitive" },
+              city: { equals: city },
             },
           },
         },
