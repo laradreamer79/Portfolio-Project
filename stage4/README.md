@@ -119,11 +119,11 @@ and show the current Stage 4 layout.
   <tr>
     <td align="center" width="50%">
       <h3>Frontend Structure</h3>
-      <img width="480" alt="Oyster Frontend Project Structure" src="assets/frontend-structure.png" />
+      <img width="480" alt="Oyster Frontend Project Structure" src="assets/frontend-structure.svg" />
     </td>
     <td align="center" width="50%">
       <h3>Backend Structure</h3>
-      <img width="480" alt="Oyster Backend Project Structure" src="assets/backend-structure.png" />
+      <img width="480" alt="Oyster Backend Project Structure" src="assets/backend-structure.svg" />
     </td>
   </tr>
 </table>
@@ -138,6 +138,7 @@ stage4/backend
 |   |-- schema.prisma
 |   |-- seed.ts
 |   `-- migrations/
+|-- postman/
 |-- src/
 |   |-- admin/
 |   |-- auth/
@@ -154,19 +155,24 @@ stage4/backend
 |   |-- payments/
 |   |-- prisma/
 |   |-- reviews/
+|   |-- services/
 |   |-- trips/
 |   |-- utils/
 |   |-- app.ts
 |   `-- server.ts
+|-- tests/
 |-- docker-compose.yml
 |-- package.json
-`-- tsconfig.json
+|-- prisma.config.ts
+|-- tsconfig.json
+`-- vitest.config.ts
 ```
 
 ### Frontend
 
 ```text
 stage4/frontend
+|-- public/
 |-- src/
 |   |-- app/
 |   |   |-- components/
@@ -183,12 +189,20 @@ stage4/frontend
 |   |   |   `-- reviews/
 |   |   |-- hooks/
 |   |   |-- lib/
-|   |   `-- pages/
-|   |-- assets/
+|   |   |-- pages/
+|   |   `-- App.tsx, Root.tsx, data.ts, routes.tsx
+|   |-- styles/
+|   |-- App.tsx
 |   |-- index.css
-|   `-- main.tsx
+|   |-- main.tsx
+|   `-- vite-env.d.ts
+|-- tests/
+|-- index.html
 |-- package.json
-`-- vite.config.js
+|-- tsconfig.json
+|-- tsconfig.test.json
+|-- vite.config.js
+`-- vitest.config.ts
 ```
 
 ### Documentation
