@@ -84,7 +84,7 @@ export function Centers() {
             )}
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {!loading && filtered.map((center) => (
               <CenterCard
                 key={center.id}
