@@ -17,6 +17,8 @@ import { useExperienceDetail } from "../features/catalog";
 import { ReviewForm, useReviewSubmission } from "../features/reviews";
 import { useAuth } from "../hooks/useAuth";
 
+const providerImageFallback = "/favicon.svg";
+
 export function CourseDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -67,6 +69,8 @@ export function CourseDetail() {
       </div>
     );
   }
+
+  const providerImage = center?.img || providerImageFallback;
 
   const includedItems = [
     "Full PADI certification materials (digital and physical)",
@@ -421,8 +425,11 @@ export function CourseDetail() {
                   className="-m-2 flex w-full items-center gap-3 rounded-xl p-2 transition-colors hover:bg-slate-50"
                 >
                   <img
-                    src={center?.img ?? course.img}
+                    src={providerImage}
                     alt={center?.name ?? "Independent Instructor"}
+                    onError={(event) => {
+                      event.currentTarget.src = providerImageFallback;
+                    }}
                     className="h-12 w-12 rounded-xl border border-slate-100 object-cover"
                   />
                   <div className="min-w-0 flex-1 text-left">
