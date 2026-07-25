@@ -146,9 +146,11 @@ stage4/backend
 |   |-- centers/
 |   |-- common/
 |   |   |-- catalog/
-|   |   `-- constants/
+|   |   |-- constants/
+|   |   `-- validation/
 |   |-- config/
 |   |-- courses/
+|   |-- generated/
 |   |-- health/
 |   |-- instructors/
 |   |-- middleware/
@@ -165,6 +167,7 @@ stage4/backend
 |-- package.json
 |-- prisma.config.ts
 |-- tsconfig.json
+|-- tsconfig.test.json
 `-- vitest.config.ts
 ```
 
@@ -176,12 +179,15 @@ stage4/frontend
 |-- src/
 |   |-- app/
 |   |   |-- components/
+|   |   |   `-- layout/
 |   |   |-- context/
 |   |   |-- features/
 |   |   |   |-- admin-dashboard/
 |   |   |   |-- auth/
 |   |   |   |-- bookings/
 |   |   |   |-- catalog/
+|   |   |   |   |-- components/
+|   |   |   |   `-- hooks/
 |   |   |   |-- center-dashboard/
 |   |   |   |-- instructor-dashboard/
 |   |   |   |-- listing-management/

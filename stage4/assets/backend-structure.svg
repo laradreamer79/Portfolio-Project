@@ -1,12 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1020" viewBox="0 0 1200 1020" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1140" viewBox="0 0 1200 1140" role="img" aria-labelledby="title desc">
   <title id="title">Oyster Stage 4 Backend Project Structure</title>
   <desc id="desc">Current Express backend folder structure for the Stage 4 Oyster project.</desc>
   <defs>
     <g id="folder"><path fill="#2563eb" d="M0 3.5A2.5 2.5 0 0 1 2.5 1h5l2.1 2.4h8.9A2.5 2.5 0 0 1 21 5.9v9.6A2.5 2.5 0 0 1 18.5 18h-16A2.5 2.5 0 0 1 0 15.5z"/></g>
     <g id="file"><path fill="#94a3b8" d="M2 0h9l5 5v14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/><path fill="#f8fafc" d="M11 0v5h5z"/></g>
   </defs>
-  <rect width="1200" height="1020" fill="#f8fafc"/>
-  <rect x="30" y="28" width="1140" height="964" rx="22" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+  <rect width="1200" height="1140" fill="#f8fafc"/>
+  <rect x="30" y="28" width="1140" height="1084" rx="22" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
   <text x="70" y="86" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" fill="#0f172a">Backend</text>
   <text x="70" y="119" font-family="Segoe UI, Arial, sans-serif" font-size="17" fill="#64748b">Current Express backend folder structure for the Stage 4 Oyster project.</text>
   <line x1="70" y1="142" x2="1130" y2="142" stroke="#e2e8f0" stroke-width="2"/>
@@ -26,6 +26,8 @@
     <use href="#folder" x="156" y="732"/><text x="184" y="750">validation/</text>
     <use href="#folder" x="126" y="772"/><text x="154" y="790">config/</text>
     <use href="#folder" x="126" y="812"/><text x="154" y="830">courses/</text>
+    <use href="#folder" x="126" y="852"/><text x="154" y="870">generated/</text>
+    <use href="#folder" x="96" y="892"/><text x="124" y="910">tests/</text>
     <use href="#folder" x="560" y="452"/><text x="588" y="470">health/</text>
     <use href="#folder" x="560" y="492"/><text x="588" y="510">instructors/</text>
     <use href="#folder" x="560" y="532"/><text x="588" y="550">middleware/</text>
@@ -42,12 +44,14 @@
     <use href="#file" x="560" y="792"/><text x="586" y="810">app.ts</text>
     <use href="#file" x="560" y="824"/><text x="586" y="842">server.ts</text>
   </g>
-  <line x1="70" y1="866" x2="1130" y2="866" stroke="#e2e8f0" stroke-width="2"/>
-  <text x="70" y="901" font-family="Segoe UI, Arial, sans-serif" font-size="17" font-weight="700" fill="#64748b">ROOT CONFIGURATION</text>
+  <line x1="70" y1="930" x2="1130" y2="930" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="70" y="960" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#64748b">ROOT CONFIGURATION</text>
   <g font-family="Consolas, 'Courier New', monospace" font-size="18" fill="#475569">
-    <use href="#file" x="98" y="921"/><text x="124" y="939">docker-compose.yml</text>
-    <use href="#file" x="390" y="921"/><text x="416" y="939">package.json</text>
-    <use href="#file" x="680" y="921"/><text x="706" y="939">prisma.config.ts</text>
-    <use href="#file" x="98" y="953"/><text x="124" y="971">vitest.config.ts</text>
+    <use href="#file" x="98" y="970"/><text x="124" y="988">docker-compose.yml</text>
+    <use href="#file" x="390" y="970"/><text x="416" y="988">package.json</text>
+    <use href="#file" x="680" y="970"/><text x="706" y="988">prisma.config.ts</text>
+    <use href="#file" x="98" y="1002"/><text x="124" y="1020">tsconfig.json</text>
+    <use href="#file" x="390" y="1002"/><text x="416" y="1020">tsconfig.test.json</text>
+    <use href="#file" x="680" y="1002"/><text x="706" y="1020">vitest.config.ts</text>
   </g>
 </svg>
