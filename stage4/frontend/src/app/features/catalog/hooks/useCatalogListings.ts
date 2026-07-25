@@ -149,7 +149,6 @@ export function useCentersCatalog(
     setCity,
     setMinRating,
     setQuery,
-    
   };
 }
 

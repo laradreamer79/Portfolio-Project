@@ -157,7 +157,7 @@ export function UserDashboard() {
 
                     <div className="mt-auto border-t border-slate-100 pt-3">
                       <div className="mb-3 flex items-center justify-between">
-                        <span className="text-xs text-slate-400">Total paid</span>
+                        <span className="text-xs text-slate-400">Total</span>
                         <span className="font-semibold text-slate-800">SAR {Number(booking.totalPrice).toLocaleString()}</span>
                       </div>
                       <div className="flex gap-2">

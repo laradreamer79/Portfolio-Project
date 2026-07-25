@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { MapPin, Search, SlidersHorizontal } from "lucide-react";
+import { MapPin, Search } from "lucide-react";
 import { CITIES } from "../data";
 import { CenterCard, useCentersCatalog } from "../features/catalog";
 
@@ -7,7 +7,6 @@ export function Centers() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const {
-    centers,
     city,
     error,
     filteredCenters: filtered,
@@ -53,20 +52,8 @@ export function Centers() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8 flex gap-8">
-        {/* Sidebar removed in favor of header city select */}
-
         {/* Results */}
         <div className="flex-1">
-          {/* Mobile city pills */}
-          <div className="flex gap-2 flex-wrap mb-6 lg:hidden">
-            {CITIES.map((c) => (
-              <button key={c} onClick={() => setCity(c)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${city === c ? "bg-teal-500 text-white" : "bg-white border border-slate-200 text-slate-600"}`}>
-                {c}
-              </button>
-            ))}
-          </div>
-
           {error && (
             <div className="mb-5 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
               {error}
