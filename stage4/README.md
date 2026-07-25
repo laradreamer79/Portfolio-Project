@@ -4,9 +4,7 @@ Stage 4 delivers the working Oyster application: React frontend, Express API,
 PostgreSQL database, authentication, catalogs, dashboards, bookings, reviews,
 payments, image upload, seed data, and testing documentation.
 
-This README is feature-based so the team can explain what was built, where the
-code lives, which routes belong to each feature, what validation is applied, and
-how each feature was tested.
+This README is organised by feature to provide a clear overview of the project's structure, implementation, validation, routing, and testing.
 
 ## Table of Contents
 
