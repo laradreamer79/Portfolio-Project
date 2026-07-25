@@ -12,6 +12,7 @@ how each feature was tested.
 
 - [Current Status](#current-status)
 - [Tech Stack](#tech-stack)
+- [Production Environment](#production-enviroment)
 - [Run the Project](#run-the-project)
 - [Project Structure](#project-structure)
 - [Project Delivery Evidence](#project-delivery-evidence)
@@ -58,6 +59,9 @@ how each feature was tested.
 | Payments | Moyasar integration with mock payment support |
 | Testing | Postman, manual browser testing, typecheck, production build checks |
 | Dev tools | Docker Compose, npm scripts, GitHub Issues, GitHub Pull Requests |
+
+## Production Enviroment
+[Production Environment](docs/deployment/production-environment.md)
 
 ## Run the Project
 
@@ -650,5 +654,4 @@ Sprint documentation:
 
 - [Team How-To Guide](docs/team-how-to-guide.md)
 - [Architecture Notes](docs/architecture.md)
-- [Production Environment](docs/deployment/production-environment.md)
 - [Mock Image Links](docs/mock-image-links.md)
