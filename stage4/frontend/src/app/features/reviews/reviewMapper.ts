@@ -1,0 +1,29 @@
+import type { Review } from "../../data";
+import type { ApiReview } from "./reviewService";
+
+const fallbackAvatar = "/default-user.png";
+
+function formatReviewDate(value: string) {
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(value));
+}
+
+export function toReview(review: ApiReview): Review {
+  return {
+    id: review.id,
+    centerId:
+      review.centerId ??
+      review.trip?.centerId ??
+      review.course?.centerId ??
+      0,
+    tripId: review.tripId ?? review.courseId ?? undefined,
+    user: review.user?.name ?? "Oyster user",
+    avatar: fallbackAvatar,
+    rating: review.rating,
+    date: review.createdAt ? formatReviewDate(review.createdAt) : "Recently",
+    comment: review.comment ?? "",
+  };
+}
