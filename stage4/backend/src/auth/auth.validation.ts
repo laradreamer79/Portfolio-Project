@@ -1,8 +1,5 @@
 import { z } from "zod";
-import {
-  DIVING_CITIES,
-  type DivingCity,
-} from "../common/constants/diving-cities.js";
+import { DIVING_CITIES } from "../common/constants/diving-cities.js";
 import { centerNameSchema } from "../common/validation/center-name.js";
 import { saudiPhoneSchema } from "../common/validation/saudi-phone.js";
 
@@ -17,7 +14,13 @@ const emailSchema = z
   .trim()
   .max(MAX_EMAIL_LENGTH, "Email must be 254 characters or fewer")
   .email("Invalid email address");
-const optionalCity = z.string().trim().optional();
+const optionalCity = z.preprocess(
+  (value) =>
+    typeof value === "string" && value.trim() === ""
+      ? undefined
+      : value,
+  z.enum(DIVING_CITIES, { error: "Choose a valid city" }).optional(),
+);
 const optionalCenterName = z
   .string()
   .trim()
@@ -92,12 +95,6 @@ export const registerSchema = z
           path: ["instructorCity"],
           message: "Instructor city is required",
         });
-      } else if (!DIVING_CITIES.includes(data.instructorCity as DivingCity)) {
-        context.addIssue({
-          code: "custom",
-          path: ["instructorCity"],
-          message: "Choose a valid instructor city",
-        });
       }
     }
 
@@ -119,12 +116,6 @@ export const registerSchema = z
           code: "custom",
           path: ["centerCity"],
           message: "Center city is required",
-        });
-      } else if (!DIVING_CITIES.includes(data.centerCity as DivingCity)) {
-        context.addIssue({
-          code: "custom",
-          path: ["centerCity"],
-          message: "Choose a valid center city",
         });
       }
 
