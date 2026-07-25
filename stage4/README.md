@@ -119,11 +119,11 @@ and show the current Stage 4 layout.
   <tr>
     <td align="center" width="50%">
       <h3>Frontend Structure</h3>
-      <img width="480" alt="Oyster Frontend Project Structure" src="assets/frontend-structure.svg" />
+      <img width="480" alt="Oyster Frontend Project Structure" src="assets/frontend-structure.png" />
     </td>
     <td align="center" width="50%">
       <h3>Backend Structure</h3>
-      <img width="480" alt="Oyster Backend Project Structure" src="assets/backend-structure.svg" />
+      <img width="480" alt="Oyster Backend Project Structure" src="assets/backend-structure.png" />
     </td>
   </tr>
 </table>
@@ -188,7 +188,7 @@ stage4/frontend
 |   |-- index.css
 |   `-- main.tsx
 |-- package.json
-`-- vite.config.ts
+`-- vite.config.js
 ```
 
 ### Documentation
@@ -226,7 +226,7 @@ current logged-in user, and protects role-specific pages and API routes.
 
 | Method | Route | Access | Purpose |
 |---|---|---|---|
-| POST | `/api/auth/register` | Public | Register user, instructor, diving center, or admin seed account |
+| POST | `/api/auth/register` | Public | Register a user, instructor, or diving center account |
 | POST | `/api/auth/login` | Public | Login and return JWT |
 | GET | `/api/auth/me` | Authenticated | Return current logged-in user |
 
@@ -234,6 +234,7 @@ current logged-in user, and protects role-specific pages and API routes.
 |---|---|
 | Required fields | Name, email, password, role, and role-specific fields |
 | Role-specific registration | Instructor requires license data. Diving center requires center details |
+| Admin accounts | Not available through public registration; created only via `npm run seed` |
 | Invalid credentials | Login rejects wrong email or password |
 | Authorization | Protected routes read the logged-in user from the token |
 
@@ -307,7 +308,7 @@ management for diving centers and instructors.
 
 | Validation or Rule | Details |
 |---|---|
-| Required fields | Title, description, city/location, date, price, capacity, difficulty, and image |
+| Required fields | Title, description, duration, difficulty, price, capacity, and schedule date. City and image are not required by the API |
 | Ownership | Trip can be center-owned through `centerId` or instructor-owned through `instructorId` |
 | Trusted owner | API does not trust owner IDs from the request body |
 | Case handling | Search and filters handle upper and lower case consistently |
@@ -346,7 +347,7 @@ management for diving centers and instructors.
 
 | Validation or Rule | Details |
 |---|---|
-| Required fields | Title, description, city/location, schedule, price, capacity, difficulty, and image |
+| Required fields | Title, description, level, price, and start date. City, capacity, and image are not required by the API |
 | Ownership | Course can be center-owned or instructor-owned |
 | Trusted owner | API decides ownership from the logged-in user |
 | Public catalog | Approved center-owned and instructor-owned courses are visible |
@@ -508,6 +509,22 @@ mode for local testing, and webhook handling.
 | Access control | Users can view their own payment. Admin can view all |
 | Webhook | Webhook updates payment status when provider callback is received |
 
+**Moyasar Test Card**
+
+For sandbox testing with Moyasar, use its test card details at checkout:
+
+| Field | Value |
+|---|---|
+| Card number | `4111 1111 1111 1111` |
+| Name on card | `Test User` |
+| Expiry | `12/30` |
+| CVV | `123` |
+
+> This requires `PAYMENT_PROVIDER_MODE="moyasar"`, a valid Moyasar test secret
+> key in the backend, and a test publishable key in the frontend. In backend
+> mock mode, payment creation bypasses Moyasar; the current frontend still
+> tokenizes the entered card before submitting the booking flow.
+
 | Test | Expected Result | Status |
 |---|---|---|
 | Create mock payment | Payment record created | Pass |
@@ -641,7 +658,6 @@ Manual verification:
 | Pull requests | [Repository pull requests](https://github.com/laradreamer79/Portfolio-Project/pulls) |
 | Issues | [Repository issues](https://github.com/laradreamer79/Portfolio-Project/issues) |
 | Bug tracker | [Bug-labeled issues](https://github.com/laradreamer79/Portfolio-Project/issues?q=is%3Aissue+label%3Abug) |
-| Project boards | [Repository projects](https://github.com/laradreamer79/Portfolio-Project/projects) |
 | Source repository workflow | [Source repository and workflow](docs/project-management/source-repository.md) |
 | Bug tracking process | [Bug tracking](docs/project-management/bug-tracking.md) |
 
