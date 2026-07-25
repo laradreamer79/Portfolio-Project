@@ -6,6 +6,8 @@ import {
   validateRegisterForm,
   type RegisterFormState,
 } from "../src/app/features/auth/authValidation";
+import { registrationConflictErrors } from "../src/app/features/auth/authService";
+import { ApiError } from "../src/app/lib/apiClient";
 
 const emptyRoleFields = {
   instructorLicenseNumber: "",
@@ -32,7 +34,7 @@ describe("login form", () => {
     };
 
     expect(loginFormSchema.safeParse(form).success).toBe(true);
-    expect(validateLoginForm(form)).toBeNull();
+    expect(validateLoginForm(form)).toEqual({});
   });
 
   it("rejects an invalid email or an empty password", () => {
@@ -54,7 +56,7 @@ describe("login form", () => {
 describe("registration form", () => {
   it("accepts a valid normal user", () => {
     expect(registerFormSchema.safeParse(validUser).success).toBe(true);
-    expect(validateRegisterForm(validUser)).toBeNull();
+    expect(validateRegisterForm(validUser)).toEqual({});
   });
 
   it.each([
@@ -117,9 +119,63 @@ describe("registration form", () => {
     ).toBe(false);
   });
 
-  it("returns the first validation message used by the red error box", () => {
-    expect(validateRegisterForm({ ...validUser, name: "" })).toBe(
-      "Enter a name using at least two letters.",
-    );
+  it("returns all validation messages by field", () => {
+    expect(
+      validateRegisterForm({
+        ...validUser,
+        name: "",
+        email: "invalid",
+        phone: "123",
+      }),
+    ).toEqual({
+      name: "Enter a name using at least two letters.",
+      email: "Enter a valid email address.",
+      phone: "Phone number must contain 10 digits and start with 05.",
+    });
+  });
+
+  it("maps duplicate license conflicts to the active role field", () => {
+    expect(
+      registrationConflictErrors(
+        new ApiError(
+          "Instructor license number already exists",
+          409,
+          { field: "instructorLicenseNumber" },
+        ),
+        "instructor",
+      ),
+    ).toEqual({
+      instructorLicenseNumber:
+        "Instructor license number already exists",
+    });
+
+    expect(
+      registrationConflictErrors(
+        new ApiError("Diving center license number already exists", 409),
+        "diving_center",
+      ),
+    ).toEqual({
+      centerLicenseNumber:
+        "Diving center license number already exists",
+    });
+  });
+
+  it("returns duplicate email and license errors together", () => {
+    expect(
+      registrationConflictErrors(
+        new ApiError("Email already exists", 409, {
+          fieldErrors: {
+            email: "Email already exists",
+            centerLicenseNumber:
+              "Diving center license number already exists",
+          },
+        }),
+        "diving_center",
+      ),
+    ).toEqual({
+      email: "Email already exists",
+      centerLicenseNumber:
+        "Diving center license number already exists",
+    });
   });
 });

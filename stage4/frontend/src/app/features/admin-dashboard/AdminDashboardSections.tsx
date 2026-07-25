@@ -16,12 +16,20 @@ import {
   Waves,
   X,
 } from "lucide-react";
+import { FormFieldError } from "../../components/FormFieldError";
+import {
+  zodFieldErrors,
+  type FieldErrors,
+} from "../../lib/validation";
 import type { BookingCard } from "../bookings";
 import type {
   AdminDashboardSummary,
   AdminProfile,
 } from "./adminService";
-import type { UpdateAdminProfileInput } from "./adminValidation";
+import {
+  updateAdminProfileSchema,
+  type UpdateAdminProfileInput,
+} from "./adminValidation";
 import type {
   AdminTab,
   CenterRow,
@@ -704,16 +712,28 @@ export function AdminProfilePanel({
 }: AdminProfilePanelProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<
+    FieldErrors<keyof UpdateAdminProfileInput>
+  >({});
 
   useEffect(() => {
     if (!profile) return;
     setName(profile.name);
     setEmail(profile.email);
+    setFieldErrors({});
   }, [profile]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    void onSave({ name, email });
+    const result = updateAdminProfileSchema.safeParse({ name, email });
+
+    if (!result.success) {
+      setFieldErrors(zodFieldErrors(result.error));
+      return;
+    }
+
+    setFieldErrors({});
+    void onSave(result.data);
   }
 
   if (!profile) {
@@ -757,12 +777,23 @@ export function AdminProfilePanel({
             <input
               id="admin-name"
               value={name}
-              onChange={(event) => setName(event.target.value)}
+              onChange={(event) => {
+                setName(event.target.value);
+                setFieldErrors((current) => ({
+                  ...current,
+                  name: undefined,
+                }));
+              }}
+              aria-invalid={Boolean(fieldErrors.name)}
+              aria-describedby={
+                fieldErrors.name ? "admin-name-error" : undefined
+              }
               maxLength={100}
               className="flex-1 bg-transparent text-sm text-slate-800 outline-none"
               autoComplete="name"
             />
           </div>
+          <FormFieldError id="admin-name-error" message={fieldErrors.name} />
         </div>
 
         <div>
@@ -778,12 +809,23 @@ export function AdminProfilePanel({
               id="admin-email"
               type="email"
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                setFieldErrors((current) => ({
+                  ...current,
+                  email: undefined,
+                }));
+              }}
+              aria-invalid={Boolean(fieldErrors.email)}
+              aria-describedby={
+                fieldErrors.email ? "admin-email-error" : undefined
+              }
               maxLength={254}
               className="flex-1 bg-transparent text-sm text-slate-800 outline-none"
               autoComplete="email"
             />
           </div>
+          <FormFieldError id="admin-email-error" message={fieldErrors.email} />
         </div>
 
         <div className="rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-500">

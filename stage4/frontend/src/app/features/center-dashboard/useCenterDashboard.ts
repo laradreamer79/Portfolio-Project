@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import type { Center } from "../../data";
+import type { FieldErrors } from "../../lib/validation";
 import {
   validateCenterProfile,
   validateCenterProfileImage,
@@ -39,6 +40,9 @@ export function useCenterDashboard({
   const [center, setCenter] = useState<Center | null>(null);
   const [bookings, setBookings] = useState<CenterBookingRow[]>([]);
   const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [profileFieldErrors, setProfileFieldErrors] = useState<
+    FieldErrors<keyof UpdateCenterPayload>
+  >({});
   const [profileError, setProfileError] = useState<string | null>(null);
   const [profileSuccess, setProfileSuccess] = useState<string | null>(null);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
@@ -95,6 +99,10 @@ export function useCenterDashboard({
     const file = event.target.files?.[0] ?? null;
 
     setProfileError(null);
+    setProfileFieldErrors((current) => ({
+      ...current,
+      image: undefined,
+    }));
     setProfileSuccess(null);
 
     if (!file) {
@@ -105,7 +113,10 @@ export function useCenterDashboard({
     const imageError = validateCenterProfileImage(file);
     if (imageError) {
       setProfileImage(null);
-      setProfileError(imageError);
+      setProfileFieldErrors((current) => ({
+        ...current,
+        image: imageError,
+      }));
       event.target.value = "";
       return;
     }
@@ -129,7 +140,7 @@ export function useCenterDashboard({
 
     const validation = validateCenterProfile(formPayload);
     if (!validation.ok) {
-      setProfileError(validation.error);
+      setProfileFieldErrors(validation.errors);
       return;
     }
 
@@ -137,6 +148,7 @@ export function useCenterDashboard({
     if (profileImage) payload.image = profileImage;
 
     setIsSavingProfile(true);
+    setProfileFieldErrors({});
     setProfileError(null);
     setProfileSuccess(null);
 
@@ -183,12 +195,18 @@ export function useCenterDashboard({
     handleProfileSubmit,
     isSavingProfile,
     pending,
+    profileFieldErrors,
     profileError,
     profileImage,
     profileImagePreview,
     profileSuccess,
     revenue,
     setActiveTab,
+    clearProfileFieldError: (field: keyof UpdateCenterPayload) =>
+      setProfileFieldErrors((current) => ({
+        ...current,
+        [field]: undefined,
+      })),
     ...listingManagement,
   };
 }

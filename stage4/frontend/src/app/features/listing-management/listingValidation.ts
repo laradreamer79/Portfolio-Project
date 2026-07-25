@@ -4,6 +4,8 @@ import {
   firstZodError,
   imageFileSchema,
   todayOrFutureDateSchema,
+  zodFieldErrors,
+  type FieldErrors,
 } from "../../lib/validation";
 
 export type ListingForm = {
@@ -25,7 +27,7 @@ type ListingValidationOptions = {
 };
 
 type ListingValidationResult =
-  | { ok: false; error: string }
+  | { ok: false; errors: FieldErrors<keyof ListingForm | "image"> }
   | {
       ok: true;
       data: {
@@ -106,7 +108,7 @@ export function validateListingForm(
   });
 
   if (!result.success) {
-    return { ok: false, error: firstZodError(result.error) };
+    return { ok: false, errors: zodFieldErrors(result.error) };
   }
 
   const { title, description, price, slots, date } = result.data;

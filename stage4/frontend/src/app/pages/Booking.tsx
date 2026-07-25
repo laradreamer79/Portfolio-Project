@@ -16,9 +16,11 @@ import {
   formatExpiry,
   useBookingFlow,
 } from "../features/bookings";
+import { FormFieldError } from "../components/FormFieldError";
 
 export function Booking() {
   const {
+    bookingErrors,
     center,
     confirmedBooking,
     confirmedPayment,
@@ -34,6 +36,7 @@ export function Booking() {
     navigate,
     past,
     payment,
+    paymentErrors,
     setDivers,
     setFormField,
     setPaymentField,
@@ -43,7 +46,6 @@ export function Booking() {
     stepIdx,
     submitError,
     total,
-    validationError,
   } = useBookingFlow();
 
   if (loading) {
@@ -106,23 +108,21 @@ export function Booking() {
             {step === "details" && (
               <div className="bg-white rounded-2xl border border-slate-100 p-6 space-y-5">
                 <h2 className="font-display text-2xl font-bold text-slate-900 tracking-wide">Your Details</h2>
-                {validationError && (
-                  <div role="alert" className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
-                    {validationError}
-                  </div>
-                )}
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-slate-600 block mb-1.5">Full Name *</label>
-                    <input autoComplete="name" minLength={2} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="Mohammed Al-Rashid" value={form.name} onChange={setFormField("name")} />
+                    <label htmlFor="booking-name" className="text-sm font-medium text-slate-600 block mb-1.5">Full Name *</label>
+                    <input id="booking-name" autoComplete="name" minLength={2} aria-invalid={Boolean(bookingErrors.name)} aria-describedby={bookingErrors.name ? "booking-name-error" : undefined} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="Mohammed Al-Rashid" value={form.name} onChange={setFormField("name")} />
+                    <FormFieldError id="booking-name-error" message={bookingErrors.name} />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-slate-600 block mb-1.5">Email Address *</label>
-                    <input type="email" autoComplete="email" className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="your@email.com" value={form.email} onChange={setFormField("email")} />
+                    <label htmlFor="booking-email" className="text-sm font-medium text-slate-600 block mb-1.5">Email Address *</label>
+                    <input id="booking-email" type="email" autoComplete="email" aria-invalid={Boolean(bookingErrors.email)} aria-describedby={bookingErrors.email ? "booking-email-error" : undefined} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="your@email.com" value={form.email} onChange={setFormField("email")} />
+                    <FormFieldError id="booking-email-error" message={bookingErrors.email} />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-slate-600 block mb-1.5">Phone Number *</label>
-                    <input type="tel" autoComplete="tel" inputMode="numeric" maxLength={10} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="05XXXXXXXX" value={form.phone} onChange={setFormField("phone")} />
+                    <label htmlFor="booking-phone" className="text-sm font-medium text-slate-600 block mb-1.5">Phone Number *</label>
+                    <input id="booking-phone" type="tel" autoComplete="tel" inputMode="numeric" maxLength={10} aria-invalid={Boolean(bookingErrors.phone)} aria-describedby={bookingErrors.phone ? "booking-phone-error" : undefined} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors" placeholder="05XXXXXXXX" value={form.phone} onChange={setFormField("phone")} />
+                    <FormFieldError id="booking-phone-error" message={bookingErrors.phone} />
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600 block mb-1.5">Scheduled Date</label>
@@ -139,8 +139,9 @@ export function Booking() {
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-600 block mb-1.5">Special Requests / Notes</label>
-                  <textarea rows={3} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors resize-none" placeholder="Certification level, equipment needs, accessibility requirements..." value={form.notes} onChange={setFormField("notes")} />
+                  <label htmlFor="booking-notes" className="text-sm font-medium text-slate-600 block mb-1.5">Special Requests / Notes</label>
+                  <textarea id="booking-notes" rows={3} aria-invalid={Boolean(bookingErrors.notes)} aria-describedby={bookingErrors.notes ? "booking-notes-error" : undefined} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors resize-none" placeholder="Certification level, equipment needs, accessibility requirements..." value={form.notes} onChange={setFormField("notes")} />
+                  <FormFieldError id="booking-notes-error" message={bookingErrors.notes} />
                 </div>
                 <button
                   onClick={handleDetailsContinue}
@@ -169,23 +170,27 @@ export function Booking() {
                   <p className="text-xs text-slate-400 font-medium mb-1 uppercase tracking-widest">Card Number</p>
                   <div className="flex items-center gap-3">
                     <CreditCard className="w-5 h-5 text-slate-400" />
-                    <input inputMode="numeric" autoComplete="cc-number" className="flex-1 text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="4242 4242 4242 4242" maxLength={19} value={payment.card} onChange={(event) => setPaymentValue("card", formatCardNumber(event.target.value))} />
+                    <input id="payment-card" inputMode="numeric" autoComplete="cc-number" aria-invalid={Boolean(paymentErrors.card)} aria-describedby={paymentErrors.card ? "payment-card-error" : undefined} className="flex-1 text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="4242 4242 4242 4242" maxLength={19} value={payment.card} onChange={(event) => setPaymentValue("card", formatCardNumber(event.target.value))} />
                   </div>
                 </div>
+                <FormFieldError id="payment-card-error" message={paymentErrors.card} />
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                     <p className="text-xs text-slate-400 font-medium mb-1 uppercase tracking-widest">Expiry Date</p>
-                    <input inputMode="numeric" autoComplete="cc-exp" maxLength={7} className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="MM / YY" value={payment.expiry} onChange={(event) => setPaymentValue("expiry", formatExpiry(event.target.value))} />
+                    <input id="payment-expiry" inputMode="numeric" autoComplete="cc-exp" maxLength={7} aria-invalid={Boolean(paymentErrors.expiry)} aria-describedby={paymentErrors.expiry ? "payment-expiry-error" : undefined} className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="MM / YY" value={payment.expiry} onChange={(event) => setPaymentValue("expiry", formatExpiry(event.target.value))} />
+                    <FormFieldError id="payment-expiry-error" message={paymentErrors.expiry} />
                   </div>
                   <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                     <p className="text-xs text-slate-400 font-medium mb-1 uppercase tracking-widest">CVV</p>
-                    <input inputMode="numeric" autoComplete="cc-csc" className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="•••" maxLength={3} type="password" value={payment.cvv} onChange={(event) => setPaymentValue("cvv", formatCvv(event.target.value))} />
+                    <input id="payment-cvv" inputMode="numeric" autoComplete="cc-csc" aria-invalid={Boolean(paymentErrors.cvv)} aria-describedby={paymentErrors.cvv ? "payment-cvv-error" : undefined} className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent font-mono" placeholder="•••" maxLength={3} type="password" value={payment.cvv} onChange={(event) => setPaymentValue("cvv", formatCvv(event.target.value))} />
+                    <FormFieldError id="payment-cvv-error" message={paymentErrors.cvv} />
                   </div>
                 </div>
                 <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                   <p className="text-xs text-slate-400 font-medium mb-1 uppercase tracking-widest">Cardholder Name</p>
-                  <input autoComplete="cc-name" className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent" placeholder="Name as on card" value={payment.holder} onChange={setPaymentField("holder")} />
+                  <input id="payment-holder" autoComplete="cc-name" aria-invalid={Boolean(paymentErrors.holder)} aria-describedby={paymentErrors.holder ? "payment-holder-error" : undefined} className="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent" placeholder="Name as on card" value={payment.holder} onChange={setPaymentField("holder")} />
                 </div>
+                <FormFieldError id="payment-holder-error" message={paymentErrors.holder} />
                 <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-50 rounded-xl p-3 border border-slate-100">
                   <Lock className="w-3.5 h-3.5" />
                   Card details are securely tokenized by Moyasar and are never sent to Oyster.

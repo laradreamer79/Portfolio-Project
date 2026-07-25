@@ -19,7 +19,9 @@ export function Auth() {
     isAuthenticated,
     isInitializing,
     isSubmitting,
+    loginErrors,
     loginForm,
+    registerErrors,
     registerForm,
     setRegistrationRole,
     showPassword,
@@ -102,18 +104,22 @@ export function Auth() {
                 noValidate
               >
                 <AuthField
+                  id="login-email"
                   label="Email"
                   type="email"
                   value={loginForm.email}
                   onChange={(value) => updateLoginField("email", value)}
                   autoComplete="email"
+                  error={loginErrors.email}
                 />
                 <PasswordField
+                  id="login-password"
                   value={loginForm.password}
                   onChange={(value) => updateLoginField("password", value)}
                   show={showPassword}
                   onToggle={togglePassword}
                   autoComplete="current-password"
+                  error={loginErrors.password}
                 />
                 <AuthSubmitButton loading={isSubmitting}>
                   Sign In
@@ -152,32 +158,40 @@ export function Auth() {
                   </div>
                 </fieldset>
                 <AuthField
+                  id="register-name"
                   label="Full Name"
                   value={registerForm.name}
                   onChange={(value) => updateRegisterField("name", value)}
                   autoComplete="name"
                   minLength={2}
                   maxLength={AUTH_FIELD_LIMITS.name}
+                  error={registerErrors.name}
                 />
                 <AuthField
+                  id="register-email"
                   label="Email"
                   type="email"
                   value={registerForm.email}
                   onChange={(value) => updateRegisterField("email", value)}
                   autoComplete="email"
                   maxLength={AUTH_FIELD_LIMITS.email}
+                  error={registerErrors.email}
                 />
                 <AuthField
+                  id="register-phone"
                   label="Phone Number"
                   type="tel"
                   value={registerForm.phone}
                   onChange={(value) => updateRegisterField("phone", value)}
                   autoComplete="tel"
                   inputMode="numeric"
+                  numericOnly
                   minLength={AUTH_FIELD_LIMITS.phone}
                   maxLength={AUTH_FIELD_LIMITS.phone}
+                  error={registerErrors.phone}
                 />
                 <PasswordField
+                  id="register-password"
                   value={registerForm.password}
                   onChange={(value) => updateRegisterField("password", value)}
                   show={showPassword}
@@ -185,20 +199,26 @@ export function Auth() {
                   autoComplete="new-password"
                   minLength={8}
                   maxLength={AUTH_FIELD_LIMITS.password}
+                  error={registerErrors.password}
                 />
                 {registerForm.role === "instructor" && (
                   <>
                     <AuthField
+                      id="instructor-license"
                       label="Instructor License Number"
                       value={registerForm.instructorLicenseNumber}
                       onChange={(value) =>
                         updateRegisterField("instructorLicenseNumber", value)
                       }
                       autoComplete="off"
+                      inputMode="numeric"
+                      numericOnly
                       minLength={2}
                       maxLength={AUTH_FIELD_LIMITS.license}
+                      error={registerErrors.instructorLicenseNumber}
                     />
                     <AuthSelectField
+                      id="instructor-city"
                       label="City"
                       value={registerForm.instructorCity}
                       options={DIVING_CITIES}
@@ -206,12 +226,14 @@ export function Auth() {
                       onChange={(value) =>
                         updateRegisterField("instructorCity", value)
                       }
+                      error={registerErrors.instructorCity}
                     />
                   </>
                 )}
                 {registerForm.role === "diving_center" && (
                   <div className="space-y-4">
                     <AuthField
+                      id="center-name"
                       label="Diving Center Name"
                       value={registerForm.centerName}
                       onChange={(value) =>
@@ -220,8 +242,10 @@ export function Auth() {
                       autoComplete="organization"
                       minLength={2}
                       maxLength={AUTH_FIELD_LIMITS.centerName}
+                      error={registerErrors.centerName}
                     />
                     <AuthSelectField
+                      id="center-city"
                       label="City"
                       value={registerForm.centerCity}
                       options={DIVING_CITIES}
@@ -229,16 +253,21 @@ export function Auth() {
                       onChange={(value) =>
                         updateRegisterField("centerCity", value)
                       }
+                      error={registerErrors.centerCity}
                     />
                     <AuthField
+                      id="center-license"
                       label="Diving Center License Number"
                       value={registerForm.centerLicenseNumber}
                       onChange={(value) =>
                         updateRegisterField("centerLicenseNumber", value)
                       }
                       autoComplete="off"
+                      inputMode="numeric"
+                      numericOnly
                       minLength={2}
                       maxLength={AUTH_FIELD_LIMITS.license}
+                      error={registerErrors.centerLicenseNumber}
                     />
                   </div>
                 )}

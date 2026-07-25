@@ -541,10 +541,8 @@ export function InstructorDashboard() {
                       Price (SAR) *
                     </label>
                     <input
-                      type="number"
+                      type="text"
                       inputMode="decimal"
-                      min="0"
-                      step="0.01"
                       className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:border-teal-400 focus:outline-none"
                       placeholder="e.g. 450"
                       value={form.price}
@@ -557,10 +555,8 @@ export function InstructorDashboard() {
                       Max Spots {form.type === "trip" ? "*" : "(trips only)"}
                     </label>
                     <input
-                      type="number"
+                      type="text"
                       inputMode="numeric"
-                      min="1"
-                      step="1"
                       disabled={form.type === "course"}
                       className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:border-teal-400 focus:outline-none disabled:bg-slate-50 disabled:text-slate-400"
                       placeholder="e.g. 4"

@@ -1,8 +1,16 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { ApiError } from "../../lib/apiClient";
+import {
+  hasFieldErrors,
+  type FieldErrors,
+} from "../../lib/validation";
 import type { RegistrationRole } from "../../lib/roles";
-import type { LoginPayload } from "./authService";
+import {
+  registrationConflictErrors,
+  type LoginPayload,
+} from "./authService";
 import {
   validateLoginForm,
   validateRegisterForm,
@@ -46,9 +54,14 @@ export function useAuthForm() {
     params.get("tab") === "register" ? "register" : "login",
   );
   const [showPassword, setShowPassword] = useState(false);
-  const [validationError, setValidationError] = useState<string | null>(null);
   const [loginForm, setLoginForm] = useState(EMPTY_LOGIN_FORM);
   const [registerForm, setRegisterForm] = useState(EMPTY_REGISTER_FORM);
+  const [loginErrors, setLoginErrors] = useState<
+    FieldErrors<keyof LoginPayload>
+  >({});
+  const [registerErrors, setRegisterErrors] = useState<
+    FieldErrors<keyof RegisterFormState>
+  >({});
 
   useEffect(() => {
     clearError();
@@ -58,22 +71,26 @@ export function useAuthForm() {
 
   function switchTab(nextTab: AuthTab) {
     clearError();
-    setValidationError(null);
+    setLoginErrors({});
+    setRegisterErrors({});
     setTab(nextTab);
   }
 
   function updateLoginField(field: keyof LoginPayload, value: string) {
-    setValidationError(null);
+    clearError();
+    setLoginErrors((current) => ({ ...current, [field]: undefined }));
     setLoginForm((current) => ({ ...current, [field]: value }));
   }
 
   function updateRegisterField(field: RegisterTextField, value: string) {
-    setValidationError(null);
+    clearError();
+    setRegisterErrors((current) => ({ ...current, [field]: undefined }));
     setRegisterForm((current) => ({ ...current, [field]: value }));
   }
 
   function setRegistrationRole(role: RegistrationRole) {
-    setValidationError(null);
+    clearError();
+    setRegisterErrors({});
     setRegisterForm((current) => ({ ...current, role }));
   }
 
@@ -87,8 +104,9 @@ export function useAuthForm() {
   async function handleLogin(event: FormEvent) {
     event.preventDefault();
 
-    const error = validateLoginForm(loginForm);
-    if (error) return setValidationError(error);
+    const errors = validateLoginForm(loginForm);
+    setLoginErrors(errors);
+    if (hasFieldErrors(errors)) return;
 
     try {
       await login({ ...loginForm, email: loginForm.email.trim() });
@@ -101,32 +119,50 @@ export function useAuthForm() {
   async function handleRegister(event: FormEvent) {
     event.preventDefault();
 
-    const error = validateRegisterForm(registerForm);
-    if (error) return setValidationError(error);
+    const errors = validateRegisterForm(registerForm);
+    setRegisterErrors(errors);
+    if (hasFieldErrors(errors)) return;
 
     const name = registerForm.name.trim();
     const email = registerForm.email.trim();
+    const instructorLicenseNumber =
+      registerForm.instructorLicenseNumber.trim();
+    const centerLicenseNumber =
+      registerForm.centerLicenseNumber.trim();
 
     try {
       await register({
         ...registerForm,
         name,
         email,
-        instructorLicenseNumber:
-          registerForm.instructorLicenseNumber.trim(),
+        instructorLicenseNumber,
         instructorCity: registerForm.instructorCity.trim(),
         centerName: registerForm.centerName.trim(),
         centerCity: registerForm.centerCity.trim(),
-        centerLicenseNumber: registerForm.centerLicenseNumber.trim(),
+        centerLicenseNumber,
       });
       finishAuthentication();
-    } catch {
-      // AuthProvider exposes the request error.
+    } catch (requestError) {
+      const conflictErrors = registrationConflictErrors(
+        requestError,
+        registerForm.role,
+      );
+
+      if (
+        requestError instanceof ApiError &&
+        hasFieldErrors(conflictErrors)
+      ) {
+        clearError();
+        setRegisterErrors((current) => ({
+          ...current,
+          ...conflictErrors,
+        }));
+      }
     }
   }
 
   return {
-    error: validationError ?? error,
+    error,
     goHome: () => navigate("/"),
     handleLogin,
     handleRegister,
@@ -134,7 +170,9 @@ export function useAuthForm() {
     isInitializing,
     isSubmitting,
     loginForm,
+    loginErrors,
     registerForm,
+    registerErrors,
     setRegistrationRole,
     showPassword,
     switchTab,

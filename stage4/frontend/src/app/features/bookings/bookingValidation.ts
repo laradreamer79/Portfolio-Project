@@ -1,9 +1,10 @@
 import { z } from "zod";
 import {
   emailSchema,
-  firstZodError,
   personNameSchema,
   saudiPhoneSchema,
+  zodFieldErrors,
+  type FieldErrors,
 } from "../../lib/validation";
 import type { BookingFormState, PaymentFormState } from "./useBookingFlow";
 
@@ -64,14 +65,18 @@ export const paymentDetailsSchema = z.object({
   holder: personNameSchema,
 });
 
-export function validateBookingDetails(form: BookingFormState) {
+export function validateBookingDetails(
+  form: BookingFormState,
+): FieldErrors<keyof BookingFormState> {
   const result = bookingDetailsSchema.safeParse(form);
-  return result.success ? null : firstZodError(result.error);
+  return result.success ? {} : zodFieldErrors(result.error);
 }
 
-export function validatePaymentDetails(payment: PaymentFormState) {
+export function validatePaymentDetails(
+  payment: PaymentFormState,
+): FieldErrors<keyof PaymentFormState> {
   const result = paymentDetailsSchema.safeParse(payment);
-  return result.success ? null : firstZodError(result.error);
+  return result.success ? {} : zodFieldErrors(result.error);
 }
 
 export function formatCardNumber(value: string) {
