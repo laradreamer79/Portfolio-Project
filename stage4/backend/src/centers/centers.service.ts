@@ -3,6 +3,10 @@ import type { CatalogActor } from "../common/catalog/catalog-ownership.js";
 import { Prisma } from "../generated/prisma/client.js";
 import { prisma } from "../prisma/client.js";
 import type { CenterQueryInput } from "./centers.validation.js";
+import {
+  DIVING_CITIES,
+  type DivingCity,
+} from "../common/constants/diving-cities.js";
 
 async function assertCenterAccess(id: number, actor: CatalogActor) {
   const center = await prisma.divingCenter.findUnique({
@@ -49,17 +53,24 @@ export const centersService = {
   ) {
     const { city, search, status, ownerId, actor } = filters;
     const allowAllStatuses = status === "all" && canReadAllStatuses(actor, ownerId);
+    const matchingCities = search
+      ? DIVING_CITIES.filter((candidate) =>
+          candidate.toLowerCase().includes(search.toLowerCase()),
+        )
+      : [];
     const where: Prisma.DivingCenterWhereInput = {
       ...(allowAllStatuses ? {} : centerVisibilityWhere(actor)),
       ...(ownerId !== undefined && { ownerId }),
-      ...(city && { city: { equals: city, mode: "insensitive" } }),
+      ...(city && { city }),
       ...(search && {
         AND: [
           {
             OR: [
               { name: { contains: search, mode: "insensitive" } },
               { description: { contains: search, mode: "insensitive" } },
-              { city: { contains: search, mode: "insensitive" } },
+              ...(matchingCities.length > 0
+                ? [{ city: { in: [...matchingCities] } }]
+                : []),
             ],
           },
         ],
@@ -98,7 +109,7 @@ export const centersService = {
 
   async create(data: {
     name: string;
-    city: string;
+    city: DivingCity;
     address?: string;
     licenseNumber: string;
     description?: string;
@@ -116,7 +127,7 @@ export const centersService = {
     actor: CatalogActor,
     data: Partial<{
       name: string;
-      city: string;
+      city: DivingCity;
       address: string;
       description: string;
       priceRange: string;

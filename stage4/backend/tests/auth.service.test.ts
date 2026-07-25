@@ -85,9 +85,11 @@ describe("auth service registration phone persistence", () => {
         password: "password123",
         role,
         instructorLicenseNumber: role === "instructor" ? "12345" : "",
-        instructorCity: role === "instructor" ? "Jeddah" : "",
+        instructorCity:
+          role === "instructor" ? "Jeddah" : undefined,
         centerName: role === "diving_center" ? "Jazan Diver" : "",
-        centerCity: role === "diving_center" ? "Jazan" : "",
+        centerCity:
+          role === "diving_center" ? "Jazan" : undefined,
         centerLicenseNumber:
           role === "diving_center" ? "98765" : "",
       });
