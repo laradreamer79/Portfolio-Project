@@ -5,7 +5,6 @@ import { getCenters, getCourses, getTrips } from "../catalogService";
 export const CATALOG_LEVELS = [
   "All Levels",
   "Beginner",
-  "Open Water",
   "Intermediate",
   "Advanced",
 ];
@@ -32,9 +31,7 @@ export function useExperienceCatalog(kind: ExperienceKind) {
             city,
             search: query,
             difficulty:
-              level === "All Levels" || level === "Open Water"
-                ? undefined
-                : level.toLowerCase(),
+              level === "All Levels" ? undefined : level.toLowerCase(),
           })
         : getCourses({
             city,
