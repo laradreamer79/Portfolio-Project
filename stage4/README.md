@@ -12,6 +12,7 @@ how each feature was tested.
 
 - [Current Status](#current-status)
 - [Tech Stack](#tech-stack)
+- [Production Environment](#production-environment)
 - [Run the Project](#run-the-project)
 - [Project Structure](#project-structure)
 - [Project Delivery Evidence](#project-delivery-evidence)
@@ -58,6 +59,15 @@ how each feature was tested.
 | Payments | Moyasar integration with mock payment support |
 | Testing | Postman, manual browser testing, typecheck, production build checks |
 | Dev tools | Docker Compose, npm scripts, GitHub Issues, GitHub Pull Requests |
+
+## Production Environment
+
+The production URLs, deployment configuration, environment variables,
+database migration steps, and verification checklist are documented in the
+[Production Environment guide](docs/deployment/production-environment.md).
+
+- Frontend: [https://zeroyster.onrender.com](https://zeroyster.onrender.com)
+- API health: [https://oyster-kwn3.onrender.com/api/health](https://oyster-kwn3.onrender.com/api/health)
 
 ## Run the Project
 
@@ -651,4 +661,3 @@ Sprint documentation:
 - [Team How-To Guide](docs/team-how-to-guide.md)
 - [Architecture Notes](docs/architecture.md)
 - [Production Environment](docs/deployment/production-environment.md)
-
