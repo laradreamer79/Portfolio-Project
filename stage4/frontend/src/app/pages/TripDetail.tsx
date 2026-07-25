@@ -7,6 +7,8 @@ import { useExperienceDetail } from "../features/catalog";
 import { ReviewForm, useReviewSubmission } from "../features/reviews";
 import { useAuth } from "../hooks/useAuth";
 
+const providerImageFallback = "/favicon.svg";
+
 export function TripDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -46,6 +48,8 @@ export function TripDetail() {
       </div>
     );
   }
+
+  const providerImage = center?.img || providerImageFallback;
 
   const includedItems = trip.type === "course" 
     ? [
@@ -314,8 +318,11 @@ export function TripDetail() {
                   className="flex items-center gap-3 w-full hover:bg-slate-50 rounded-xl p-2 -m-2 transition-colors"
                 >
                   <img 
-                    src={center?.img ?? trip.img} 
+                    src={providerImage}
                     alt={center?.name ?? "Independent Instructor"} 
+                    onError={(event) => {
+                      event.currentTarget.src = providerImageFallback;
+                    }}
                     className="w-12 h-12 rounded-xl object-cover border border-slate-100"
                   />
                   <div className="flex-1 text-left min-w-0">
