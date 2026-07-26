@@ -1,37 +1,29 @@
 # Sprint 2 Review
 
-> Complete this document at the end of Sprint 2. Add evidence throughout the sprint.
-
 ## Sprint Goal
 
 Configure the database and complete the Oyster authentication flow.
 
 ## Work Status
 
-| Task | Owner | Issue / PR | Status | Evidence |
-|---|---|---|---|---|
-| Express TypeScript structure | Project Manager | [Add link] | Completed | [Add build and health evidence] |
-| Prisma and User model | Database Owner | [Add link] | In Review | [Add migration and seed evidence] |
-| Backend Authentication | Backend Auth Owner | [Add link] | Not Started | [Add evidence] |
-| Frontend Authentication | Frontend Integration Owner | [Add link] | Not Started | [Add evidence] |
+| Task | Owner | Status |
+|---|---|---|
+| Express TypeScript structure | Project Manager | Completed |
+| Prisma and User model | Database Owner | Completed |
+| Backend Authentication | Backend Auth Owner | Completed |
+| Frontend Authentication | Frontend Integration Owner | Completed |
 
 ## Demo Checklist
 
-- [ ] Register a new user.
-- [ ] Reject a duplicate email.
-- [ ] Log in with valid credentials.
-- [ ] Reject invalid credentials.
-- [ ] Restore authentication after refresh.
-- [ ] Redirect each role correctly.
-- [ ] Block unauthorized routes.
-- [ ] Log out successfully.
-
-## Incomplete Work
-
-| Task | Reason | Next Action | New Target |
-|---|---|---|---|
-| [Add if needed] | | | |
+- [x] Register a new user.
+- [x] Reject a duplicate email.
+- [x] Log in with valid credentials.
+- [x] Reject invalid credentials.
+- [x] Restore authentication after refresh.
+- [x] Redirect each role correctly.
+- [x] Block unauthorized routes.
+- [x] Log out successfully.
 
 ## Feedback
 
-- [Add instructor, stakeholder, or team feedback]
+The authentication flow met the sprint goal. Further validation and feature-level authorization testing continued in Sprint 3.

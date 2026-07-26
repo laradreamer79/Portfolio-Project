@@ -2,9 +2,7 @@
 
 ## Sprint Details
 
-- Status: Planned
-- Start date: [Add date]
-- End date: [Add date]
+- Status: Completed
 - Sprint goal: Complete payment, quality assurance, deployment, and final project delivery.
 
 ## Planned Scope

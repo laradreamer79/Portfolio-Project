@@ -1,21 +1,27 @@
 # Sprint 3 Retrospective
 
-> Complete this document during the Sprint 3 retrospective meeting.
-
 ## What Went Well
 
-- [Add observations]
+- Catalog pages were connected to real backend data.
+- Booking, review, and dashboard flows became functional end to end.
+- Feature-based folders made frontend and backend flows easier to trace.
 
 ## What Did Not Go Well
 
-- [Add observations]
+- Some pages initially contained service and state-management logic.
+- Concurrent feature branches caused merge conflicts.
+- Inconsistent validation required additional cleanup.
 
 ## Lessons Learned
 
-- [Add lessons]
+- Smaller pull requests reduce conflicts and simplify reviews.
+- Business rules must be enforced by backend services, not only the UI.
+- Keeping validation close to each feature improves maintainability.
 
 ## Improvement Actions
 
 | Action | Owner | Due Sprint | Status |
 |---|---|---|---|
-| [Add action] | [Owner] | Sprint 4 | Planned |
+| Extract page logic into feature hooks and services | Frontend team | Sprint 4 | Completed |
+| Standardize backend feature structure | Backend team | Sprint 4 | Completed |
+| Expand validation and authorization tests | Team | Sprint 4 | Completed |
