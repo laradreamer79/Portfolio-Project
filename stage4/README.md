@@ -238,17 +238,23 @@ Purpose:
 Registers and logs in users, stores JWT tokens on the client, returns the
 current logged-in user, and protects role-specific pages and API routes.
 
+#### Key Files
+
 | Area | Important Files |
 |---|---|
 | Backend routes and logic | `backend/src/auth/auth.routes.ts`, `auth.controller.ts`, `auth.service.ts`, `auth.validation.ts`, `auth.token.ts` |
 | Backend protection | `backend/src/middleware/auth.middleware.ts`, `role.middleware.ts` |
 | Frontend auth | `frontend/src/app/features/auth/`, `frontend/src/app/context/`, `frontend/src/app/hooks/useAuth.ts` |
 
+#### API Routes
+
 | Method | Route | Access | Purpose |
 |---|---|---|---|
 | POST | `/api/auth/register` | Public | Register a user, instructor, or diving center account |
 | POST | `/api/auth/login` | Public | Login and return JWT |
 | GET | `/api/auth/me` | Authenticated | Return current logged-in user |
+
+#### Validation and Business Rules
 
 | Validation or Rule | Details |
 |---|---|
@@ -257,6 +263,8 @@ current logged-in user, and protects role-specific pages and API routes.
 | Admin accounts | Not available through public registration; created only via `npm run seed` |
 | Invalid credentials | Login rejects wrong email or password |
 | Authorization | Protected routes read the logged-in user from the token |
+
+#### Test Results
 
 | Test | Expected Result | Status |
 |---|---|---|
@@ -273,11 +281,15 @@ Purpose:
 Shows diving centers to visitors, supports search and filters, and allows center
 owners or admins to manage center data.
 
+#### Key Files
+
 | Area | Important Files |
 |---|---|
 | Backend | `backend/src/centers/centers.routes.ts`, `centers.controller.ts`, `centers.service.ts`, `centers.validation.ts` |
 | Shared catalog helpers | `backend/src/common/catalog/`, `backend/src/common/constants/diving-cities.ts` |
 | Frontend | `frontend/src/app/pages/Centers.tsx`, `CenterDetail.tsx`, `frontend/src/app/features/catalog/` |
+
+#### API Routes
 
 | Method | Route | Access | Purpose |
 |---|---|---|---|
@@ -287,6 +299,8 @@ owners or admins to manage center data.
 | PUT | `/api/centers/:id` | Owner, admin | Update center profile |
 | DELETE | `/api/centers/:id` | Admin | Delete center |
 
+#### Validation and Business Rules
+
 | Validation or Rule | Details |
 |---|---|
 | Search and filters | City, status, query, and catalog filters are validated |
@@ -295,6 +309,8 @@ owners or admins to manage center data.
 | Image | Center image is handled through upload middleware |
 | UI update | Centers page follows the trips page style, removes the sidebar, places filters beside search, and removes verified-only |
 | Data quality | City and location names should be reviewed for spelling and consistency |
+
+#### Test Results
 
 | Test | Expected Result | Status |
 |---|---|---|
@@ -311,12 +327,16 @@ Purpose:
 Shows diving trips, supports details, search, filters, image upload, and owner
 management for diving centers and instructors.
 
+#### Key Files
+
 | Area | Important Files |
 |---|---|
 | Backend | `backend/src/trips/` |
 | Ownership helpers | `backend/src/common/catalog/catalog-ownership.ts` |
 | Validation helpers | `backend/src/common/catalog/catalog-validation.ts` |
 | Frontend | `frontend/src/app/pages/Trips.tsx`, `TripDetail.tsx`, `frontend/src/app/features/catalog/` |
+
+#### API Routes
 
 | Method | Route | Access | Purpose |
 |---|---|---|---|
@@ -326,6 +346,8 @@ management for diving centers and instructors.
 | PUT | `/api/trips/:id` | Owner, admin | Update trip |
 | DELETE | `/api/trips/:id` | Owner, admin | Delete trip |
 
+#### Validation and Business Rules
+
 | Validation or Rule | Details |
 |---|---|
 | Required fields | Title, description, duration, difficulty, price, capacity, and schedule date. City and image are not required by the API |
@@ -333,6 +355,8 @@ management for diving centers and instructors.
 | Trusted owner | API does not trust owner IDs from the request body |
 | Case handling | Search and filters handle upper and lower case consistently |
 | Public status behavior | Public visitors see approved trips only |
+
+#### Test Results
 
 | Test | Expected Result | Status |
 |---|---|---|
@@ -351,11 +375,15 @@ Purpose:
 Shows diving courses, supports details, search, filters, image upload, and owner
 management for diving centers and instructors.
 
+#### Key Files
+
 | Area | Important Files |
 |---|---|
 | Backend | `backend/src/courses/` |
 | Ownership helpers | `backend/src/common/catalog/catalog-ownership.ts` |
 | Frontend | `frontend/src/app/pages/Courses.tsx`, `CourseDetail.tsx`, `frontend/src/app/features/catalog/` |
+
+#### API Routes
 
 | Method | Route | Access | Purpose |
 |---|---|---|---|
@@ -365,12 +393,16 @@ management for diving centers and instructors.
 | PUT | `/api/courses/:id` | Owner, admin | Update course |
 | DELETE | `/api/courses/:id` | Owner, admin | Delete course |
 
+#### Validation and Business Rules
+
 | Validation or Rule | Details |
 |---|---|
 | Required fields | Title, description, level, price, and start date. City, capacity, and image are not required by the API |
 | Ownership | Course can be center-owned or instructor-owned |
 | Trusted owner | API decides ownership from the logged-in user |
 | Public catalog | Approved center-owned and instructor-owned courses are visible |
+
+#### Test Results
 
 | Test | Expected Result | Status |
 |---|---|---|
@@ -388,6 +420,8 @@ Purpose:
 Allows diving centers and instructors to add and manage their own trips and
 courses from dashboard pages.
 
+#### Key Files
+
 | Area | Important Files |
 |---|---|
 | Center dashboard | `frontend/src/app/pages/CenterDashboard.tsx`, `frontend/src/app/features/center-dashboard/` |
@@ -395,12 +429,16 @@ courses from dashboard pages.
 | Listing forms | `frontend/src/app/features/listing-management/` |
 | Backend catalog APIs | `backend/src/trips/`, `backend/src/courses/`, `backend/src/common/catalog/` |
 
+#### Validation and Business Rules
+
 | Validation or Rule | Details |
 |---|---|
 | Image upload | Trip and course forms support image upload through multipart form data |
 | Center ownership | Diving center listings are linked to the logged-in center |
 | Instructor ownership | Instructor listings are linked to the instructor profile and do not require a center |
 | Listing visibility | New listings appear in the owner dashboard and catalog when approved |
+
+#### Test Results
 
 | Test | Expected Result | Status |
 |---|---|---|
@@ -415,11 +453,15 @@ courses from dashboard pages.
 Purpose:
 Handles center and listing images when provided and uploads them to Cloudinary.
 
+#### Key Files
+
 | Area | Important Files |
 |---|---|
 | Upload middleware | `backend/src/middleware/upload.middleware.ts` |
 | Cloudinary config | `backend/src/config/cloudinary.ts` |
 | Listing forms | `frontend/src/app/features/listing-management/` |
+
+#### Validation and Business Rules
 
 | Validation or Rule | Details |
 |---|---|
@@ -427,6 +469,8 @@ Handles center and listing images when provided and uploads them to Cloudinary.
 | Optional listing images | Trip and course creation can attach an uploaded image when provided |
 | Cloudinary config | Missing Cloudinary variables fail clearly during upload instead of crashing local startup |
 | Catalog display | Uploaded image URL appears on catalog cards and detail pages |
+
+#### Test Results
 
 | Test | Expected Result | Status |
 |---|---|---|
@@ -441,10 +485,14 @@ Purpose:
 Lets users create bookings for trips or courses, view their bookings, cancel
 their own bookings, and lets admins list bookings.
 
+#### Key Files
+
 | Area | Important Files |
 |---|---|
 | Backend | `backend/src/bookings/` |
 | Frontend | `frontend/src/app/features/bookings/`, `frontend/src/app/pages/Booking.tsx`, `BookingDetail.tsx` |
+
+#### API Routes
 
 | Method | Route | Access | Purpose |
 |---|---|---|---|
@@ -453,11 +501,15 @@ their own bookings, and lets admins list bookings.
 | GET | `/api/bookings/my` | Authenticated | List current user's bookings |
 | GET | `/api/bookings` | Admin | List all bookings |
 
+#### Validation and Business Rules
+
 | Validation or Rule | Details |
 |---|---|
 | Valid listing | Booking must reference an existing trip or course |
 | Invalid booking | Missing or invalid booking data is rejected |
 | Ownership | Users can access their own bookings. Admin can access all |
+
+#### Test Results
 
 | Test | Expected Result | Status |
 |---|---|---|
@@ -473,11 +525,15 @@ Purpose:
 Lets users create reviews and lets visitors filter reviews by center, trip, or
 course. Admins can manage review records.
 
+#### Key Files
+
 | Area | Important Files |
 |---|---|
 | Backend | `backend/src/reviews/` |
 | Frontend | `frontend/src/app/features/reviews/` |
 | Admin UI | `frontend/src/app/features/admin-dashboard/` |
+
+#### API Routes
 
 | Method | Route | Access | Purpose |
 |---|---|---|---|
@@ -488,11 +544,15 @@ course. Admins can manage review records.
 | GET | `/api/reviews/trip/:tripId` | Public | Reviews for a trip |
 | GET | `/api/reviews/course/:courseId` | Public | Reviews for a course |
 
+#### Validation and Business Rules
+
 | Validation or Rule | Details |
 |---|---|
 | Rating | Rating is validated before saving |
 | Target | Review must belong to a center, trip, or course |
 | Admin moderation | Admin can list and delete reviews |
+
+#### Test Results
 
 | Test | Expected Result | Status |
 |---|---|---|
@@ -509,11 +569,15 @@ Purpose:
 Supports payment creation, payment lookup, admin payment listing, mock payment
 mode for local testing, and webhook handling.
 
+#### Key Files
+
 | Area | Important Files |
 |---|---|
 | Backend | `backend/src/payments/` |
 | Payment gateway | `backend/src/payments/moyasar.gateway.ts` |
 | Frontend | `frontend/src/app/features/payments/`, `frontend/src/app/pages/PaymentCallback.tsx` |
+
+#### API Routes
 
 | Method | Route | Access | Purpose |
 |---|---|---|---|
@@ -522,6 +586,8 @@ mode for local testing, and webhook handling.
 | GET | `/api/payments` | Admin | List all payments |
 | POST | `/api/payments/webhook` | Public webhook | Receive payment status updates |
 
+#### Validation and Business Rules
+
 | Validation or Rule | Details |
 |---|---|
 | Payment config | Missing or invalid config returns a clear error |
@@ -529,7 +595,7 @@ mode for local testing, and webhook handling.
 | Access control | Users can view their own payment. Admin can view all |
 | Webhook | Webhook updates payment status when provider callback is received |
 
-**Moyasar Test Card**
+#### Moyasar Test Card
 
 For sandbox testing with Moyasar, use its test card details at checkout:
 
@@ -545,6 +611,8 @@ For sandbox testing with Moyasar, use its test card details at checkout:
 > mock mode, payment creation bypasses Moyasar; the current frontend still
 > tokenizes the entered card before submitting the booking flow.
 
+#### Test Results
+
 | Test | Expected Result | Status |
 |---|---|---|
 | Create mock payment | Payment record created | Pass |
@@ -559,10 +627,14 @@ Purpose:
 Provides admin-only access to project data and management actions for centers,
 reviews, bookings, payments, and dashboard statistics.
 
+#### Key Files
+
 | Area | Important Files |
 |---|---|
 | Backend | `backend/src/admin/`, `backend/src/middleware/role.middleware.ts` |
 | Frontend | `frontend/src/app/pages/AdminDashboard.tsx`, `frontend/src/app/features/admin-dashboard/` |
+
+#### API Routes
 
 | Method | Route | Access | Purpose |
 |---|---|---|---|
@@ -573,11 +645,15 @@ reviews, bookings, payments, and dashboard statistics.
 | GET | `/api/payments` | Admin | List payments |
 | GET | `/api/reviews` | Admin | List reviews |
 
+#### Validation and Business Rules
+
 | Validation or Rule | Details |
 |---|---|
 | Admin-only access | Non-admin users are blocked |
 | Admin actions | Admin controls are connected to backend routes |
 | Data views | Admin can inspect center, review, booking, and payment data where available |
+
+#### Test Results
 
 | Test | Expected Result | Status |
 |---|---|---|
@@ -592,10 +668,14 @@ Purpose:
 Provides repeatable development data instead of manually recreating base records
 in Prisma Studio.
 
+#### Key Files
+
 | Area | Important Files |
 |---|---|
 | Prisma seed | `backend/prisma/seed.ts` |
 | Schema | `backend/prisma/schema.prisma` |
+
+#### Seed Contents
 
 | Seed Data | Purpose |
 |---|---|
@@ -606,6 +686,8 @@ in Prisma Studio.
 | One approved diving center | Catalog and center detail testing |
 | One approved trip | Trip catalog and booking testing |
 | One approved course | Course catalog and booking testing |
+
+#### Test Results
 
 | Test | Expected Result | Status |
 |---|---|---|
@@ -619,15 +701,21 @@ Purpose:
 Confirms the API is running and returns consistent errors for invalid routes,
 validation failures, authorization failures, and unexpected server errors.
 
+#### Key Files
+
 | Area | Important Files |
 |---|---|
 | App setup | `backend/src/app.ts`, `backend/src/server.ts` |
 | Health | `backend/src/health/` |
 | Errors | `backend/src/middleware/error.middleware.ts`, `not-found.middleware.ts`, `backend/src/utils/http-error.ts` |
 
+#### API Routes
+
 | Method | Route | Access | Purpose |
 |---|---|---|---|
 | GET | `/api/health` | Public | API health check |
+
+#### Test Results
 
 | Test | Expected Result | Status |
 |---|---|---|
