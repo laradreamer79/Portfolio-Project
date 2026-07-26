@@ -2,9 +2,7 @@
 
 ## Sprint Details
 
-- Status: Planned
-- Start date: [Add date]
-- End date: [Add date]
+- Status: Completed
 - Sprint goal: Replace mock data with real APIs and complete catalog, booking, review, and dashboard features.
 
 ## Planned Scope
