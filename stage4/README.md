@@ -602,7 +602,7 @@ For sandbox testing with Moyasar, use its test card details at checkout:
 | Field | Value |
 |---|---|
 | Card number | `4111 1111 1111 1111` |
-| Name on card | `Test User` |
+| Name on card | `SARA OMAR` |
 | Expiry | `12/30` |
 | CVV | `123` |
 
