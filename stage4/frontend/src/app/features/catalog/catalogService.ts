@@ -29,6 +29,7 @@ export type ApiCenter = {
   imageUrl?: string | null;
   status?: string;
   createdAt?: string;
+  averageRating?: number;
   _count?: ApiCount;
   trips?: ApiTrip[];
   courses?: ApiCourse[];
@@ -147,6 +148,14 @@ function formatLevel(value: string) {
 }
 
 export function toCenter(center: ApiCenter): Center {
+  const reviewCount = center._count?.reviews ?? center.reviews?.length ?? 0;
+  const rating =
+    center.averageRating ??
+    (reviewCount > 0 && center.reviews && center.reviews.length > 0
+      ? center.reviews.reduce((total, review) => total + review.rating, 0) /
+        center.reviews.length
+      : 0);
+
   return {
     id: center.id,
     name: center.name,
@@ -156,8 +165,8 @@ export function toCenter(center: ApiCenter): Center {
     longDescription:
       center.description ?? "Explore diving experiences, courses, and trips from this diving provider.",
     priceRange: center.priceRange ?? "Contact for pricing",
-    rating: 0,
-    reviews: center._count?.reviews ?? 0,
+    rating: Number(rating.toFixed(1)),
+    reviews: reviewCount,
     phone: center.contactPhone ?? "Not provided",
     email: center.contactEmail ?? "Not provided",
     address: center.address ?? center.city,
