@@ -3,8 +3,6 @@
 ## Sprint Details
 
 - Status: Completed
-- Start date: [Add date]
-- End date: [Add date]
 - Sprint goal: Establish the project foundation and source-control workflow, configure the frontend and backend, and build the main frontend UI pages.
 
 ## Planned Work

@@ -16,13 +16,13 @@ Build and demonstrate the Oyster frontend UI with working navigation and reusabl
 
 ## Demonstration
 
-| Demonstrated flow | Result | Evidence |
-|---|---|---|
-| Navigate between public pages | Completed | [Add screenshot or video] |
-| Open center, trip, and course details | Completed with mock data | [Add evidence] |
-| Open authentication UI | Completed as UI only | [Add evidence] |
-| Open role dashboard pages | Completed as UI only | [Add evidence] |
-| Production build and lint | Passed | [Add terminal evidence] |
+| Demonstrated flow | Result |
+|---|---|
+| Navigate between public pages | Completed |
+| Open center, trip, and course details | Completed with mock data |
+| Open authentication UI | Completed as UI only |
+| Open role dashboard pages | Completed as UI only |
+| Production build and lint | Passed |
 
 ## Incomplete or Deferred Work
 
@@ -32,4 +32,4 @@ Build and demonstrate the Oyster frontend UI with working navigation and reusabl
 
 ## Feedback
 
-- [Add instructor, stakeholder, or team feedback]
+The team agreed to connect the UI to real authentication and API data in the following sprints.
