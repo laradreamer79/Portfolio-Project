@@ -1,4 +1,4 @@
-import { Calendar, Clock, GraduationCap, MapPin, Waves, X } from "lucide-react";
+import { Calendar, Clock, GraduationCap, MapPin, Waves } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useMyBookings } from "../features/bookings";
 import { useAuth } from "../hooks/useAuth";
@@ -20,10 +20,7 @@ export function UserDashboard() {
     activeCount,
     bookings,
     cancelledCount,
-    cancellingId,
-    cancelError,
     error,
-    handleCancel,
     loading,
   } = useMyBookings(token);
 
@@ -56,12 +53,6 @@ export function UserDashboard() {
             {error}
           </div>
         )}
-        {cancelError && (
-          <div className="mb-5 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {cancelError}
-          </div>
-        )}
-
         {loading && <p className="text-sm text-slate-400">Loading your bookings...</p>}
 
         {!loading && bookings.length === 0 && !error && (
@@ -160,7 +151,7 @@ export function UserDashboard() {
                         <span className="text-xs text-slate-400">Total</span>
                         <span className="font-semibold text-slate-800">SAR {Number(booking.totalPrice).toLocaleString()}</span>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex">
                         <button
                           type="button"
                           onClick={() => navigate(`/${isCourse ? "courses" : "trips"}/${item.id}`)}
@@ -168,17 +159,6 @@ export function UserDashboard() {
                         >
                           View details
                         </button>
-                        {booking.status !== "cancelled" && (
-                          <button
-                            type="button"
-                            onClick={() => handleCancel(booking.id)}
-                            disabled={cancellingId === booking.id}
-                            className="flex items-center gap-1 rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 disabled:opacity-40"
-                          >
-                            <X className="h-3.5 w-3.5" />
-                            {cancellingId === booking.id ? "Cancelling..." : "Cancel"}
-                          </button>
-                        )}
                       </div>
                     </div>
                   </div>
