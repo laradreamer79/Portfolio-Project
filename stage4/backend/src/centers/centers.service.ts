@@ -78,7 +78,7 @@ export const centersService = {
       ...(status && status !== "all" && { status }),
     };
 
-    return prisma.divingCenter.findMany({
+    const centers = await prisma.divingCenter.findMany({
       where,
       include: {
         owner: { select: { id: true, name: true, email: true } },
@@ -86,6 +86,26 @@ export const centersService = {
       },
       orderBy: { createdAt: "desc" },
     });
+
+    const centerIds = centers.map((center) => center.id);
+    const ratingAverages = centerIds.length
+      ? await prisma.review.groupBy({
+          by: ["centerId"],
+          where: { centerId: { in: centerIds } },
+          _avg: { rating: true },
+        })
+      : [];
+    const averageRatingByCenter = new Map(
+      ratingAverages.map((rating) => [
+        rating.centerId,
+        rating._avg.rating ?? 0,
+      ]),
+    );
+
+    return centers.map((center) => ({
+      ...center,
+      averageRating: averageRatingByCenter.get(center.id) ?? 0,
+    }));
   },
 
   async getById(id: number, actor?: CatalogActor) {
