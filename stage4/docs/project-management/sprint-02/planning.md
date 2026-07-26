@@ -2,9 +2,7 @@
 
 ## Sprint Details
 
-- Status: In Progress
-- Start date: [Add date]
-- End date: [Add date]
+- Status: Completed
 - Sprint goal: Configure the database and complete Register, Login, Logout, and role-based authentication.
 
 ## Team Responsibilities

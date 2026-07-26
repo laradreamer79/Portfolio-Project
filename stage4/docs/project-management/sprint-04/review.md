@@ -1,31 +1,28 @@
 # Sprint 4 Review
 
-> Complete this document at the end of Sprint 4.
-
 ## Release Summary
 
-- Release date: [Add date]
-- Release commit: [Add commit]
-- Frontend URL: [Add URL]
-- Backend URL: [Add URL]
+- Frontend: [Oyster production website](https://zeroyster.onrender.com)
+- Backend: [Oyster API health check](https://oyster-kwn3.onrender.com/api/health)
 
 ## Completed Scope
 
-| Feature | Result | Evidence |
-|---|---|---|
-| Authentication | [Pass / Fail] | [Add link] |
-| Catalog | [Pass / Fail] | [Add link] |
-| Booking | [Pass / Fail] | [Add link] |
-| Payment | [Pass / Fail] | [Add link] |
-| Dashboards | [Pass / Fail] | [Add link] |
+| Feature | Result |
+|---|---|
+| Authentication | Pass |
+| Catalog | Pass |
+| Booking | Pass |
+| Payment | Pass |
+| Dashboards | Pass |
 
 ## Quality Summary
 
-- Automated tests: [Add result]
-- Postman collection: [Add result]
-- End-to-end tests: [Add result]
-- Open defects: [Add count and links]
+- Frontend automated tests: Pass
+- Backend automated tests: Pass
+- Postman collection: Available for API verification
+- End-to-end browser automation: Not configured
+- Open critical defects: None recorded
 
 ## Final Feedback
 
-- [Add instructor, stakeholder, and team feedback]
+The release met the required core flows. End-to-end browser automation remains a recommended future improvement.
