@@ -678,6 +678,7 @@ Manual verification:
 | Pull requests | [Repository pull requests](https://github.com/laradreamer79/Portfolio-Project/pulls) |
 | Issues | [Repository issues](https://github.com/laradreamer79/Portfolio-Project/issues) |
 | Bug tracker | [Bug-labeled issues](https://github.com/laradreamer79/Portfolio-Project/issues?q=is%3Aissue+label%3Abug) |
+| Project boards | [Repository projects](https://github.com/laradreamer79/Portfolio-Project/projects) |
 | Source repository workflow | [Source repository and workflow](docs/project-management/source-repository.md) |
 | Bug tracking process | [Bug tracking](docs/project-management/bug-tracking.md) |
 
