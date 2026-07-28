@@ -16,10 +16,11 @@ async function main() {
   // =====================
   const user = await prisma.user.upsert({
     where: { email: "user@example.com" },
-    update: { passwordHash },
+    update: { passwordHash, phone: "0511111111" },
     create: {
       name: "Test User",
       email: "user@example.com",
+      phone: "0511111111",
       passwordHash,
       role: "user",
     },
@@ -27,10 +28,11 @@ async function main() {
 
   const instructor = await prisma.user.upsert({
     where: { email: "instructor@example.com" },
-    update: { passwordHash },
+    update: { passwordHash, phone: "0522222222" },
     create: {
       name: "Test Instructor",
       email: "instructor@example.com",
+      phone: "0522222222",
       passwordHash,
       role: "instructor",
     },
@@ -38,10 +40,11 @@ async function main() {
 
   const centerOwner = await prisma.user.upsert({
     where: { email: "divingcenter@example.com" },
-    update: { passwordHash },
+    update: { passwordHash, phone: "0533333333" },
     create: {
       name: "Test Diving Center",
       email: "divingcenter@example.com",
+      phone: "0533333333",
       passwordHash,
       role: "diving_center",
     },
@@ -49,10 +52,11 @@ async function main() {
 
   await prisma.user.upsert({
     where: { email: "admin@example.com" },
-    update: { passwordHash },
+    update: { passwordHash, phone: "0544444444" },
     create: {
       name: "Test Admin",
       email: "admin@example.com",
+      phone: "0544444444",
       passwordHash,
       role: "admin",
     },
