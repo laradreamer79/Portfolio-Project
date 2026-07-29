@@ -69,16 +69,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsInitializing(false);
       return;
     }
+    const storedAuth = stored;
 
-    authService
-      .getMe(stored.token)
-      .then((currentUser) => {
-        setToken(stored.token);
+    async function restoreAuth() {
+      try {
+        const currentUser = await authService.getMe(storedAuth.token);
+        setToken(storedAuth.token);
         setUser(currentUser);
-        saveStoredAuth({ token: stored.token, user: currentUser });
-      })
-      .catch(() => saveStoredAuth(null))
-      .finally(() => setIsInitializing(false));
+        saveStoredAuth({ token: storedAuth.token, user: currentUser });
+      } catch {
+        saveStoredAuth(null);
+      } finally {
+        setIsInitializing(false);
+      }
+    }
+
+    void restoreAuth();
   }, []);
 
   const login = useCallback(async (payload: LoginPayload) => {

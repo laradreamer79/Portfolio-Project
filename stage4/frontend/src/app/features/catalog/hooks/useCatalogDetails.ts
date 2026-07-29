@@ -36,48 +36,46 @@ export function useExperienceDetail(
     setError(null);
 
     async function load() {
-      if (kind === "trip") {
-        const data = await getTripById(experienceId, token);
+      try {
+        if (kind === "trip") {
+          const data = await getTripById(experienceId, token);
+          if (!active) return;
+
+          setExperience(data.trip);
+          setCenter(data.center);
+          setReviews(data.reviews);
+
+          const related = await getTrips(
+            data.center?.city ? { city: data.center.city } : {},
+            token,
+          );
+          if (!active) return;
+          setSimilarExperiences(
+            related
+              .filter((candidate) => candidate.id !== data.trip.id)
+              .slice(0, 3),
+          );
+          return;
+        }
+
+        const data = await getCourseById(experienceId, token);
         if (!active) return;
 
-        setExperience(data.trip);
+        setExperience(data.course);
         setCenter(data.center);
         setReviews(data.reviews);
 
-        const related = await getTrips(
+        const related = await getCourses(
           data.center?.city ? { city: data.center.city } : {},
           token,
         );
         if (!active) return;
         setSimilarExperiences(
           related
-            .filter((candidate) => candidate.id !== data.trip.id)
+            .filter((candidate) => candidate.id !== data.course.id)
             .slice(0, 3),
         );
-        return;
-      }
-
-      const data = await getCourseById(experienceId, token);
-      if (!active) return;
-
-      setExperience(data.course);
-      setCenter(data.center);
-      setReviews(data.reviews);
-
-      const related = await getCourses(
-        data.center?.city ? { city: data.center.city } : {},
-        token,
-      );
-      if (!active) return;
-      setSimilarExperiences(
-        related
-          .filter((candidate) => candidate.id !== data.course.id)
-          .slice(0, 3),
-      );
-    }
-
-    load()
-      .catch((requestError: unknown) => {
+      } catch (requestError) {
         if (!active) return;
         setError(
           requestError instanceof Error
@@ -88,10 +86,12 @@ export function useExperienceDetail(
         setCenter(undefined);
         setReviews([]);
         setSimilarExperiences([]);
-      })
-      .finally(() => {
+      } finally {
         if (active) setLoading(false);
-      });
+      }
+    }
+
+    void load();
 
     return () => {
       active = false;
@@ -142,14 +142,14 @@ export function useCenterDetail(id: string | undefined) {
     setLoading(true);
     setError(null);
 
-    getCenterById(centerId)
-      .then((data) => {
+    async function loadCenter() {
+      try {
+        const data = await getCenterById(centerId);
         if (!active) return;
         setCenter(data.center);
         setExperiences([...data.trips, ...data.courses]);
         setReviews(data.reviews);
-      })
-      .catch((requestError: unknown) => {
+      } catch (requestError) {
         if (!active) return;
         setError(
           requestError instanceof Error
@@ -159,10 +159,12 @@ export function useCenterDetail(id: string | undefined) {
         setCenter(null);
         setExperiences([]);
         setReviews([]);
-      })
-      .finally(() => {
+      } finally {
         if (active) setLoading(false);
-      });
+      }
+    }
+
+    void loadCenter();
 
     return () => {
       active = false;
