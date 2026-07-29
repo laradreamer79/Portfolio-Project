@@ -38,6 +38,14 @@ function errorDetails(payload: unknown): unknown {
   return (payload as { details?: unknown }).details;
 }
 
+async function parseJson(response: Response): Promise<unknown> {
+  try {
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
 export async function apiRequest<T>(
   path: string,
   options: RequestOptions = {},
@@ -62,9 +70,7 @@ export async function apiRequest<T>(
     const isJson = response.headers.get("content-type")?.includes(
       "application/json",
     );
-    const payload: unknown = isJson
-      ? await response.json().catch(() => null)
-      : null;
+    const payload = isJson ? await parseJson(response) : null;
 
     if (!response.ok) {
       throw new ApiError(

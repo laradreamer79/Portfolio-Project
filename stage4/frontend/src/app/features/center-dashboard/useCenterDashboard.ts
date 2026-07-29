@@ -61,14 +61,21 @@ export function useCenterDashboard({
     if (!token || !userId) return;
 
     let active = true;
+    const authToken = token;
 
-    getCenters({ status: "all", ownerId: userId }, token)
-      .then((centers) => {
+    async function loadCenter() {
+      try {
+        const centers = await getCenters(
+          { status: "all", ownerId: userId },
+          authToken,
+        );
         if (active) setCenter(centers[0] ?? null);
-      })
-      .catch(() => {
+      } catch {
         if (active) setCenter(null);
-      });
+      }
+    }
+
+    void loadCenter();
 
     return () => {
       active = false;

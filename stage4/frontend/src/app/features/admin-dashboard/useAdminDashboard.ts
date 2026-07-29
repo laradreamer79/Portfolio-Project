@@ -75,28 +75,35 @@ export function useAdminDashboard(token: string | null) {
     if (!token) return;
 
     let active = true;
+    const authToken = token;
 
-    getAdminDashboard(token)
-      .then((summary) => {
+    async function loadDashboardSummary() {
+      try {
+        const summary = await getAdminDashboard(authToken);
         if (active) setDashboard(summary);
-      })
-      .catch(() => {
+      } catch {
         if (active) setDashboard(null);
-      });
+      }
+    }
 
-    getAdminProfile(token)
-      .then((adminProfile) => {
+    async function loadAdminProfile() {
+      try {
+        const adminProfile = await getAdminProfile(authToken);
         if (active) setProfile(adminProfile);
-      })
-      .catch(() => {
+      } catch {
         if (active) {
           setProfile(null);
           setProfileError("Unable to load the admin profile.");
         }
-      });
+      }
+    }
 
-    getCenters({ status: "all" }, token)
-      .then((centerData) => {
+    async function loadCenters() {
+      try {
+        const centerData = await getCenters(
+          { status: "all" },
+          authToken,
+        );
         if (!active) return;
         setCenters(
           centerData.map((center) => ({
@@ -104,27 +111,35 @@ export function useAdminDashboard(token: string | null) {
             status: toCenterStatus(center.status),
           })),
         );
-      })
-      .catch(() => {
+      } catch {
         if (active) setCenters([]);
-      });
+      }
+    }
 
-    getAllBookings(token)
-      .then((bookingData) => {
+    async function loadBookings() {
+      try {
+        const bookingData = await getAllBookings(authToken);
         if (active) setBookings(bookingData);
-      })
-      .catch(() => {
+      } catch {
         if (active) setBookings([]);
-      });
+      }
+    }
 
-    getAllReviews(token)
-      .then((reviewData) => {
+    async function loadReviews() {
+      try {
+        const reviewData = await getAllReviews(authToken);
         if (!active) return;
         setReviews(reviewData.map(toReview));
-      })
-      .catch(() => {
+      } catch {
         if (active) setReviews([]);
-      });
+      }
+    }
+
+    void loadDashboardSummary();
+    void loadAdminProfile();
+    void loadCenters();
+    void loadBookings();
+    void loadReviews();
 
     return () => {
       active = false;

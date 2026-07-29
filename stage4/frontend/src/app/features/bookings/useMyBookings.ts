@@ -20,24 +20,27 @@ export function useMyBookings(token: string | null) {
     }
 
     let active = true;
+    const authToken = token;
     setLoading(true);
     setError(null);
 
-    getMyBookings(token)
-      .then((data) => {
+    async function loadBookings() {
+      try {
+        const data = await getMyBookings(authToken);
         if (active) setBookings(data);
-      })
-      .catch((requestError: unknown) => {
+      } catch (requestError) {
         if (!active) return;
         setError(
           requestError instanceof Error
             ? requestError.message
             : "Unable to load your bookings.",
         );
-      })
-      .finally(() => {
+      } finally {
         if (active) setLoading(false);
-      });
+      }
+    }
+
+    void loadBookings();
 
     return () => {
       active = false;
