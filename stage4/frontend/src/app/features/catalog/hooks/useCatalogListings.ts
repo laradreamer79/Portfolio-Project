@@ -39,13 +39,16 @@ export function useExperienceCatalog(kind: ExperienceKind) {
             level: level === "All Levels" ? undefined : level,
           });
 
-    Promise.all([experienceRequest, getCenters()])
-      .then(([experienceData, centerData]) => {
+    async function loadExperiences() {
+      try {
+        const [experienceData, centerData] = await Promise.all([
+          experienceRequest,
+          getCenters(),
+        ]);
         if (!active) return;
         setExperiences(experienceData);
         setCenters(centerData);
-      })
-      .catch((requestError: unknown) => {
+      } catch (requestError) {
         if (!active) return;
         setError(
           requestError instanceof Error
@@ -55,10 +58,12 @@ export function useExperienceCatalog(kind: ExperienceKind) {
               : "Unable to load courses.",
         );
         setExperiences([]);
-      })
-      .finally(() => {
+      } finally {
         if (active) setLoading(false);
-      });
+      }
+    }
+
+    void loadExperiences();
 
     return () => {
       active = false;
@@ -108,11 +113,11 @@ export function useCentersCatalog(
     setLoading(true);
     setError(null);
 
-    getCenters({ city, search: query })
-      .then((data) => {
+    async function loadCenters() {
+      try {
+        const data = await getCenters({ city, search: query });
         if (active) setCenters(data);
-      })
-      .catch((requestError: unknown) => {
+      } catch (requestError) {
         if (!active) return;
         setError(
           requestError instanceof Error
@@ -120,10 +125,12 @@ export function useCentersCatalog(
             : "Unable to load diving centers.",
         );
         setCenters([]);
-      })
-      .finally(() => {
+      } finally {
         if (active) setLoading(false);
-      });
+      }
+    }
+
+    void loadCenters();
 
     return () => {
       active = false;
@@ -162,18 +169,18 @@ export function useCityCatalog(city: string) {
     setLoading(true);
     setError(null);
 
-    Promise.all([
-      getCenters({ city }),
-      getTrips({ city, search: query }),
-      getCourses({ city, search: query }),
-    ])
-      .then(([centerData, tripData, courseData]) => {
+    async function loadCityCatalog() {
+      try {
+        const [centerData, tripData, courseData] = await Promise.all([
+          getCenters({ city }),
+          getTrips({ city, search: query }),
+          getCourses({ city, search: query }),
+        ]);
         if (!active) return;
         setCenters(centerData);
         setTrips(tripData);
         setCourses(courseData);
-      })
-      .catch((requestError: unknown) => {
+      } catch (requestError) {
         if (!active) return;
         setError(
           requestError instanceof Error
@@ -183,10 +190,12 @@ export function useCityCatalog(city: string) {
         setCenters([]);
         setTrips([]);
         setCourses([]);
-      })
-      .finally(() => {
+      } finally {
         if (active) setLoading(false);
-      });
+      }
+    }
+
+    void loadCityCatalog();
 
     return () => {
       active = false;
@@ -222,14 +231,18 @@ export function useFeaturedCatalog() {
     setLoading(true);
     setError(null);
 
-    Promise.all([getCenters(), getTrips(), getCourses()])
-      .then(([centerData, tripData, courseData]) => {
+    async function loadFeaturedCatalog() {
+      try {
+        const [centerData, tripData, courseData] = await Promise.all([
+          getCenters(),
+          getTrips(),
+          getCourses(),
+        ]);
         if (!active) return;
         setCenters(centerData);
         setTrips(tripData);
         setCourses(courseData);
-      })
-      .catch((requestError: unknown) => {
+      } catch (requestError) {
         if (!active) return;
         setError(
           requestError instanceof Error
@@ -239,10 +252,12 @@ export function useFeaturedCatalog() {
         setCenters([]);
         setTrips([]);
         setCourses([]);
-      })
-      .finally(() => {
+      } finally {
         if (active) setLoading(false);
-      });
+      }
+    }
+
+    void loadFeaturedCatalog();
 
     return () => {
       active = false;

@@ -120,13 +120,12 @@ export function useBookingFlow() {
     setLoading(true);
     setLoadError(null);
 
-    const request =
-      experienceType === "course"
-        ? getCourseById(experienceId, token)
-        : getTripById(experienceId, token);
-
-    request
-      .then((data) => {
+    async function loadExperience() {
+      try {
+        const data =
+          experienceType === "course"
+            ? await getCourseById(experienceId, token)
+            : await getTripById(experienceId, token);
         if (!active) return;
 
         if (experienceType === "course" && "course" in data) {
@@ -136,8 +135,7 @@ export function useBookingFlow() {
           setExperience(data.trip);
           setCenter(data.center);
         }
-      })
-      .catch((err: unknown) => {
+      } catch (err) {
         if (!active) return;
 
         setLoadError(
@@ -145,10 +143,12 @@ export function useBookingFlow() {
         );
         setExperience(null);
         setCenter(undefined);
-      })
-      .finally(() => {
+      } finally {
         if (active) setLoading(false);
-      });
+      }
+    }
+
+    void loadExperience();
 
     return () => {
       active = false;

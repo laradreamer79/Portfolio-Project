@@ -51,6 +51,14 @@ function paymentErrorMessage(data: unknown) {
   return "Moyasar could not validate the card details.";
 }
 
+async function parseJson(response: Response): Promise<unknown> {
+  try {
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
 export async function createMoyasarToken(card: MoyasarCardDetails) {
   const publishableKey = requirePublishableKey();
   const [month, year] = card.expiry.split("/").map((part) => part.trim());
@@ -78,7 +86,7 @@ export async function createMoyasarToken(card: MoyasarCardDetails) {
     );
   }
 
-  const responseData: unknown = await response.json().catch(() => null);
+  const responseData = await parseJson(response);
 
   if (!response.ok) {
     throw new MoyasarTokenError(paymentErrorMessage(responseData));

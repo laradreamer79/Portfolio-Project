@@ -37,22 +37,26 @@ export function InstructorDashboard() {
     if (!token) return;
 
     let active = true;
+    const authToken = token;
 
-    getInstructorProfile(token)
-      .then((profile) => {
+    async function loadInstructorProfile() {
+      try {
+        const profile = await getInstructorProfile(authToken);
         if (!active) return;
         setInstructorLicense(profile.licenseNumber);
         setInstructorStatus(profile.status);
         setInstructorCity(profile.city ?? "");
-      })
-      .catch((error) => {
+      } catch (error) {
         if (!active) return;
         setCityError(
           error instanceof Error
             ? error.message
             : "Unable to load instructor profile.",
         );
-      });
+      }
+    }
+
+    void loadInstructorProfile();
 
     return () => {
       active = false;
