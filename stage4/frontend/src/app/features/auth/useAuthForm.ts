@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type SubmitEvent } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { ApiError } from "../../lib/apiClient";
@@ -101,7 +101,7 @@ export function useAuthForm() {
     );
   }
 
-  async function handleLogin(event: FormEvent) {
+  async function handleLogin(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const errors = validateLoginForm(loginForm);
@@ -116,7 +116,7 @@ export function useAuthForm() {
     }
   }
 
-  async function handleRegister(event: FormEvent) {
+  async function handleRegister(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const errors = validateRegisterForm(registerForm);

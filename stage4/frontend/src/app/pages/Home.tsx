@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Anchor,
@@ -42,7 +42,7 @@ export function Home() {
     loading,
   } = useFeaturedCatalog();
 
-  function handleSearch(event: FormEvent<HTMLFormElement>) {
+  function handleSearch(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     const query = searchQuery.trim();
     navigate(query ? `/centers?search=${encodeURIComponent(query)}` : "/centers");
