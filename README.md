@@ -1,3 +1,9 @@
+# Oyster
+
+- Landing page: [Oyster Landing Page](https://laradreamer79.github.io/Portfolio-Project/landing-page.html)
+- Deployed application: [Oyster Platform](https://zeroyster.onrender.com)
+- Source code: [Portfolio Project Repository](https://github.com/laradreamer79/Portfolio-Project)
+
 ## Stage 1 – Team Formation and Idea Development
 
 In Stage 1, the team focused on building a collaborative and organized working environment while exploring potential project ideas for the portfolio project.
