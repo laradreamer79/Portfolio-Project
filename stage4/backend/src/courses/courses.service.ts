@@ -62,6 +62,19 @@ const courseDetailInclude = {
   _count: { select: { bookings: true, reviews: true } },
 } satisfies Prisma.CourseInclude;
 
+function needsProviderApproval(actor?: CatalogActor) {
+  return !actor || actor.role === "user";
+}
+
+function publicProviderWhere(): Prisma.CourseWhereInput {
+  return {
+    OR: [
+      { center: { status: "approved" } },
+      { instructorId: { not: null } },
+    ],
+  };
+}
+
 async function getAll(filters: CourseFilters) {
   const {
     level,
@@ -77,6 +90,9 @@ async function getAll(filters: CourseFilters) {
 
   const where: Prisma.CourseWhereInput = {
     ...catalogVisibilityWhere(actor, status),
+    ...(needsProviderApproval(actor) && {
+      AND: [publicProviderWhere()],
+    }),
     ...(centerId !== undefined && { centerId }),
     ...(instructorId !== undefined && { instructorId }),
     ...(level && {
@@ -88,34 +104,27 @@ async function getAll(filters: CourseFilters) {
         ...(maxPrice !== undefined && { lte: maxPrice }),
       },
     }),
-    ...(city && {
-      OR: [
-        { center: { city: { equals: city } } },
-        {
-          instructor: {
-            instructorProfile: {
-              city: { equals: city },
-            },
-          },
-        },
-      ],
-    }),
-    ...(search && {
-      AND: [
-        {
-          OR: [
-            { title: { contains: search, mode: "insensitive" } },
-            { description: { contains: search, mode: "insensitive" } },
-          ],
-        },
-      ],
-    }),
   };
 
-  return prisma.course.findMany({
+  const courses = await prisma.course.findMany({
     where,
     include: courseListInclude,
     orderBy: { startDate: "asc" },
+  });
+
+  const normalizedSearch = search?.toLowerCase();
+
+  return courses.filter((course) => {
+    const listingCity =
+      course.center?.city ?? course.instructor?.instructorProfile?.city;
+    const matchesCity = !city || listingCity === city;
+    const matchesSearch =
+      !normalizedSearch ||
+      course.title.toLowerCase().includes(normalizedSearch) ||
+      course.description?.toLowerCase().includes(normalizedSearch) ||
+      listingCity?.toLowerCase().includes(normalizedSearch);
+
+    return matchesCity && matchesSearch;
   });
 }
 
@@ -124,6 +133,9 @@ async function getById(id: number, actor?: CatalogActor) {
     where: {
       id,
       ...catalogDetailVisibilityWhere(actor),
+      ...(needsProviderApproval(actor) && {
+        AND: [publicProviderWhere()],
+      }),
     },
     include: courseDetailInclude,
   });

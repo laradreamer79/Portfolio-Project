@@ -125,6 +125,13 @@ async function create(data: CreatePaymentCommand) {
         });
       }
 
+      if (localStatus === "failed") {
+        await transaction.booking.update({
+          where: { id: booking.id },
+          data: { status: "cancelled" },
+        });
+      }
+
       return transaction.payment.create({
         data: {
           bookingId: booking.id,
@@ -222,7 +229,7 @@ async function handleWebhook(payload: MoyasarWebhookInput) {
       });
     }
 
-    if (localStatus === "refunded") {
+    if (localStatus === "failed" || localStatus === "refunded") {
       await transaction.booking.update({
         where: { id: existingPayment.bookingId },
         data: { status: "cancelled" },

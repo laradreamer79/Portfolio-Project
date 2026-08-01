@@ -36,6 +36,7 @@ export type ApiBooking = {
     id: number;
     name: string;
     email?: string;
+    phone?: string;
   } | null;
 };
 
@@ -101,6 +102,16 @@ export async function getMyBookings(token: string) {
 export async function getAllBookings(token: string) {
   const bookings = await apiRequest<ApiBooking[]>("/bookings", { token });
   return bookings.map(toBookingCard);
+}
+
+export function getCenterBookings(centerId: number, token: string) {
+  return apiRequest<ApiBooking[]>(`/bookings/center?centerId=${centerId}`, {
+    token,
+  });
+}
+
+export function getInstructorBookings(token: string) {
+  return apiRequest<ApiBooking[]>("/bookings/instructor", { token });
 }
 
 export async function createBooking(
