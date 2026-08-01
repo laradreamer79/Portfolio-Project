@@ -29,6 +29,7 @@ const CITY_IMGS: Record<string, string> = {
 
 const CONTACT_EMAIL = "Laradreamer79@gmail.com";
 const WHATSAPP_NUMBER = "966543889380";
+const GMAIL_COMPOSE_URL = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(CONTACT_EMAIL)}&su=${encodeURIComponent("Oyster inquiry")}`;
 
 export function Home() {
   const navigate = useNavigate();
@@ -327,7 +328,9 @@ export function Home() {
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <a
-              href={`mailto:${CONTACT_EMAIL}`}
+              href={GMAIL_COMPOSE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 rounded-xl bg-white px-7 py-3.5 text-sm font-bold text-teal-600 shadow-lg transition-colors hover:bg-teal-50"
             >
               <Mail className="h-4 w-4" />
