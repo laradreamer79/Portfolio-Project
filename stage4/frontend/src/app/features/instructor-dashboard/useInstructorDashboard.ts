@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { getInstructorBookings, type ApiBooking } from "../bookings";
 import { useListingManagement } from "../listing-management";
 
 export type InstructorDashboardTab =
@@ -9,6 +10,8 @@ export type InstructorDashboardTab =
 
 export type InstructorBookingRow = {
   id: string;
+  listingId: number;
+  listingType: "trip" | "course";
   trip: string;
   customer: string;
   email: string;
@@ -22,27 +25,48 @@ export type InstructorBookingRow = {
 export function useInstructorDashboard(token: string | null) {
   const [activeTab, setActiveTab] =
     useState<InstructorDashboardTab>("overview");
-  const [bookings, setBookings] = useState<InstructorBookingRow[]>([]);
+  const [allBookings, setAllBookings] = useState<InstructorBookingRow[]>([]);
+  const [selectedListingKey, setSelectedListingKey] = useState("");
+
+  useEffect(() => {
+    if (!token) return;
+
+    let active = true;
+    const authToken = token;
+
+    async function loadBookings() {
+      try {
+        const data = await getInstructorBookings(authToken);
+        if (active) setAllBookings(data.map(toInstructorBookingRow));
+      } catch {
+        if (active) setAllBookings([]);
+      }
+    }
+
+    void loadBookings();
+
+    return () => {
+      active = false;
+    };
+  }, [token]);
+
+  const bookings = useMemo(
+    () =>
+      selectedListingKey
+        ? allBookings.filter(
+            (booking) =>
+              `${booking.listingType}:${booking.listingId}` ===
+              selectedListingKey,
+          )
+        : allBookings,
+    [allBookings, selectedListingKey],
+  );
 
   const listingManagement = useListingManagement({
     token,
     defaultSlots: 4,
     onEditComplete: () => setActiveTab("listings"),
   });
-
-  function confirmBooking(id: string) {
-    setBookings((current) =>
-      current.map((booking) =>
-        booking.id === id ? { ...booking, status: "confirmed" } : booking,
-      ),
-    );
-  }
-
-  function declineBooking(id: string) {
-    setBookings((current) =>
-      current.filter((booking) => booking.id !== id),
-    );
-  }
 
   function viewListings() {
     listingManagement.closePostModal();
@@ -65,12 +89,37 @@ export function useInstructorDashboard(token: string | null) {
   return {
     activeTab,
     bookings,
-    confirmBooking,
-    declineBooking,
     pending,
     revenue,
     setActiveTab,
+    selectedListingKey,
+    setSelectedListingKey,
     viewListings,
     ...listingManagement,
+  };
+}
+
+function toInstructorBookingRow(booking: ApiBooking): InstructorBookingRow {
+  const listing = booking.trip ?? booking.course;
+  const date = listing?.scheduleDate ?? listing?.startDate;
+
+  return {
+    id: `OYS-${String(booking.id).padStart(6, "0")}`,
+    listingId: listing?.id ?? 0,
+    listingType: booking.trip ? "trip" : "course",
+    trip: listing?.title ?? "Deleted listing",
+    customer: booking.user?.name ?? "Oyster user",
+    email: booking.user?.email ?? "",
+    phone: booking.user?.phone ?? booking.user?.email ?? "Not provided",
+    divers: booking.numberOfPeople,
+    total: Number(booking.totalPrice),
+    date: date
+      ? new Intl.DateTimeFormat("en", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }).format(new Date(date))
+      : "Date TBA",
+    status: booking.status,
   };
 }

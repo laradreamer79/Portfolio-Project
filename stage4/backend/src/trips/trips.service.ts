@@ -62,6 +62,23 @@ const tripDetailInclude = {
   _count: { select: { bookings: true, reviews: true } },
 } satisfies Prisma.TripInclude;
 
+function needsProviderApproval(actor?: CatalogActor) {
+  return !actor || actor.role === "user";
+}
+
+function publicProviderWhere(): Prisma.TripWhereInput {
+  return {
+    OR: [
+      { center: { status: "approved" } },
+      {
+        instructor: {
+          instructorProfile: { status: "approved" },
+        },
+      },
+    ],
+  };
+}
+
 async function getAll(filters: TripFilters) {
   const {
     city,
@@ -77,6 +94,9 @@ async function getAll(filters: TripFilters) {
 
   const where: Prisma.TripWhereInput = {
     ...catalogVisibilityWhere(actor, status),
+    ...(needsProviderApproval(actor) && {
+      AND: [publicProviderWhere()],
+    }),
     ...(centerId !== undefined && { centerId }),
     ...(instructorId !== undefined && { instructorId }),
     ...(difficulty && { difficultyLevel: difficulty }),
@@ -86,34 +106,27 @@ async function getAll(filters: TripFilters) {
         ...(maxPrice !== undefined && { lte: maxPrice }),
       },
     }),
-    ...(city && {
-      OR: [
-        { center: { city: { equals: city } } },
-        {
-          instructor: {
-            instructorProfile: {
-              city: { equals: city },
-            },
-          },
-        },
-      ],
-    }),
-    ...(search && {
-      AND: [
-        {
-          OR: [
-            { title: { contains: search, mode: "insensitive" } },
-            { description: { contains: search, mode: "insensitive" } },
-          ],
-        },
-      ],
-    }),
   };
 
-  return prisma.trip.findMany({
+  const trips = await prisma.trip.findMany({
     where,
     include: tripListInclude,
     orderBy: { scheduleDate: "asc" },
+  });
+
+  const normalizedSearch = search?.toLowerCase();
+
+  return trips.filter((trip) => {
+    const listingCity =
+      trip.center?.city ?? trip.instructor?.instructorProfile?.city;
+    const matchesCity = !city || listingCity === city;
+    const matchesSearch =
+      !normalizedSearch ||
+      trip.title.toLowerCase().includes(normalizedSearch) ||
+      trip.description?.toLowerCase().includes(normalizedSearch) ||
+      listingCity?.toLowerCase().includes(normalizedSearch);
+
+    return matchesCity && matchesSearch;
   });
 }
 
@@ -122,6 +135,9 @@ async function getById(id: number, actor?: CatalogActor) {
     where: {
       id,
       ...catalogDetailVisibilityWhere(actor),
+      ...(needsProviderApproval(actor) && {
+        AND: [publicProviderWhere()],
+      }),
     },
     include: tripDetailInclude,
   });

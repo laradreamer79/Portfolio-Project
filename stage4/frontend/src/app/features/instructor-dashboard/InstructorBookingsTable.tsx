@@ -1,16 +1,11 @@
-import { CheckCircle } from "lucide-react";
 import type { InstructorBookingRow } from "./useInstructorDashboard";
 
 type InstructorBookingsTableProps = {
   bookings: InstructorBookingRow[];
-  onConfirm: (id: string) => void;
-  onDecline?: (id: string) => void;
 };
 
 export function InstructorBookingsTable({
   bookings,
-  onConfirm,
-  onDecline,
 }: InstructorBookingsTableProps) {
   return (
     <div className="overflow-x-auto rounded-2xl border border-slate-100 bg-white">
@@ -25,7 +20,6 @@ export function InstructorBookingsTable({
               "Total",
               "Date",
               "Status",
-              "Action",
             ].map((heading) => (
               <th
                 key={heading}
@@ -62,30 +56,15 @@ export function InstructorBookingsTable({
                   {booking.status}
                 </span>
               </td>
-              <td className="px-4 py-3">
-                {booking.status === "pending" && (
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => onConfirm(booking.id)}
-                      className="flex items-center gap-1 rounded-lg border border-teal-200 bg-teal-50 px-2 py-1 text-xs font-medium text-teal-700 transition-colors hover:bg-teal-100"
-                    >
-                      <CheckCircle className="h-3.5 w-3.5" /> Confirm
-                    </button>
-                    {onDecline && (
-                      <button
-                        type="button"
-                        onClick={() => onDecline(booking.id)}
-                        className="rounded-lg border border-red-100 bg-red-50 px-2 py-1 text-xs font-medium text-red-600 transition-colors hover:bg-red-100"
-                      >
-                        Decline
-                      </button>
-                    )}
-                  </div>
-                )}
-              </td>
             </tr>
           ))}
+          {bookings.length === 0 && (
+            <tr>
+              <td colSpan={7} className="px-4 py-10 text-center text-sm text-slate-400">
+                No bookings for your trips or courses yet.
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>

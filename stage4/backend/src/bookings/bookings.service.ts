@@ -12,6 +12,33 @@ interface BookingActor {
   role: string;
 }
 
+const centerBookingInclude = {
+  user: {
+    select: { id: true, name: true, email: true, phone: true },
+  },
+  trip: {
+    include: { center: { select: { id: true, ownerId: true } } },
+  },
+  course: {
+    include: { center: { select: { id: true, ownerId: true } } },
+  },
+} as const;
+
+async function assertCenterOwnership(centerId: number, actor: BookingActor) {
+  const center = await prisma.divingCenter.findUnique({
+    where: { id: centerId },
+    select: { ownerId: true },
+  });
+
+  if (!center) {
+    throw new HttpError(404, "Diving center not found");
+  }
+
+  if (center.ownerId !== actor.id) {
+    throw new HttpError(403, "Forbidden");
+  }
+}
+
 async function create(
   data: CreateBookingCommand,
 ) {
@@ -186,9 +213,33 @@ async function getAll() {
   });
 }
 
+async function getForCenter(centerId: number, actor: BookingActor) {
+  await assertCenterOwnership(centerId, actor);
+
+  return prisma.booking.findMany({
+    where: {
+      OR: [{ trip: { centerId } }, { course: { centerId } }],
+    },
+    include: centerBookingInclude,
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+async function getForInstructor(instructorId: number) {
+  return prisma.booking.findMany({
+    where: {
+      OR: [{ trip: { instructorId } }, { course: { instructorId } }],
+    },
+    include: centerBookingInclude,
+    orderBy: { createdAt: "desc" },
+  });
+}
+
 export const bookingsService = {
   create,
   cancel,
   getMine,
   getAll,
+  getForCenter,
+  getForInstructor,
 };

@@ -97,8 +97,6 @@ export function InstructorDashboard() {
     activeTab,
     bookings,
     closePostModal,
-    confirmBooking,
-    declineBooking,
     editingListing,
     form,
     handleDeleteListing,
@@ -115,6 +113,8 @@ export function InstructorDashboard() {
     revenue,
     setActiveTab,
     setFormField: set,
+    selectedListingKey,
+    setSelectedListingKey,
     showPostModal,
     viewListings,
   } = useInstructorDashboard(token);
@@ -133,6 +133,24 @@ export function InstructorDashboard() {
             <p className="mt-0.5 text-sm text-slate-400">
               Manage your independent trips, courses, bookings, and students.
             </p>
+            <label className="mt-3 flex items-center gap-2 text-sm text-slate-500">
+              Select trip
+              <select
+                value={selectedListingKey}
+                onChange={(event) => setSelectedListingKey(event.target.value)}
+                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-700 transition-colors hover:border-teal-300 focus:border-teal-400 focus:outline-none"
+              >
+                <option value="">All bookings</option>
+                {listings.map((listing) => (
+                  <option
+                    key={`${listing.type}:${listing.id}`}
+                    value={`${listing.type}:${listing.id}`}
+                  >
+                    {listing.title}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
           <button
             type="button"
@@ -235,7 +253,6 @@ export function InstructorDashboard() {
               </div>
               <InstructorBookingsTable
                 bookings={bookings.slice(0, 4)}
-                onConfirm={confirmBooking}
               />
             </div>
 
@@ -296,8 +313,6 @@ export function InstructorDashboard() {
             </h2>
             <InstructorBookingsTable
               bookings={bookings}
-              onConfirm={confirmBooking}
-              onDecline={declineBooking}
             />
           </div>
         )}

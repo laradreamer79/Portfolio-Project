@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { CITIES, type Center, type Trip } from "../../../data";
+import { CITIES, DIVING_CITIES, type Center, type Trip } from "../../../data";
 import { getCenters, getCourses, getTrips } from "../catalogService";
 
 export const CATALOG_LEVELS = [
@@ -25,17 +25,23 @@ export function useExperienceCatalog(kind: ExperienceKind) {
     setLoading(true);
     setError(null);
 
+    const normalizedQuery = query.trim().toLowerCase();
+    const cityFromSearch = DIVING_CITIES.find(
+      (candidate) => candidate.toLowerCase() === normalizedQuery,
+    );
+    const selectedCity = city !== "All Cities" ? city : cityFromSearch;
+
     const experienceRequest =
       kind === "trip"
         ? getTrips({
-            city,
-            search: query,
+            city: selectedCity,
+            search: cityFromSearch ? undefined : query,
             difficulty:
               level === "All Levels" ? undefined : level.toLowerCase(),
           })
         : getCourses({
-            city,
-            search: query,
+            city: selectedCity,
+            search: cityFromSearch ? undefined : query,
             level: level === "All Levels" ? undefined : level,
           });
 

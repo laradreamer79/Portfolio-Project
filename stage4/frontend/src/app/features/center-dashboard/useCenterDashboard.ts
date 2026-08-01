@@ -6,6 +6,10 @@ import {
   validateCenterProfileImage,
 } from "./centerProfileValidation";
 import { getCenters, updateCenter, type UpdateCenterPayload } from "../catalog";
+import {
+  getCenterBookings,
+  type ApiBooking,
+} from "../bookings";
 import { useListingManagement } from "../listing-management";
 
 export type CenterDashboardTab =
@@ -16,6 +20,8 @@ export type CenterDashboardTab =
 
 export type CenterBookingRow = {
   id: string;
+  listingId: number;
+  listingType: "trip" | "course";
   trip: string;
   customer: string;
   email: string;
@@ -38,7 +44,10 @@ export function useCenterDashboard({
   const [activeTab, setActiveTab] =
     useState<CenterDashboardTab>("overview");
   const [center, setCenter] = useState<Center | null>(null);
+  const [ownedCenters, setOwnedCenters] = useState<Center[]>([]);
   const [bookings, setBookings] = useState<CenterBookingRow[]>([]);
+  const [selectedTripKey, setSelectedTripKey] = useState("");
+  const [bookingsError, setBookingsError] = useState<string | null>(null);
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [profileFieldErrors, setProfileFieldErrors] = useState<
     FieldErrors<keyof UpdateCenterPayload>
@@ -69,9 +78,36 @@ export function useCenterDashboard({
           { status: "all", ownerId: userId },
           authToken,
         );
-        if (active) setCenter(centers[0] ?? null);
+        const selectedCenter = centers[0] ?? null;
+        if (!selectedCenter) {
+          if (active) {
+            setCenter(null);
+            setOwnedCenters([]);
+            setBookings([]);
+            setSelectedTripKey("");
+          }
+          return;
+        }
+
+        const centerBookings = await getCenterBookings(
+          selectedCenter.id,
+          authToken,
+        );
+        if (active) {
+          setCenter(selectedCenter);
+          setOwnedCenters(centers);
+          setBookings(centerBookings.map(toCenterBookingRow));
+          setSelectedTripKey("");
+          setBookingsError(null);
+        }
       } catch {
-        if (active) setCenter(null);
+        if (active) {
+          setCenter(null);
+          setOwnedCenters([]);
+          setBookings([]);
+          setSelectedTripKey("");
+          setBookingsError("Unable to load bookings. Please refresh the page.");
+        }
       }
     }
 
@@ -88,18 +124,39 @@ export function useCenterDashboard({
     onEditComplete: () => setActiveTab("trips"),
   });
 
-  function confirmBooking(id: string) {
-    setBookings((current) =>
-      current.map((booking) =>
-        booking.id === id ? { ...booking, status: "confirmed" } : booking,
-      ),
-    );
-  }
+  async function selectTrip(
+    centerId: number,
+    listingId: number,
+    listingType: "trip" | "course",
+  ) {
+    if (!token) return;
 
-  function declineBooking(id: string) {
-    setBookings((current) =>
-      current.filter((booking) => booking.id !== id),
-    );
+    const selectedCenter = ownedCenters.find((item) => item.id === centerId);
+    if (!selectedCenter) return;
+
+    setCenter(selectedCenter);
+    setBookings([]);
+    setSelectedTripKey(`${listingType}:${listingId}:${centerId}`);
+    setBookingsError(null);
+
+    try {
+      const centerBookings = await getCenterBookings(centerId, token);
+      setBookings(
+        centerBookings
+          .map(toCenterBookingRow)
+          .filter(
+            (booking) =>
+              booking.listingId === listingId &&
+              booking.listingType === listingType,
+          ),
+      );
+    } catch (error) {
+      setBookingsError(
+        error instanceof Error
+          ? error.message
+          : "Unable to load bookings. Please refresh the page.",
+      );
+    }
   }
 
   function handleProfileImageChange(event: ChangeEvent<HTMLInputElement>) {
@@ -195,9 +252,9 @@ export function useCenterDashboard({
   return {
     activeTab,
     bookings,
+    bookingsError,
     center,
-    confirmBooking,
-    declineBooking,
+    ownedCenters,
     handleProfileImageChange,
     handleProfileSubmit,
     isSavingProfile,
@@ -209,11 +266,38 @@ export function useCenterDashboard({
     profileSuccess,
     revenue,
     setActiveTab,
+    selectTrip,
+    selectedTripKey,
     clearProfileFieldError: (field: keyof UpdateCenterPayload) =>
       setProfileFieldErrors((current) => ({
         ...current,
         [field]: undefined,
       })),
     ...listingManagement,
+  };
+}
+
+function toCenterBookingRow(booking: ApiBooking): CenterBookingRow {
+  const listing = booking.trip ?? booking.course;
+  const date = listing?.scheduleDate ?? listing?.startDate;
+
+  return {
+    id: `OYS-${String(booking.id).padStart(6, "0")}`,
+    listingId: listing?.id ?? 0,
+    listingType: booking.trip ? "trip" : "course",
+    trip: listing?.title ?? "Deleted listing",
+    customer: booking.user?.name ?? "Oyster user",
+    email: booking.user?.email ?? "",
+    phone: booking.user?.phone ?? booking.user?.email ?? "Not provided",
+    divers: booking.numberOfPeople,
+    total: Number(booking.totalPrice),
+    date: date
+      ? new Intl.DateTimeFormat("en", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }).format(new Date(date))
+      : "Date TBA",
+    status: booking.status,
   };
 }
