@@ -5,7 +5,9 @@ import {
   ArrowRight,
   Award,
   CheckCircle,
+  Mail,
   MapPin,
+  MessageCircle,
   Search,
   ShieldCheck,
   Waves,
@@ -24,6 +26,10 @@ const CITY_IMGS: Record<string, string> = {
   NEOM: "https://images.unsplash.com/photo-1682687981630-cefe9cd73072?w=600&h=420&fit=crop&auto=format",
   Jazan: "https://images.unsplash.com/photo-1682687981922-7b55dbb30892?w=600&h=420&fit=crop&auto=format",
 };
+
+const CONTACT_EMAIL = "Laradreamer79@gmail.com";
+const WHATSAPP_NUMBER = "966543889380";
+const GMAIL_COMPOSE_URL = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(CONTACT_EMAIL)}&su=${encodeURIComponent("Oyster inquiry")}`;
 
 export function Home() {
   const navigate = useNavigate();
@@ -54,15 +60,18 @@ export function Home() {
       <section className="relative h-[88vh] min-h-[540px] flex flex-col justify-end overflow-hidden">
         <img src="https://images.unsplash.com/photo-1682687982298-c7514a167088?w=1600&h=900&fit=crop&auto=format" alt="Scuba diver over Saudi Red Sea coral reef" className="absolute inset-0 w-full h-full object-cover object-center" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
-        <div className="relative max-w-7xl mx-auto px-6 w-full pb-16">
-          <p className="text-teal-300 text-sm font-medium tracking-[0.2em] uppercase mb-3">Saudi Arabia's Diving Platform</p>
-          <h1 className="font-display text-6xl md:text-8xl font-bold text-white leading-none tracking-wide mb-4">
+        <div className="relative max-w-7xl mx-auto px-6 w-full pb-35">
+          <h1 className="mb-5 font-display text-6xl font-bold leading-none tracking-wide text-white md:text-8xl">
             DISCOVER THE<br /><span className="text-teal-400">RED SEA.</span>
           </h1>
-          <p className="text-white/70 text-lg max-w-lg mb-8">Browse certified diving centers across the Kingdom. Book trips, courses, and experiences — all in one place.</p>
+
+          <p className="mb-6 text-sm font-medium uppercase tracking-[0.2em] text-teal-300">
+            Saudi Arabia&apos;s Diving Platform
+          </p>
+
           <form
             onSubmit={handleSearch}
-            className="flex max-w-2xl flex-col gap-2 sm:flex-row"
+            className="flex max-w-2xl flex-col gap-4 sm:flex-row"
           >
             <div className="flex items-center gap-2 flex-1 bg-white rounded-2xl px-4 py-3 shadow-xl">
               <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
@@ -248,7 +257,7 @@ export function Home() {
       <section className="relative overflow-hidden">
         <img src="https://images.unsplash.com/photo-1573553467420-b2a90be8d317?w=1600&h=700&fit=crop&auto=format" alt="Diver exploring an underwater shipwreck" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-black/65" />
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:gap-6 md:py-24">
+        <div className="relative mx-auto grid max-w-7xl items-start gap-12 px-6 py-20 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:gap-6 md:py-24">
           <div className="order-2 w-full md:order-2 md:justify-self-stretch">
             <p className="mb-5 text-sm font-medium uppercase tracking-[0.2em] text-teal-300">Oyster at a glance</p>
             <div className="grid grid-cols-2 gap-3 md:gap-4">
@@ -295,20 +304,49 @@ export function Home() {
         </div>
       </section>
 
-      {/* Operator CTA */}
-      <section className="bg-teal-600 py-14">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+      {/* Contact */}
+      <section id="contact" className="bg-teal-600 py-9">
+        <div className="mx-auto flex max-w-7xl flex-col gap-8 px-6 md:flex-row md:items-center md:justify-between">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <Award className="w-5 h-5 text-teal-200" />
-              <span className="text-teal-200 text-sm font-medium uppercase tracking-widest">For Dive Centers</span>
+            <div className="mb-2 flex items-center gap-2">
+              <Mail className="h-5 w-5 text-teal-200" />
+              <span className="text-sm font-medium uppercase tracking-widest text-teal-200">
+                Contact Us
+              </span>
             </div>
-            <h2 className="font-display text-4xl font-bold text-white tracking-wide">LIST YOUR CENTER ON OYSTER</h2>
-            <p className="text-teal-100 mt-2 max-w-lg">Reach divers across Saudi Arabia and beyond. Manage bookings, reviews, and your trip calendar — all in one dashboard.</p>
+
+            <h2 className="font-display text-4xl font-bold tracking-wide text-white">
+              LET&apos;S TALK DIVING
+            </h2>
+
+            <p className="mt-2 max-w-xl text-teal-100">
+              Have a question about centers, trips, courses, or bookings?
+              <br />
+              Our team is here to help you.
+            </p>
           </div>
-          <button onClick={() => navigate("/center/dashboard")} className="bg-white text-teal-600 font-bold px-8 py-3.5 rounded-xl hover:bg-teal-50 transition-colors whitespace-nowrap text-sm flex-shrink-0 shadow-lg">
-            Open Center Portal →
-          </button>
+
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <a
+              href={GMAIL_COMPOSE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 rounded-xl bg-white px-7 py-3.5 text-sm font-bold text-teal-600 shadow-lg transition-colors hover:bg-teal-50"
+            >
+              <Mail className="h-4 w-4" />
+              Email Us
+            </a>
+
+            <a
+              href={`https://wa.me/${WHATSAPP_NUMBER}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 rounded-xl border border-white/40 px-7 py-3.5 text-sm font-bold text-white transition-colors hover:bg-white/10"
+            >
+              <MessageCircle className="h-4 w-4" />
+              WhatsApp
+            </a>
+          </div>
         </div>
       </section>
     </div>
