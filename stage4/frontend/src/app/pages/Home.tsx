@@ -27,9 +27,7 @@ const CITY_IMGS: Record<string, string> = {
   Jazan: "https://images.unsplash.com/photo-1682687981922-7b55dbb30892?w=600&h=420&fit=crop&auto=format",
 };
 
-const CONTACT_EMAIL = "Laradreamer79@gmail.com";
 const WHATSAPP_NUMBER = "966543889380";
-const GMAIL_COMPOSE_URL = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(CONTACT_EMAIL)}&su=${encodeURIComponent("Oyster inquiry")}`;
 
 export function Home() {
   const navigate = useNavigate();
@@ -327,16 +325,6 @@ export function Home() {
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row">
-            <a
-              href={GMAIL_COMPOSE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 rounded-xl bg-white px-7 py-3.5 text-sm font-bold text-teal-600 shadow-lg transition-colors hover:bg-teal-50"
-            >
-              <Mail className="h-4 w-4" />
-              Email Us
-            </a>
-
             <a
               href={`https://wa.me/${WHATSAPP_NUMBER}`}
               target="_blank"
