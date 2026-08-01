@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { updateAdminProfileSchema } from "../src/admin/admin.validation.js";
+import {
+  adminInstructorIdParamsSchema,
+  updateAdminProfileSchema,
+  updateInstructorStatusSchema,
+} from "../src/admin/admin.validation.js";
 import {
   loginSchema,
   registerSchema,
@@ -460,6 +464,21 @@ describe("payment form and webhook validation", () => {
 });
 
 describe("profile form validation", () => {
+  it("validates admin instructor approval requests", () => {
+    expect(
+      adminInstructorIdParamsSchema.safeParse({ id: "7" }).success,
+    ).toBe(true);
+    expect(
+      adminInstructorIdParamsSchema.safeParse({ id: "invalid" }).success,
+    ).toBe(false);
+    expect(
+      updateInstructorStatusSchema.safeParse({ status: "approved" }).success,
+    ).toBe(true);
+    expect(
+      updateInstructorStatusSchema.safeParse({ status: "active" }).success,
+    ).toBe(false);
+  });
+
   it("validates admin profile updates", () => {
     expect(updateAdminProfileSchema.safeParse({}).success).toBe(false);
     expect(

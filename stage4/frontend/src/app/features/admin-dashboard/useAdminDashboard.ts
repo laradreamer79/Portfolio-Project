@@ -11,8 +11,11 @@ import { getCenters, updateCenterStatus } from "../catalog";
 import { deleteReview, getAllReviews, toReview } from "../reviews";
 import {
   getAdminDashboard,
+  getAdminInstructors,
   getAdminProfile,
+  updateAdminInstructorStatus,
   updateAdminProfile,
+  type AdminInstructor,
   type AdminDashboardSummary,
   type AdminProfile,
 } from "./adminService";
@@ -21,10 +24,12 @@ import type { UpdateAdminProfileInput } from "./adminValidation";
 export type AdminTab =
   | "overview"
   | "centers"
+  | "instructors"
   | "bookings"
   | "reviews"
   | "profile";
 export type CenterStatus = "active" | "pending" | "suspended";
+export type InstructorStatus = "pending" | "approved" | "rejected";
 
 export type CenterRow = Center & {
   status: CenterStatus;
@@ -46,6 +51,7 @@ export const ADMIN_TABS: ReadonlyArray<{
 }> = [
   { key: "overview", label: "Overview" },
   { key: "centers", label: "Centers" },
+  { key: "instructors", label: "Instructors" },
   { key: "bookings", label: "Bookings" },
   { key: "reviews", label: "Reviews" },
   { key: "profile", label: "Profile" },
@@ -59,10 +65,14 @@ export function useAdminDashboard(token: string | null) {
   const [profileError, setProfileError] = useState<string | null>(null);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [centers, setCenters] = useState<CenterRow[]>([]);
+  const [instructors, setInstructors] = useState<AdminInstructor[]>([]);
   const [bookings, setBookings] = useState<BookingCard[]>([]);
   const [reviews, setReviews] = useState<ReviewRow[]>([]);
   const [centerQuery, setCenterQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<CenterStatus | "all">("all");
+  const [instructorQuery, setInstructorQuery] = useState("");
+  const [instructorStatusFilter, setInstructorStatusFilter] =
+    useState<InstructorStatus | "all">("all");
   const [toast, setToast] = useState<string | null>(null);
 
   function toCenterStatus(status?: string): CenterStatus {
@@ -116,6 +126,15 @@ export function useAdminDashboard(token: string | null) {
       }
     }
 
+    async function loadInstructors() {
+      try {
+        const instructorData = await getAdminInstructors(authToken);
+        if (active) setInstructors(instructorData);
+      } catch {
+        if (active) setInstructors([]);
+      }
+    }
+
     async function loadBookings() {
       try {
         const bookingData = await getAllBookings(authToken);
@@ -138,6 +157,7 @@ export function useAdminDashboard(token: string | null) {
     void loadDashboardSummary();
     void loadAdminProfile();
     void loadCenters();
+    void loadInstructors();
     void loadBookings();
     void loadReviews();
 
@@ -205,6 +225,35 @@ export function useAdminDashboard(token: string | null) {
     }
   }
 
+  async function setInstructorStatus(
+    id: number,
+    status: InstructorStatus,
+  ) {
+    if (!token) return;
+
+    const previousInstructors = instructors;
+    setInstructors((current) =>
+      current.map((instructor) =>
+        instructor.id === id ? { ...instructor, status } : instructor,
+      ),
+    );
+
+    try {
+      await updateAdminInstructorStatus(id, status, token);
+      await refreshDashboard();
+      showToast(
+        status === "approved"
+          ? "Instructor approved and activated."
+          : status === "rejected"
+            ? "Instructor access rejected."
+            : "Instructor moved back to pending review.",
+      );
+    } catch {
+      setInstructors(previousInstructors);
+      showToast("Unable to update instructor status.");
+    }
+  }
+
   async function removeReview(id: number) {
     if (!token) return;
 
@@ -258,6 +307,24 @@ export function useAdminDashboard(token: string | null) {
     });
   }, [centerQuery, centers, statusFilter]);
 
+  const filteredInstructors = useMemo(() => {
+    const normalizedQuery = instructorQuery.trim().toLowerCase();
+
+    return instructors.filter((instructor) => {
+      const matchesQuery =
+        !normalizedQuery ||
+        instructor.user.name.toLowerCase().includes(normalizedQuery) ||
+        instructor.user.email.toLowerCase().includes(normalizedQuery) ||
+        instructor.licenseNumber.toLowerCase().includes(normalizedQuery) ||
+        instructor.city?.toLowerCase().includes(normalizedQuery);
+      const matchesStatus =
+        instructorStatusFilter === "all" ||
+        instructor.status === instructorStatusFilter;
+
+      return matchesQuery && matchesStatus;
+    });
+  }, [instructorQuery, instructors, instructorStatusFilter]);
+
   const totalRevenue = useMemo(
     () =>
       bookings
@@ -270,6 +337,12 @@ export function useAdminDashboard(token: string | null) {
       dashboard?.pendingCenters ??
       centers.filter((center) => center.status === "pending").length,
     [centers, dashboard],
+  );
+  const pendingInstructorCount = useMemo(
+    () =>
+      dashboard?.pendingInstructors ??
+      instructors.filter((instructor) => instructor.status === "pending").length,
+    [dashboard, instructors],
   );
 
   async function saveProfile(data: UpdateAdminProfileInput) {
@@ -303,8 +376,13 @@ export function useAdminDashboard(token: string | null) {
     centers,
     dashboard,
     filteredCenters,
+    filteredInstructors,
+    instructorQuery,
+    instructors,
+    instructorStatusFilter,
     isSavingProfile,
     pendingCount,
+    pendingInstructorCount,
     profile,
     profileError,
     removeReview,
@@ -312,6 +390,9 @@ export function useAdminDashboard(token: string | null) {
     saveProfile,
     setActiveTab,
     setCenterQuery,
+    setInstructorQuery,
+    setInstructorStatus,
+    setInstructorStatusFilter,
     setStatusFilter,
     statusFilter,
     suspendCenter,

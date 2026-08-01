@@ -9,10 +9,29 @@ export type AdminDashboardSummary = {
   totalUsers: number;
   totalCenters: number;
   pendingCenters: number;
+  totalInstructors: number;
+  pendingInstructors: number;
   totalBookings: number;
   confirmedBookings: number;
   totalReviews: number;
   totalRevenue: number;
+};
+
+export type InstructorApprovalStatus = "pending" | "approved" | "rejected";
+
+export type AdminInstructor = {
+  id: number;
+  licenseNumber: string;
+  city: string | null;
+  status: InstructorApprovalStatus;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+  };
 };
 
 export type AdminProfile = {
@@ -32,6 +51,22 @@ export function getAdminDashboard(token: string) {
 
 export function getAdminProfile(token: string) {
   return apiRequest<AdminProfile>("/admin/profile", { token });
+}
+
+export function getAdminInstructors(token: string) {
+  return apiRequest<AdminInstructor[]>("/admin/instructors", { token });
+}
+
+export function updateAdminInstructorStatus(
+  id: number,
+  status: InstructorApprovalStatus,
+  token: string,
+) {
+  return apiRequest<AdminInstructor>(`/admin/instructors/${id}/status`, {
+    method: "PATCH",
+    body: { status },
+    token,
+  });
 }
 
 export function updateAdminProfile(

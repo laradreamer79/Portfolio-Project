@@ -1,5 +1,17 @@
 import { z } from "zod";
 
+export const adminInstructorIdParamsSchema = z
+  .object({
+    id: z.coerce.number().int().positive(),
+  })
+  .strict();
+
+export const updateInstructorStatusSchema = z
+  .object({
+    status: z.enum(["pending", "approved", "rejected"]),
+  })
+  .strict();
+
 export const updateAdminProfileSchema = z
   .object({
     name: z
@@ -26,4 +38,8 @@ export const updateAdminProfileSchema = z
 
 export type UpdateAdminProfileInput = z.infer<
   typeof updateAdminProfileSchema
+>;
+
+export type UpdateInstructorStatusInput = z.infer<
+  typeof updateInstructorStatusSchema
 >;
