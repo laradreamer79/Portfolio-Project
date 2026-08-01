@@ -8,5 +8,10 @@ export const adminRouter = Router();
 adminRouter.use(authenticate, authorize("admin"));
 
 adminRouter.get("/dashboard", adminController.getDashboard);
+adminRouter.get("/instructors", adminController.getInstructors);
+adminRouter.patch(
+  "/instructors/:id/status",
+  adminController.updateInstructorStatus,
+);
 adminRouter.get("/profile", adminController.getProfile);
 adminRouter.patch("/profile", adminController.updateProfile);

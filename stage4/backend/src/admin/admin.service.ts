@@ -1,7 +1,10 @@
 import { Prisma } from "../generated/prisma/client.js";
 import { prisma } from "../prisma/client.js";
 import { HttpError } from "../utils/http-error.js";
-import type { UpdateAdminProfileInput } from "./admin.validation.js";
+import type {
+  UpdateAdminProfileInput,
+  UpdateInstructorStatusInput,
+} from "./admin.validation.js";
 
 const adminProfileSelect = {
   id: true,
@@ -17,6 +20,8 @@ async function getDashboard() {
     totalUsers,
     totalCenters,
     pendingCenters,
+    totalInstructors,
+    pendingInstructors,
     totalBookings,
     confirmedBookings,
     totalReviews,
@@ -25,6 +30,10 @@ async function getDashboard() {
     prisma.user.count(),
     prisma.divingCenter.count(),
     prisma.divingCenter.count({
+      where: { status: "pending" },
+    }),
+    prisma.instructorProfile.count(),
+    prisma.instructorProfile.count({
       where: { status: "pending" },
     }),
     prisma.booking.count(),
@@ -42,11 +51,72 @@ async function getDashboard() {
     totalUsers,
     totalCenters,
     pendingCenters,
+    totalInstructors,
+    pendingInstructors,
     totalBookings,
     confirmedBookings,
     totalReviews,
     totalRevenue: Number(revenue._sum.totalPrice ?? 0),
   };
+}
+
+async function getInstructors() {
+  return prisma.instructorProfile.findMany({
+    select: {
+      id: true,
+      licenseNumber: true,
+      city: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+async function updateInstructorStatus(
+  instructorProfileId: number,
+  data: UpdateInstructorStatusInput,
+) {
+  try {
+    return await prisma.instructorProfile.update({
+      where: { id: instructorProfileId },
+      data: { status: data.status },
+      select: {
+        id: true,
+        licenseNumber: true,
+        city: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+          },
+        },
+      },
+    });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
+      throw new HttpError(404, "Instructor profile not found");
+    }
+
+    throw error;
+  }
 }
 
 async function getProfile(userId: number) {
@@ -91,6 +161,8 @@ async function updateProfile(
 
 export const adminService = {
   getDashboard,
+  getInstructors,
   getProfile,
+  updateInstructorStatus,
   updateProfile,
 };

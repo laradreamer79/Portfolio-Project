@@ -4,6 +4,7 @@ import {
   ADMIN_TABS,
   AdminBookings,
   AdminCenters,
+  AdminInstructors,
   AdminOverview,
   AdminProfilePanel,
   AdminReviews,
@@ -22,8 +23,13 @@ export function AdminDashboard() {
     centers,
     dashboard,
     filteredCenters,
+    filteredInstructors,
+    instructorQuery,
+    instructors,
+    instructorStatusFilter,
     isSavingProfile,
     pendingCount,
+    pendingInstructorCount,
     profile,
     profileError,
     removeReview,
@@ -31,6 +37,9 @@ export function AdminDashboard() {
     saveProfile,
     setActiveTab,
     setCenterQuery,
+    setInstructorQuery,
+    setInstructorStatus,
+    setInstructorStatusFilter,
     setStatusFilter,
     statusFilter,
     suspendCenter,
@@ -82,7 +91,9 @@ export function AdminDashboard() {
               {tab.label}
               {tab.key === "centers" && pendingCount > 0
                 ? ` (${pendingCount})`
-                : ""}
+                : tab.key === "instructors" && pendingInstructorCount > 0
+                  ? ` (${pendingInstructorCount})`
+                  : ""}
             </button>
           ))}
         </div>
@@ -94,9 +105,23 @@ export function AdminDashboard() {
             bookings={bookings}
             centers={centers}
             dashboard={dashboard}
+            instructors={instructors}
             pendingCount={pendingCount}
+            pendingInstructorCount={pendingInstructorCount}
             totalRevenue={totalRevenue}
             onOpenTab={setActiveTab}
+          />
+        )}
+
+        {activeTab === "instructors" && (
+          <AdminInstructors
+            instructors={instructors}
+            filteredInstructors={filteredInstructors}
+            query={instructorQuery}
+            statusFilter={instructorStatusFilter}
+            onQueryChange={setInstructorQuery}
+            onStatusChange={setInstructorStatusFilter}
+            onStatusUpdate={setInstructorStatus}
           />
         )}
 
