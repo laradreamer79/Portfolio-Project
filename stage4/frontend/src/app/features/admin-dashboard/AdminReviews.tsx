@@ -79,7 +79,15 @@ export function AdminReviews({
                 </p>
               </div>
               <button
-                onClick={() => onRemove(review.id)}
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      "Are you sure you want to remove this review?",
+                    )
+                  ) {
+                    onRemove(review.id);
+                  }
+                }}
                 className="self-start rounded-xl p-2 text-slate-300 transition-colors hover:bg-red-50 hover:text-red-500"
                 title="Remove review"
               >
