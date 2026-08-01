@@ -30,4 +30,10 @@ export const bookingIdParamsSchema = z
   })
   .strict();
 
+export const centerBookingsQuerySchema = z
+  .object({
+    centerId: z.coerce.number().int().positive("Center ID must be positive."),
+  })
+  .strict();
+
 export type CreateBookingInput = z.infer<typeof createBookingSchema>;

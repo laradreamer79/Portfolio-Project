@@ -13,11 +13,10 @@ export function CenterDashboard() {
   const {
     activeTab,
     bookings,
+    bookingsError,
     center,
     clearProfileFieldError,
     closePostModal,
-    confirmBooking,
-    declineBooking,
     editingListing,
     form,
     handleDeleteListing,
@@ -42,6 +41,9 @@ export function CenterDashboard() {
     profileSuccess,
     revenue,
     setActiveTab,
+    selectTrip,
+    selectedTripKey,
+    ownedCenters,
     setFormField: set,
     showPostModal,
   } = useCenterDashboard({ token, userId: user?.id });
@@ -55,6 +57,40 @@ export function CenterDashboard() {
             <p className="text-teal-600 text-sm font-medium tracking-widest uppercase mb-1">Center Portal</p>
             <h1 className="font-display text-3xl font-bold text-slate-900 tracking-wide">{center?.name ?? "Diving Center Dashboard"}</h1>
             <p className="text-slate-400 text-sm mt-0.5">{center ? `${center.city} · Since ${center.since}` : "Connect your center profile to manage listings"}</p>
+            {ownedCenters.length > 0 && (
+              <label className="mt-3 flex items-center gap-2 text-sm text-slate-500">
+                Select trip
+                <select
+                  value={selectedTripKey}
+                  onChange={(event) => {
+                    const [type, id, centerId] = event.target.value.split(":");
+                    if (!type || !id || !centerId) return;
+                    void selectTrip(
+                      Number(centerId),
+                      Number(id),
+                      type as "trip" | "course",
+                    );
+                  }}
+                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-700 transition-colors hover:border-teal-300 focus:border-teal-400 focus:outline-none"
+                >
+                  <option value="" disabled>Choose a trip or course</option>
+                  {listings
+                    .filter((listing) =>
+                      listing.centerId !== undefined &&
+                      listing.centerId !== null &&
+                      ownedCenters.some((item) => item.id === listing.centerId),
+                    )
+                    .map((listing) => (
+                      <option
+                        key={`${listing.type}:${listing.id}`}
+                        value={`${listing.type}:${listing.id}:${listing.centerId}`}
+                      >
+                        {listing.title}
+                      </option>
+                    ))}
+                </select>
+              </label>
+            )}
           </div>
           <button onClick={openCreateModal} className="bg-teal-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-teal-600 transition-colors flex items-center gap-2 text-sm">
             <Plus className="w-4 h-4" /> Post Trip / Course
@@ -110,7 +146,7 @@ export function CenterDashboard() {
                 <table className="min-w-[880px] w-full text-sm">
                   <thead className="bg-slate-50 border-b border-slate-100">
                     <tr>
-                      {["Booking ID", "Trip", "Customer", "Divers", "Total", "Date", "Status", ""].map((h) => (
+                      {["Booking ID", "Trip", "Customer", "Divers", "Total", "Date", "Status"].map((h) => (
                         <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-widest">{h}</th>
                       ))}
                     </tr>
@@ -128,13 +164,6 @@ export function CenterDashboard() {
                           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${b.status === "confirmed" ? "bg-emerald-50 text-emerald-700 border border-emerald-100" : "bg-amber-50 text-amber-700 border border-amber-100"}`}>
                             {b.status}
                           </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          {b.status === "pending" && (
-                            <button onClick={() => confirmBooking(b.id)} className="text-xs text-teal-600 hover:text-teal-800 font-medium flex items-center gap-1">
-                              <CheckCircle className="w-3.5 h-3.5" /> Confirm
-                            </button>
-                          )}
                         </td>
                       </tr>
                     ))}
@@ -175,7 +204,7 @@ export function CenterDashboard() {
               <table className="min-w-[1000px] w-full text-sm">
                 <thead className="bg-slate-50 border-b border-slate-100">
                   <tr>
-                    {["Booking ID", "Trip", "Customer", "Contact", "Divers", "Total", "Date", "Status", "Action"].map((h) => (
+                    {["Booking ID", "Trip", "Customer", "Contact", "Divers", "Total", "Date", "Status"].map((h) => (
                       <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-widest">{h}</th>
                     ))}
                   </tr>
@@ -195,16 +224,15 @@ export function CenterDashboard() {
                           {b.status}
                         </span>
                       </td>
-                      <td className="px-4 py-3.5">
-                        {b.status === "pending" && (
-                          <div className="flex gap-2">
-                            <button onClick={() => confirmBooking(b.id)} className="text-xs bg-teal-50 text-teal-700 border border-teal-200 px-2 py-1 rounded-lg hover:bg-teal-100 transition-colors font-medium">Confirm</button>
-                            <button onClick={() => declineBooking(b.id)} className="text-xs bg-red-50 text-red-600 border border-red-100 px-2 py-1 rounded-lg hover:bg-red-100 transition-colors font-medium">Decline</button>
-                          </div>
-                        )}
-                      </td>
                     </tr>
                   ))}
+                  {bookings.length === 0 && (
+                    <tr>
+                      <td colSpan={8} className="px-4 py-10 text-center text-sm text-slate-400">
+                        {bookingsError ?? "No bookings for this center yet."}
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
