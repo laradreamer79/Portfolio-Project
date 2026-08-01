@@ -28,20 +28,20 @@ const cities = [
 
 const features = [
   {
-    title: "Browse Centers",
-    description: "Find certified diving centers across Saudi Arabia and compare their diving experiences.",
-    image: "https://images.unsplash.com/photo-1560275619-4662e36fa65c?w=900&h=520&fit=crop&auto=format",
-    icon: <Search />,
+    title: "Book Your Dive",
+    description: "Choose a trip or course, reserve your spot, and follow your booking status in one place.",
+    image: "https://images.unsplash.com/photo-1682687982298-c7514a167088?w=900&h=520&fit=crop&auto=format",
+    icon: <CheckCircle />,
   },
   {
-    title: "Dive Trips",
-    description: "Explore guided dive trips, choose the right date, and reserve your place online.",
-    image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=900&h=520&fit=crop&auto=format",
-    icon: <Waves />,
+    title: "Ratings & Reviews",
+    description: "Read real diver reviews and ratings to choose a diving center with confidence.",
+    image: "https://images.unsplash.com/photo-1573553467420-b2a90be8d317?w=900&h=520&fit=crop&auto=format",
+    icon: <ShieldCheck />,
   },
   {
-    title: "Training Courses",
-    description: "Discover courses for beginners and advanced divers, all in one platform.",
+    title: "Add Trips & Courses",
+    description: "Diving centers and instructors can publish their experiences and reach more divers.",
     image: "https://images.unsplash.com/photo-1682687982167-d7fb3ed8541d?w=900&h=520&fit=crop&auto=format",
     icon: <BookOpen />,
   },
