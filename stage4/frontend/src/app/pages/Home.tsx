@@ -29,7 +29,7 @@ const CITY_IMGS: Record<string, string> = {
 
 const CONTACT_EMAIL = "Laradreamer79@gmail.com";
 const WHATSAPP_NUMBER = "966543889380";
-const GMAIL_COMPOSE_URL = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(CONTACT_EMAIL)}&su=${encodeURIComponent("Oyster inquiry")}`;
+const GMAIL_COMPOSE_URL = `https://mail.google.com/mail/u/0/?view=cm&fs=1&tf=1&to=${encodeURIComponent(CONTACT_EMAIL)}&su=${encodeURIComponent("Oyster inquiry")}`;
 
 export function Home() {
   const navigate = useNavigate();
