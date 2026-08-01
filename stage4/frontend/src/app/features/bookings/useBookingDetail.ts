@@ -24,28 +24,31 @@ export function useBookingDetail(
     }
 
     let active = true;
+    const authToken = token;
     setLoading(true);
     setError(null);
 
-    getMyBookings(token)
-      .then((bookings) => {
+    async function loadBooking() {
+      try {
+        const bookings = await getMyBookings(authToken);
         if (!active) return;
 
         const found = bookings.find((candidate) => candidate.id === bookingId);
         setBooking(found ?? null);
         if (!found) setError("Booking not found.");
-      })
-      .catch((requestError: unknown) => {
+      } catch (requestError) {
         if (!active) return;
         setError(
           requestError instanceof Error
             ? requestError.message
             : "Unable to load this booking.",
         );
-      })
-      .finally(() => {
+      } finally {
         if (active) setLoading(false);
-      });
+      }
+    }
+
+    void loadBooking();
 
     return () => {
       active = false;

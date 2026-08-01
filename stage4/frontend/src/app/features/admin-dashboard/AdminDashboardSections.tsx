@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type SubmitEvent } from "react";
 import {
   AlertCircle,
   Building2,
@@ -723,7 +723,7 @@ export function AdminProfilePanel({
     setFieldErrors({});
   }, [profile]);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     const result = updateAdminProfileSchema.safeParse({ name, email });
 

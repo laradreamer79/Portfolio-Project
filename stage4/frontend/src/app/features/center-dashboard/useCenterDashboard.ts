@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type ChangeEvent, type SubmitEvent } from "react";
 import type { Center } from "../../data";
 import type { FieldErrors } from "../../lib/validation";
 import {
@@ -61,14 +61,21 @@ export function useCenterDashboard({
     if (!token || !userId) return;
 
     let active = true;
+    const authToken = token;
 
-    getCenters({ status: "all", ownerId: userId }, token)
-      .then((centers) => {
+    async function loadCenter() {
+      try {
+        const centers = await getCenters(
+          { status: "all", ownerId: userId },
+          authToken,
+        );
         if (active) setCenter(centers[0] ?? null);
-      })
-      .catch(() => {
+      } catch {
         if (active) setCenter(null);
-      });
+      }
+    }
+
+    void loadCenter();
 
     return () => {
       active = false;
@@ -124,7 +131,7 @@ export function useCenterDashboard({
     setProfileImage(file);
   }
 
-  async function handleProfileSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleProfileSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!token || !center) {
       setProfileError("Unable to find your center profile. Sign in again.");

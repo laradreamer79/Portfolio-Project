@@ -92,17 +92,21 @@ export function useListingManagement({
     if (!token) return;
 
     let active = true;
+    const authToken = token;
 
-    Promise.all([
-      getTrips({ status: "all" }, token),
-      getCourses({ status: "all" }, token),
-    ])
-      .then(([trips, courses]) => {
+    async function loadListings() {
+      try {
+        const [trips, courses] = await Promise.all([
+          getTrips({ status: "all" }, authToken),
+          getCourses({ status: "all" }, authToken),
+        ]);
         if (active) setListings([...trips, ...courses]);
-      })
-      .catch(() => {
+      } catch {
         if (active) setListings([]);
-      });
+      }
+    }
+
+    void loadListings();
 
     return () => {
       active = false;

@@ -42,10 +42,6 @@ export type PaymentFormState = {
   holder: string;
 };
 
-function bookingPhoneStorageKey(userId: number) {
-  return `oyster_booking_phone_${userId}`;
-}
-
 function isExperienceType(
   value: string | undefined,
 ): value is BookingExperienceType {
@@ -98,14 +94,11 @@ export function useBookingFlow() {
   useEffect(() => {
     if (!user) return;
 
-    const savedPhone =
-      window.localStorage.getItem(bookingPhoneStorageKey(user.id)) ?? "";
-
     setForm((current) => ({
       ...current,
       name: current.name || user.name,
       email: current.email || user.email,
-      phone: current.phone || user.phone || savedPhone,
+      phone: current.phone || user.phone,
     }));
   }, [user]);
 
@@ -120,13 +113,12 @@ export function useBookingFlow() {
     setLoading(true);
     setLoadError(null);
 
-    const request =
-      experienceType === "course"
-        ? getCourseById(experienceId, token)
-        : getTripById(experienceId, token);
-
-    request
-      .then((data) => {
+    async function loadExperience() {
+      try {
+        const data =
+          experienceType === "course"
+            ? await getCourseById(experienceId, token)
+            : await getTripById(experienceId, token);
         if (!active) return;
 
         if (experienceType === "course" && "course" in data) {
@@ -136,8 +128,7 @@ export function useBookingFlow() {
           setExperience(data.trip);
           setCenter(data.center);
         }
-      })
-      .catch((err: unknown) => {
+      } catch (err) {
         if (!active) return;
 
         setLoadError(
@@ -145,10 +136,12 @@ export function useBookingFlow() {
         );
         setExperience(null);
         setCenter(undefined);
-      })
-      .finally(() => {
+      } finally {
         if (active) setLoading(false);
-      });
+      }
+    }
+
+    void loadExperience();
 
     return () => {
       active = false;
@@ -198,12 +191,6 @@ export function useBookingFlow() {
     setBookingErrors(errors);
 
     if (!hasFieldErrors(errors) && !past) {
-      if (user) {
-        window.localStorage.setItem(
-          bookingPhoneStorageKey(user.id),
-          form.phone,
-        );
-      }
       setStep("payment");
     }
   }
