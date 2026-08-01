@@ -62,6 +62,20 @@ async function main() {
     },
   });
 
+  await prisma.instructorProfile.upsert({
+    where: { userId: instructor.id },
+    update: {
+      city: "Jeddah",
+      status: "approved",
+    },
+    create: {
+      userId: instructor.id,
+      licenseNumber: "INS-2026-001",
+      city: "Jeddah",
+      status: "approved",
+    },
+  });
+
   console.log("Development users created successfully.");
 
   // =====================
