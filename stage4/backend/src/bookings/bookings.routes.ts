@@ -30,6 +30,20 @@ bookingsRouter.get(
 );
 
 bookingsRouter.get(
+  "/center",
+  authenticate,
+  authorize(ROLES.DIVING_CENTER),
+  bookingsController.getForCenter,
+);
+
+bookingsRouter.get(
+  "/instructor",
+  authenticate,
+  authorize(ROLES.INSTRUCTOR),
+  bookingsController.getForInstructor,
+);
+
+bookingsRouter.get(
   "/",
   authenticate,
   authorize(ROLES.ADMIN),
