@@ -34,7 +34,7 @@ const { paymentsService } = await import(
   "../src/payments/payments.service.js"
 );
 
-describe("payment retry behavior", () => {
+describe("rejected payment behavior", () => {
   beforeEach(() => {
     bookingFindUnique.mockReset();
     paymentCreate.mockReset();
@@ -51,7 +51,7 @@ describe("payment retry behavior", () => {
     );
   });
 
-  it("keeps a booking pending when its payment fails", async () => {
+  it("cancels a booking when its payment fails", async () => {
     bookingFindUnique.mockResolvedValue({
       id: 10,
       userId: 4,
@@ -73,7 +73,10 @@ describe("payment retry behavior", () => {
       sourceToken: "token",
     });
 
-    expect(bookingUpdate).not.toHaveBeenCalled();
+    expect(bookingUpdate).toHaveBeenCalledWith({
+      where: { id: 10 },
+      data: { status: "cancelled" },
+    });
     expect(paymentCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({ status: "failed" }),
@@ -81,7 +84,7 @@ describe("payment retry behavior", () => {
     );
   });
 
-  it("updates a failed payment when the customer retries", async () => {
+  it("does not allow another payment for a cancelled booking", async () => {
     bookingFindUnique.mockResolvedValue({
       id: 10,
       userId: 4,
@@ -89,37 +92,23 @@ describe("payment retry behavior", () => {
       totalPrice: 250,
       payment: { id: 7, status: "failed" },
     });
-    createMoyasarPayment.mockResolvedValue({
-      id: "pay_retry",
-      status: "paid",
-      source: null,
-    });
-    paymentUpdate.mockResolvedValue({ id: 7, status: "paid" });
-
-    await paymentsService.create({
-      bookingId: 10,
-      userId: 4,
-      paymentMethod: "creditcard",
-      sourceToken: "retry-token",
-    });
-
-    expect(bookingUpdate).toHaveBeenCalledWith({
-      where: { id: 10 },
-      data: { status: "confirmed" },
-    });
-    expect(paymentUpdate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { id: 7 },
-        data: expect.objectContaining({
-          status: "paid",
-          moyasarPaymentId: "pay_retry",
-        }),
+    await expect(
+      paymentsService.create({
+        bookingId: 10,
+        userId: 4,
+        paymentMethod: "creditcard",
+        sourceToken: "retry-token",
       }),
-    );
+    ).rejects.toMatchObject({
+      statusCode: 409,
+      message: "Cancelled bookings cannot be paid",
+    });
+
+    expect(createMoyasarPayment).not.toHaveBeenCalled();
     expect(paymentCreate).not.toHaveBeenCalled();
   });
 
-  it("does not cancel the booking for a failed webhook", async () => {
+  it("cancels the booking for a failed webhook", async () => {
     paymentFindUnique.mockResolvedValue({ id: 7, bookingId: 10 });
     paymentUpdate.mockResolvedValue({ id: 7, status: "failed" });
 
@@ -132,7 +121,10 @@ describe("payment retry behavior", () => {
       },
     });
 
-    expect(bookingUpdate).not.toHaveBeenCalled();
+    expect(bookingUpdate).toHaveBeenCalledWith({
+      where: { id: 10 },
+      data: { status: "cancelled" },
+    });
     expect(paymentUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { id: 7 },
