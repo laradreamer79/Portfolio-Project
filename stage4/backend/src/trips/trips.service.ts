@@ -70,7 +70,11 @@ function publicProviderWhere(): Prisma.TripWhereInput {
   return {
     OR: [
       { center: { status: "approved" } },
-      { instructorId: { not: null } },
+      {
+        instructor: {
+          instructorProfile: { status: "approved" },
+        },
+      },
     ],
   };
 }

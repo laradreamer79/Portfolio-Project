@@ -42,20 +42,41 @@ async function createMockPayment(
   booking: {
     id: number;
     totalPrice: Prisma.Decimal;
+    status: string;
   },
   paymentMethod: string,
+  existingPaymentId?: number,
 ) {
   try {
-    const payment = await prisma.payment.create({
-      data: {
-        bookingId: booking.id,
+    const payment = await prisma.$transaction(async (transaction) => {
+      if (existingPaymentId && booking.status === "cancelled") {
+        await transaction.booking.update({
+          where: { id: booking.id },
+          data: { status: "pending" },
+        });
+      }
+
+      const paymentData = {
         amount: booking.totalPrice,
-        status: "pending",
+        status: "pending" as const,
         paymentMethod,
         moyasarPaymentId: `mock_${Date.now()}_${booking.id}`,
         invoiceUrl: null,
-      },
-      include: paymentWithBooking,
+      };
+
+      return existingPaymentId
+        ? transaction.payment.update({
+            where: { id: existingPaymentId },
+            data: paymentData,
+            include: paymentWithBooking,
+          })
+        : transaction.payment.create({
+            data: {
+              bookingId: booking.id,
+              ...paymentData,
+            },
+            include: paymentWithBooking,
+          });
     });
 
     return {
@@ -83,7 +104,9 @@ async function create(data: CreatePaymentCommand) {
     throw new HttpError(403, "You cannot pay for this booking");
   }
 
-  if (booking.status === "cancelled") {
+  const canRetryFailedPayment = booking.payment?.status === "failed";
+
+  if (booking.status === "cancelled" && !canRetryFailedPayment) {
     throw new HttpError(409, "Cancelled bookings cannot be paid");
   }
 
@@ -91,7 +114,7 @@ async function create(data: CreatePaymentCommand) {
     throw new HttpError(409, "This booking is already confirmed");
   }
 
-  if (booking.payment) {
+  if (booking.payment && !canRetryFailedPayment) {
     throw new HttpError(
       409,
       "A payment already exists for this booking",
@@ -99,7 +122,11 @@ async function create(data: CreatePaymentCommand) {
   }
 
   if (env.paymentProviderMode === "mock") {
-    return createMockPayment(booking, data.paymentMethod);
+    return createMockPayment(
+      booking,
+      data.paymentMethod,
+      booking.payment?.id,
+    );
   }
 
   if (!data.sourceToken) {
@@ -125,24 +152,34 @@ async function create(data: CreatePaymentCommand) {
         });
       }
 
-      if (localStatus === "failed") {
+      if (localStatus !== "paid" && booking.status === "cancelled") {
         await transaction.booking.update({
           where: { id: booking.id },
-          data: { status: "cancelled" },
+          data: { status: "pending" },
         });
       }
 
-      return transaction.payment.create({
-        data: {
-          bookingId: booking.id,
-          amount: booking.totalPrice,
-          status: localStatus,
-          paymentMethod: data.paymentMethod,
-          moyasarPaymentId: providerPayment.id,
-          invoiceUrl: transactionUrl,
-        },
-        include: paymentWithBooking,
-      });
+      const paymentData = {
+        amount: booking.totalPrice,
+        status: localStatus,
+        paymentMethod: data.paymentMethod,
+        moyasarPaymentId: providerPayment.id,
+        invoiceUrl: transactionUrl,
+      };
+
+      return booking.payment
+        ? transaction.payment.update({
+            where: { id: booking.payment.id },
+            data: paymentData,
+            include: paymentWithBooking,
+          })
+        : transaction.payment.create({
+            data: {
+              bookingId: booking.id,
+              ...paymentData,
+            },
+            include: paymentWithBooking,
+          });
     });
 
     return {
@@ -229,7 +266,7 @@ async function handleWebhook(payload: MoyasarWebhookInput) {
       });
     }
 
-    if (localStatus === "failed" || localStatus === "refunded") {
+    if (localStatus === "refunded") {
       await transaction.booking.update({
         where: { id: existingPayment.bookingId },
         data: { status: "cancelled" },
