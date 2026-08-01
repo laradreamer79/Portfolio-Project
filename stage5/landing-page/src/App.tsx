@@ -101,7 +101,7 @@ function App() {
 
         <section id="features" className="section muted">
           <div className="content">
-            <div className="section-heading"><p className="eyebrow teal">Everything in one place</p><h2>EXPLORE OYSTER</h2><p className="subcopy">Three simple ways Oyster helps divers discover their next underwater experience.</p></div>
+            <div className="section-heading"><p className="eyebrow teal">Everything in one place</p><h2>FEATURES</h2><p className="subcopy">Three simple ways Oyster helps divers discover their next underwater experience.</p></div>
             <div className="feature-grid">
               {features.map((feature) => <article className="feature-card" key={feature.title}><img src={feature.image} alt="" /><div><span className="feature-icon">{feature.icon}</span><h3>{feature.title}</h3><p>{feature.description}</p></div></article>)}
             </div>
