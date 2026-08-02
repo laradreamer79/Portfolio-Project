@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   Waves,
 } from "lucide-react";
+import bookingFeatureImage from "./assets/booking-feature.png";
 
 const APP_URL = "https://zeroyster.onrender.com";
 const REPOSITORY_URL = "https://github.com/laradreamer79/Portfolio-Project";
@@ -30,7 +31,7 @@ const features = [
   {
     title: "Book Your Dive",
     description: "Choose a trip or course, reserve your spot, and follow your booking status in one place.",
-    image: "https://images.unsplash.com/photo-1682687982298-c7514a167088?w=900&h=520&fit=crop&auto=format",
+    image: bookingFeatureImage,
     icon: <CheckCircle />,
   },
   {
