@@ -6,9 +6,9 @@
 
 - [Team Members](#team-members)
 - [Portfolio Landing Page Deliverables](#portfolio-landing-page-deliverables)
-- [Results Summary](#1-results-summary)
-- [Lessons Learned](#2-lessons-learned)
-- [Team Retrospective](#3-team-retrospective)
+- [Results Summary](#results-summary)
+- [Lessons Learned](#lessons-learned)
+- [Team Retrospective](#team-retrospective)
 
 ---
 
