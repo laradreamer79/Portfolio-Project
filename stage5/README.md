@@ -1,7 +1,5 @@
 # Stage 5: Final Report
 
-**Results Summary - Lessons Learned - Team Retrospective**
-
 ## Table of Contents
 
 - [Team Members](#team-members)
