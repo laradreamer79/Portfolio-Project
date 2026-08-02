@@ -12,6 +12,7 @@ import {
   Waves,
 } from "lucide-react";
 import bookingFeatureImage from "./assets/booking-feature.png";
+import addTripsFeatureImage from "./assets/add-trips-feature.png";
 import reviewsFeatureImage from "./assets/reviews-feature.png";
 
 const APP_URL = "https://zeroyster.onrender.com";
@@ -44,7 +45,7 @@ const features = [
   {
     title: "Add Trips & Courses",
     description: "Diving centers and instructors can publish their experiences and reach more divers.",
-    image: "https://images.unsplash.com/photo-1682687982167-d7fb3ed8541d?w=900&h=520&fit=crop&auto=format",
+    image: addTripsFeatureImage,
     icon: <BookOpen />,
   },
 ];
