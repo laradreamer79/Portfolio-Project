@@ -17,7 +17,7 @@
 
 ### 1. Landing Page URL
 
-[Visit the live Oyster landing page](https://laradreamer79.github.io/Portfolio-Project/)
+
 
 ### 2. YouTube Demo Video
 
