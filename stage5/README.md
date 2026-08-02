@@ -6,9 +6,9 @@
 
 - [Team Members](#team-members)
 - [Portfolio Landing Page Deliverables](#portfolio-landing-page-deliverables)
-- [1. Results Summary](#1-results-summary)
-- [2. Lessons Learned](#2-lessons-learned)
-- [3. Team Retrospective](#3-team-retrospective)
+- [Results Summary](#1-results-summary)
+- [Lessons Learned](#2-lessons-learned)
+- [Team Retrospective](#3-team-retrospective)
 
 ---
 
@@ -50,9 +50,9 @@
 
 ---
 
-# 1. Results Summary
+# Results Summary
 
-## 1.1 Project Overview
+## Project Overview
 
 Oyster is a web platform designed to support the diving community by helping users discover diving centers, trips, and courses in Saudi Arabia.
 
@@ -71,7 +71,7 @@ The MVP focuses on creating a clear connection between divers, instructors, and 
 
 ---
 
-## 1.2 Project Journey Overview
+## Project Journey Overview
 
 The Oyster project progressed through five structured stages, starting from the initial idea and ending with a functional MVP and final project reflection.
 
@@ -97,7 +97,7 @@ The final stage focuses on documenting the final results, reflecting on team per
 
 ---
 
-## 1.3 MVP Feature Completion
+##  MVP Feature Completion
 
 | Feature | Planned | Delivered | Status |
 |---|---|---|---|
@@ -128,7 +128,7 @@ The final stage focuses on documenting the final results, reflecting on team per
 
 ---
 
-## 1.4 SMART Objectives Evaluation
+## SMART Objectives Evaluation
 
 | Objective | Target | Result |
 |---|---|---|
@@ -144,7 +144,7 @@ The final stage focuses on documenting the final results, reflecting on team per
 
 ---
 
-## 1.5 Key Project Outcomes
+##  Key Project Outcomes
 
 - The team delivered a functional full-stack MVP.
 - The application supports multiple user roles: user, instructor, diving center, and admin.
@@ -162,7 +162,7 @@ The final stage focuses on documenting the final results, reflecting on team per
 
 ---
 
-## 1.6 Technical Stack Delivered
+##  Technical Stack Delivered
 
 | Layer | Technology | Purpose |
 |---|---|---|
@@ -184,9 +184,9 @@ The final stage focuses on documenting the final results, reflecting on team per
 
 ---
 
-# 2. Lessons Learned
+# Lessons Learned
 
-## 2.1 What Went Well
+##  What Went Well
 
 ### Clear Feature Separation
 
@@ -210,7 +210,7 @@ Testing documentation, Postman checks, automated tests, and GitHub Actions helpe
 
 ---
 
-## 2.2 Challenges and How They Were Addressed
+## Challenges and How They Were Addressed
 
 ### Challenge 1: Managing Role-Based Logic
 
@@ -282,7 +282,7 @@ Clear task ownership and frequent updates reduce confusion and prevent duplicate
 
 ---
 
-## 2.3 Recommendations for Future Projects
+## Recommendations for Future Projects
 
 - Define ownership and role permissions earlier in the planning stage.
 - Create shared validation rules before building repeated forms.
@@ -297,11 +297,11 @@ Clear task ownership and frequent updates reduce confusion and prevent duplicate
 
 ---
 
-# 3. Team Retrospective
+#  Team Retrospective
 
 The team conducted a retrospective to reflect on the project experience, evaluate collaboration, and identify improvements for future projects.
 
-## 3.1 What Worked Well as a Team
+## What Worked Well as a Team
 
 - The team successfully delivered a working MVP.
 - Team members contributed across frontend, backend, testing, and documentation.
@@ -313,7 +313,7 @@ The team conducted a retrospective to reflect on the project experience, evaluat
 
 ---
 
-## 3.2 What We Would Do Differently
+## What We Would Do Differently
 
 - Start testing earlier during each feature, not only after implementation.
 - Assign ownership more clearly for shared features.
@@ -325,7 +325,7 @@ The team conducted a retrospective to reflect on the project experience, evaluat
 
 ---
 
-## 3.3 Individual Contributions
+## Individual Contributions
 
 | Member | Primary Contributions |
 |---|---|
@@ -336,7 +336,7 @@ The team conducted a retrospective to reflect on the project experience, evaluat
 
 ---
 
-## 3.4 Overall Team Assessment
+## Overall Team Assessment
 
 The team successfully delivered a functional MVP within the planned project stages.
 
