@@ -12,6 +12,7 @@ import {
   Waves,
 } from "lucide-react";
 import bookingFeatureImage from "./assets/booking-feature.png";
+import reviewsFeatureImage from "./assets/reviews-feature.png";
 
 const APP_URL = "https://zeroyster.onrender.com";
 const REPOSITORY_URL = "https://github.com/laradreamer79/Portfolio-Project";
@@ -37,7 +38,7 @@ const features = [
   {
     title: "Ratings & Reviews",
     description: "Read real diver reviews and ratings to choose a diving center with confidence.",
-    image: "https://images.unsplash.com/photo-1573553467420-b2a90be8d317?w=900&h=520&fit=crop&auto=format",
+    image: reviewsFeatureImage,
     icon: <ShieldCheck />,
   },
   {
