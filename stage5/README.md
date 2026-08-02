@@ -6,26 +6,9 @@
 
 - [Team Members](#team-members)
 - [Portfolio Landing Page Deliverables](#portfolio-landing-page-deliverables)
-  - [Landing Page URL](#1-landing-page-url)
-  - [YouTube Demo Video](#2-youtube-demo-video)
-  - [Project Repository](#3-project-repository)
-  - [Team GitHub Profiles](#4-team-github-profiles)
 - [1. Results Summary](#1-results-summary)
-  - [1.1 Project Overview](#11-project-overview)
-  - [1.2 Project Journey Overview](#12-project-journey-overview)
-  - [1.3 MVP Feature Completion](#13-mvp-feature-completion)
-  - [1.4 SMART Objectives Evaluation](#14-smart-objectives-evaluation)
-  - [1.5 Key Project Outcomes](#15-key-project-outcomes)
-  - [1.6 Technical Stack Delivered](#16-technical-stack-delivered)
 - [2. Lessons Learned](#2-lessons-learned)
-  - [2.1 What Went Well](#21-what-went-well)
-  - [2.2 Challenges and How They Were Addressed](#22-challenges-and-how-they-were-addressed)
-  - [2.3 Recommendations for Future Projects](#23-recommendations-for-future-projects)
 - [3. Team Retrospective](#3-team-retrospective)
-  - [3.1 What Worked Well as a Team](#31-what-worked-well-as-a-team)
-  - [3.2 What We Would Do Differently](#32-what-we-would-do-differently)
-  - [3.3 Individual Contributions](#33-individual-contributions)
-  - [3.4 Overall Team Assessment](#34-overall-team-assessment)
 
 ---
 
