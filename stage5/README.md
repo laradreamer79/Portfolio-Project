@@ -13,6 +13,33 @@
 
 ---
 
+## Portfolio Landing Page Deliverables
+
+### 1. Landing Page URL
+
+
+
+### 2. YouTube Demo Video
+
+[Watch the Oyster demo on YouTube](https://youtu.be/texwZajNdWk)
+
+### 3. Project Repository
+
+[Oyster Portfolio Project on GitHub](https://github.com/laradreamer79/Portfolio-Project)
+
+### 4. Team GitHub Profiles
+
+| Team Member | GitHub Profile |
+|---|---|
+| Lara Alzannan | [laradreamer79](https://github.com/laradreamer79) |
+| Ebtihal Alomari | [bakosh2](https://github.com/bakosh2) |
+| Maryam Alessa | [maryam13188](https://github.com/maryam13188) |
+| Solaf Alessa | [lilsouy](https://github.com/lilsouy) |
+
+> The landing-page **About** section contains the project story and team details. LinkedIn and X/Twitter links will be added when the team provides their profile URLs.
+
+---
+
 # 1. Results Summary
 
 ## 1.1 Project Overview
