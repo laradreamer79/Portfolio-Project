@@ -737,8 +737,6 @@ validation failures, authorization failures, and unexpected server errors.
 | [Sprint 2 results](docs/testing/sprint-02-results.md) | Database and auth test results |
 | [Sprint 3 results](docs/testing/sprint-03-results.md) | Catalog, booking, reviews, payment, and integration results |
 | [Sprint 4 results](docs/testing/sprint-04-results.md) | Final delivery, documentation, deployment, and regression results |
-| [Postman guide](docs/testing/postman/README.md) | API testing checklist and setup notes |
-| [Evidence guide](docs/testing/evidence/README.md) | Text evidence notes for testing results |
 
 Recommended verification before opening a pull request:
 
