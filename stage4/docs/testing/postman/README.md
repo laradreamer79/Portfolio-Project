@@ -22,11 +22,8 @@ Oyster API
 └── Dashboards and Admin
 ```
 
-Use environment variables:
 
 ```text
 baseUrl = http://localhost:3000/api
-token =
 ```
 
-Do not commit an exported environment containing real credentials or tokens.
