@@ -31,11 +31,15 @@
 
 [Watch the Oyster demo on YouTube](https://youtu.be/texwZajNdWk)
 
-### 3. Project Repository
+### 3. Project Presentation
+
+[View the Oyster project presentation on Google Slides](https://docs.google.com/presentation/d/15Bplel9c8NmltdiD-OAtgAIrDe_n9aFi/edit?slide=id.p1#slide=id.p1)
+
+### 4. Project Repository
 
 [Oyster Portfolio Project on GitHub](https://github.com/laradreamer79/Portfolio-Project)
 
-### 4. Team GitHub Profiles
+### 5. Team GitHub Profiles
 
 | Team Member | GitHub Profile |
 |---|---|
