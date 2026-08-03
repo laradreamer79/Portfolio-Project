@@ -729,12 +729,14 @@ validation failures, authorization failures, and unexpected server errors.
 | Document | Purpose |
 |---|---|
 | [Test plan](docs/testing/test-plan.md) | Overall testing approach and coverage |
+| [Backend automated tests](https://github.com/laradreamer79/Portfolio-Project/tree/develop/stage4/backend/tests) | Vitest and Supertest coverage for authentication, authorization, validation, bookings, payments, admin actions, and provider approval |
+| [Frontend automated tests](https://github.com/laradreamer79/Portfolio-Project/tree/develop/stage4/frontend/tests) | Vitest coverage for authentication, booking, catalog forms, payment handling, and numeric input validation |
+| [Postman API collection](https://github.com/laradreamer79/Portfolio-Project/tree/develop/stage4/backend/postman) | Reusable API requests for manually verifying Oyster endpoints |
+| [GitHub Actions runs](https://github.com/laradreamer79/Portfolio-Project/actions) | CI execution evidence for automated checks, tests, and builds |
 | [Sprint 1 results](docs/testing/sprint-01-results.md) | Frontend UI and routing test results |
 | [Sprint 2 results](docs/testing/sprint-02-results.md) | Database and auth test results |
 | [Sprint 3 results](docs/testing/sprint-03-results.md) | Catalog, booking, reviews, payment, and integration results |
 | [Sprint 4 results](docs/testing/sprint-04-results.md) | Final delivery, documentation, deployment, and regression results |
-| [Postman guide](docs/testing/postman/README.md) | API testing checklist and setup notes |
-| [Evidence guide](docs/testing/evidence/README.md) | Text evidence notes for testing results |
 
 Recommended verification before opening a pull request:
 
