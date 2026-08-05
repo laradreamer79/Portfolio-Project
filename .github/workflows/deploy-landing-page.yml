@@ -1,0 +1,58 @@
+name: Deploy landing page to GitHub Pages
+
+on:
+  push:
+    branches:
+      - feat/react-landing-page
+    paths:
+      - "stage5/landing-page/**"
+      - ".github/workflows/deploy-landing-page.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: stage5/landing-page
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: stage5/landing-page/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build landing page
+        run: npm run build
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload landing page
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: stage5/landing-page/dist
+
+      - name: Deploy landing page
+        id: deployment
+        uses: actions/deploy-pages@v4

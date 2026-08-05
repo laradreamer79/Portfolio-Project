@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Oyster connects divers with certified diving centers, trips, and courses across Saudi Arabia." />
+  <title>Oyster — Saudi Arabia's Diving Platform</title>
+  <style>
+    :root { --teal:#14b8a6; --teal-dark:#0f766e; --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --page:#f8fafc; }
+    * { box-sizing:border-box; } html { scroll-behavior:smooth; } body { margin:0; color:var(--ink); background:var(--page); font-family:Arial, Helvetica, sans-serif; line-height:1.5; }
+    a { color:inherit; text-decoration:none; } .container { width:min(1120px, calc(100% - 48px)); margin:auto; }
+    .nav { position:sticky; top:0; z-index:10; height:64px; display:flex; align-items:center; background:rgba(255,255,255,.96); border-bottom:1px solid var(--line); backdrop-filter:blur(10px); }
+    .nav-inner { display:flex; align-items:center; justify-content:space-between; gap:24px; }.brand { display:flex; align-items:center; gap:9px; font-weight:800; letter-spacing:.13em; font-size:20px; }.brand-mark { display:grid; place-items:center; width:32px; height:32px; border-radius:9px; color:white; background:var(--teal); font-size:19px; }.nav-links { display:flex; gap:28px; color:#475569; font-size:14px; font-weight:600; }.nav-links a:hover { color:var(--teal-dark); }.signin { padding:9px 16px; border-radius:11px; background:var(--teal); color:white; font-size:14px; font-weight:700; }
+    .hero { position:relative; min-height:620px; display:flex; align-items:end; overflow:hidden; color:white; background:#0f172a; }.hero img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }.hero::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg, rgba(2,20,29,.88), rgba(2,20,29,.42) 58%, rgba(2,20,29,.18)); }.hero-content { position:relative; z-index:1; padding:112px 0 78px; max-width:720px; }.eyebrow { margin:0 0 14px; color:#5eead4; text-transform:uppercase; letter-spacing:.18em; font-size:12px; font-weight:800; }.hero h1 { margin:0; font-size:clamp(50px,9vw,105px); line-height:.88; letter-spacing:-.045em; }.hero h1 span { color:#2dd4bf; }.hero .intro { max-width:580px; margin:24px 0 30px; color:#e2e8f0; font-size:18px; }.buttons { display:flex; flex-wrap:wrap; gap:12px; }.button { display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:0 20px; border-radius:12px; font-size:14px; font-weight:800; transition:.2s ease; }.button.primary { background:var(--teal); color:white; }.button.primary:hover { background:var(--teal-dark); transform:translateY(-2px); }.button.secondary { border:1px solid rgba(255,255,255,.45); color:white; }.button.secondary:hover { background:rgba(255,255,255,.13); }
+    section { padding:84px 0; }.section-heading { margin-bottom:34px; }.section-heading .eyebrow { color:var(--teal-dark); }.section-heading h2 { margin:0; font-size:clamp(32px,4.5vw,50px); line-height:1; letter-spacing:-.035em; }.cities { background:white; }.city-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:16px; }.city { position:relative; min-height:165px; overflow:hidden; border-radius:16px; background:#cbd5e1; }.city img { width:100%; height:100%; position:absolute; inset:0; object-fit:cover; transition:transform .35s ease; }.city:hover img { transform:scale(1.07); }.city::after { content:""; position:absolute; inset:0; background:linear-gradient(transparent 35%, rgba(0,0,0,.78)); }.city p { position:absolute; z-index:1; left:14px; bottom:10px; margin:0; color:white; font-weight:800; font-size:19px; }
+    .how-grid, .value-grid, .team-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }.feature-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }.step, .value, .team-card, .feature-card { position:relative; padding:30px; border:1px solid var(--line); border-radius:18px; background:white; overflow:hidden; }.feature-card { padding:0; }.feature-card img { width:100%; height:190px; object-fit:cover; }.feature-card-content { padding:24px; }.number { position:absolute; top:13px; right:18px; color:#f1f5f9; font-size:70px; font-weight:900; line-height:1; }.icon { position:relative; display:grid; place-items:center; width:48px; height:48px; margin-bottom:18px; border:1px solid #ccfbf1; border-radius:14px; background:#f0fdfa; color:var(--teal-dark); font-size:24px; }.step h3, .value h3, .team-card h3, .feature-card h3 { position:relative; margin:0 0 10px; font-size:21px; }.step p, .value p, .team-card p, .feature-card p { position:relative; margin:0; color:var(--muted); font-size:14px; }.story { display:grid; grid-template-columns:1fr 1fr; gap:52px; align-items:center; background:white; }.story-image { min-height:370px; overflow:hidden; border-radius:20px; }.story-image img { width:100%; height:100%; object-fit:cover; }.story-copy p { color:var(--muted); font-size:16px; }.dark { position:relative; overflow:hidden; color:white; background:#0b2430; }.dark::before { content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(4,28,38,.92),rgba(4,28,38,.5)),url("https://images.unsplash.com/photo-1573553467420-b2a90be8d317?w=1600&h=700&fit=crop&auto=format") center/cover; }.dark .container { position:relative; }.dark h2 { max-width:650px; margin:0 0 14px; font-size:clamp(38px,6vw,72px); line-height:.92; letter-spacing:-.05em; }.dark p { max-width:590px; margin:0 0 28px; color:#cbd5e1; font-size:17px; }.team { background:white; }.team-grid { grid-template-columns:repeat(4,1fr); }.avatar { display:grid; place-items:center; width:72px; height:72px; margin-bottom:17px; border-radius:50%; background:#f0fdfa; color:var(--teal-dark); font-size:28px; }.team-card .role { color:var(--teal-dark); font-weight:700; }.footer { padding:48px 0 25px; color:#94a3b8; background:#0f172a; }.footer-top { display:flex; justify-content:space-between; gap:36px; padding-bottom:35px; }.footer p { max-width:330px; margin:14px 0 0; font-size:14px; }.footer-links { display:flex; gap:28px; align-items:flex-start; font-size:14px; }.footer-bottom { padding-top:20px; border-top:1px solid #1e293b; font-size:12px; }
+    @media (max-width:850px){.nav-links{display:none}.city-grid{grid-template-columns:repeat(3,1fr)}.how-grid,.value-grid,.feature-grid{grid-template-columns:1fr}.team-grid{grid-template-columns:repeat(2,1fr)}.story{grid-template-columns:1fr;gap:30px}.story-image{min-height:260px}.hero{min-height:580px}.hero-content{padding-bottom:60px}.footer-top{flex-direction:column}.footer-links{flex-wrap:wrap}}@media(max-width:520px){.container{width:min(100% - 32px,1120px)}section{padding:58px 0}.city-grid{grid-template-columns:repeat(2,1fr)}.team-grid{grid-template-columns:1fr}.signin{padding:8px 11px}.hero h1{font-size:50px}}
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="#top" aria-label="Oyster home"><span class="brand-mark">⚓</span>OYSTER</a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#top">Home</a>
+        <a href="#cities">Centers</a>
+        <a href="#how-it-works">Trips</a>
+        <a href="#story">About Us</a>
+      </nav>
+      <a class="signin" href="https://zeroyster.onrender.com/auth">Sign In</a>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <img src="https://images.unsplash.com/photo-1682687982298-c7514a167088?w=1600&h=900&fit=crop&auto=format" alt="Scuba diver over Saudi Red Sea coral reef">
+      <div class="container hero-content">
+        <p class="eyebrow">Saudi Arabia's Diving Platform</p>
+        <h1>DISCOVER THE<br><span>RED SEA.</span></h1>
+        <p class="intro">Browse certified diving centers across the Kingdom. Book trips, courses, and experiences — all in one place.</p>
+        <div class="buttons">
+          <a class="button primary" href="https://zeroyster.onrender.com/centers">Find Centers →</a>
+          <a class="button secondary" href="https://zeroyster.onrender.com/about">About Us</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="container">
+        <div class="section-heading"><p class="eyebrow">Everything in one place</p><h2>EXPLORE OYSTER</h2></div>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <img src="https://images.unsplash.com/photo-1682687982298-c7514a167088?w=700&h=420&fit=crop&auto=format" alt="Divers exploring a coral reef">
+            <div class="feature-card-content"><h3>Browse Centers</h3><p>Discover certified diving centers across Saudi Arabia's Red Sea and Arabian Gulf coasts.</p></div>
+          </article>
+          <article class="feature-card">
+            <img src="https://images.unsplash.com/photo-1682687982167-d7fb3ed8541d?w=700&h=420&fit=crop&auto=format" alt="Colorful coral reef dive trip">
+            <div class="feature-card-content"><h3>Dive Trips</h3><p>Explore diving trips for every level, from reef dives to advanced technical expeditions.</p></div>
+          </article>
+          <article class="feature-card">
+            <img src="https://images.unsplash.com/photo-1682687981630-cefe9cd73072?w=700&h=420&fit=crop&auto=format" alt="Diver training underwater">
+            <div class="feature-card-content"><h3>Training Courses</h3><p>Find diving courses that help beginners and experienced divers build their skills.</p></div>
+          </article>
+          <article class="feature-card">
+            <img src="https://images.unsplash.com/photo-1708649290066-5f617003b93f?w=700&h=420&fit=crop&auto=format" alt="Diver in clear Saudi waters">
+            <div class="feature-card-content"><h3>Manage Bookings</h3><p>Review upcoming diving experiences and keep your bookings in one place.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="cities" class="cities">
+      <div class="container">
+        <div class="section-heading"><p class="eyebrow">Dive destinations</p><h2>BROWSE BY CITY</h2></div>
+        <div class="city-grid">
+          <a class="city" href="https://zeroyster.onrender.com/catalog?city=Jeddah"><img src="https://images.unsplash.com/photo-1682687982298-c7514a167088?w=600&h=420&fit=crop&auto=format" alt="Jeddah"><p>Jeddah</p></a>
+          <a class="city" href="https://zeroyster.onrender.com/catalog?city=Yanbu"><img src="https://images.unsplash.com/photo-1682687982167-d7fb3ed8541d?w=600&h=420&fit=crop&auto=format" alt="Yanbu"><p>Yanbu</p></a>
+          <a class="city" href="https://zeroyster.onrender.com/catalog?city=Dammam"><img src="https://images.unsplash.com/photo-1708649290066-5f617003b93f?w=600&h=420&fit=crop&auto=format" alt="Dammam"><p>Dammam</p></a>
+          <a class="city" href="https://zeroyster.onrender.com/catalog?city=Khobar"><img src="https://images.unsplash.com/photo-1573553467420-b2a90be8d317?w=600&h=420&fit=crop&auto=format" alt="Khobar"><p>Khobar</p></a>
+          <a class="city" href="https://zeroyster.onrender.com/catalog?city=NEOM"><img src="https://images.unsplash.com/photo-1682687981630-cefe9cd73072?w=600&h=420&fit=crop&auto=format" alt="NEOM"><p>NEOM</p></a>
+          <a class="city" href="https://zeroyster.onrender.com/catalog?city=Jazan"><img src="https://images.unsplash.com/photo-1682687981922-7b55dbb30892?w=600&h=420&fit=crop&auto=format" alt="Jazan"><p>Jazan</p></a>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works">
+      <div class="container">
+        <div class="section-heading"><p class="eyebrow">Simple process</p><h2>HOW IT WORKS</h2></div>
+        <div class="how-grid">
+          <article class="step"><span class="number">01</span><div class="icon">⌕</div><h3>Browse Centers</h3><p>Explore certified diving centers across Saudi Arabia's Red Sea and Arabian Gulf coasts.</p></article>
+          <article class="step"><span class="number">02</span><div class="icon">〰</div><h3>Choose Your Dive</h3><p>Pick from trips and courses — from beginner reef dives to advanced technical expeditions.</p></article>
+          <article class="step"><span class="number">03</span><div class="icon">✓</div><h3>Book &amp; Dive</h3><p>Submit your booking request online. The center confirms your spot and you show up ready to dive.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="story" class="story">
+      <div class="container story">
+        <div class="story-copy">
+          <p class="eyebrow">Our Mission</p>
+          <h2>CONNECTING DIVERS WITH THE KINGDOM'S BEST WATERS.</h2>
+          <p>Oyster is Saudi Arabia's dedicated diving platform, built to connect passionate divers with certified dive centers across the Kingdom's stunning coastlines.</p>
+          <p>We believe that every diver — beginner or expert — deserves access to safe, verified, and memorable underwater experiences.</p>
+          <a class="button primary" href="https://zeroyster.onrender.com/about">Learn more about Oyster →</a>
+        </div>
+        <div class="story-image"><img src="https://images.unsplash.com/photo-1682687982298-c7514a167088?w=700&h=500&fit=crop&auto=format" alt="Diver over coral reef"></div>
+      </div>
+    </section>
+
+    <section class="dark">
+      <div class="container">
+        <p class="eyebrow">Why Oyster</p>
+        <h2>EXPLORE.<br>EXPERIENCE.<br><span style="color:#2dd4bf">REMEMBER.</span></h2>
+        <p>From your first open-water dive to advanced technical expeditions, Oyster connects you with certified dive centers across Saudi Arabia's stunning coastlines.</p>
+        <div class="buttons"><a class="button primary" href="https://zeroyster.onrender.com/trips">Browse Trips →</a><a class="button secondary" href="https://zeroyster.onrender.com/courses">Training Courses</a></div>
+      </div>
+    </section>
+
+    <section class="team">
+      <div class="container">
+        <div class="section-heading"><p class="eyebrow">The people behind Oyster</p><h2>OUR TEAM</h2></div>
+        <div class="team-grid">
+          <article class="team-card"><div class="avatar">◉</div><h3>Lara Alzannan</h3><p class="role">Project Manager</p></article>
+          <article class="team-card"><div class="avatar">◉</div><h3>Ebtihal Alomari</h3><p class="role">Frontend Developer</p></article>
+          <article class="team-card"><div class="avatar">◉</div><h3>Maryam Alessa</h3><p class="role">Backend Developer</p></article>
+          <article class="team-card"><div class="avatar">◉</div><h3>Solaf Alessa</h3><p class="role">Backend Developer</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:58px 0;background:#0f9d92;color:white">
+      <div class="container" style="display:flex;align-items:center;justify-content:space-between;gap:25px;flex-wrap:wrap">
+        <div><p class="eyebrow" style="color:#b9fff7">For Dive Centers</p><h2 style="margin:0;font-size:clamp(29px,4vw,46px)">LIST YOUR CENTER ON OYSTER</h2><p style="max-width:600px;margin:9px 0 0;color:#dcfffb">Reach divers across Saudi Arabia and beyond. Manage bookings, reviews, and your trip calendar — all in one dashboard.</p></div>
+        <a class="button" style="background:white;color:#0f766e" href="https://zeroyster.onrender.com/center/dashboard">Open Center Portal →</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-top">
+      <div><div class="brand" style="color:white"><span class="brand-mark">⚓</span>OYSTER</div><p>Saudi Arabia's premier diving platform. Connect with certified centers across the Kingdom.</p></div>
+      <nav class="footer-links" aria-label="Footer navigation"><a href="https://zeroyster.onrender.com/centers">Browse Centers</a><a href="https://zeroyster.onrender.com/trips">Dive Trips</a><a href="https://zeroyster.onrender.com/courses">Courses</a><a href="https://zeroyster.onrender.com/about">About</a></nav>
+    </div>
+    <div class="container footer-bottom">© 2026 Oyster. All rights reserved. · Dive Saudi Arabia.</div>
+  </footer>
+</body>
+</html>
